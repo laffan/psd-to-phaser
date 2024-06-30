@@ -1,0 +1,11 @@
+{
+  "psd_dir": "../demos/psds",
+  "output_dir": "../demos/phaser-platformer/public/assets",
+  "tile_slice_size": 500,
+  "tile_scaled_versions": [250],
+  "optimizePNGs": {
+    "sprites": false,
+    "tiles": false,
+    "renders": false
+  }
+}
