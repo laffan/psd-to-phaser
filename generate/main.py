@@ -37,7 +37,7 @@ for filename in os.listdir(psd_dir):
         
         # Process the PSD file
         psd_path = os.path.join(psd_dir, filename)
-        psd_data = process_psd(psd_path, psd_output_dir, slice_size, scaled)
+        psd_data = process_psd(psd_path, psd_output_dir, slice_size, scaled, psd_file)
         
         # Append the PSD data to the psds array in site_data
         site_data["psds"].append(psd_data)

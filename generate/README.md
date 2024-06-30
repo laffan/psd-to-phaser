@@ -4,8 +4,8 @@ This tool processes specially structured Photoshop (PSD) files, outputting indiv
 
 ## To Do (Before publish)
 
-- [ ] Generate animations.
-- [ ] Generate spritesheet.
+- [x] Generate animations.
+- [ ] Generate spritesheet (same thing w/out number checking)
 - [ ] Generate atlas.
 
 ## Installation
