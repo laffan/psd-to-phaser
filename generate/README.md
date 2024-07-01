@@ -2,12 +2,6 @@
 
 This tool processes specially structured Photoshop (PSD) files, outputting individual image files, x/y points, bounded zones and tilesets, along with a JSON blob that describes it all. There's even an additional PNG optimization step if you're the sort of person who'd be in to that. 
 
-## To Do (Before publish)
-
-- [x] Generate animations.
-- [ ] Generate spritesheet (same thing w/out number checking)
-- [ ] Generate atlas.
-
 ## Installation
 
 Ensure you have the following Python libraries installed:
@@ -17,7 +11,7 @@ Ensure you have the following Python libraries installed:
 
 You can install them using pip:
 
-```
+```bash
 pip install psd-tools Pillow
 ```
 

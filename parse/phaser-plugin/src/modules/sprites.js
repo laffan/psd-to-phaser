@@ -1,113 +1,82 @@
+// modules/sprites.js
 export default function spritesModule(plugin) {
-  return {
-    load(scene, sprites, basePath) {
-      if (!Array.isArray(sprites)) {
-        console.warn("No sprites to load or invalid sprites data");
-        return;
-      }
+    return {
+        load(scene, sprites, basePath, onProgress) {
+            sprites.forEach((sprite) => {
+                this.loadSprite(scene, sprite, basePath, onProgress);
+            });
+        },
 
-      sprites.forEach((sprite) => {
-        this.loadSprite(scene, sprite, basePath);
-      });
-    },
-    loadSprite(scene, sprite, basePath) {
-      const {
-        name,
-        type,
-        filename,
-        x,
-        y,
-        width,
-        height,
-        frameWidth,
-        frameHeight,
-        frameCount,
-      } = sprite;
-      const path = `${basePath}/sprites/${filename || name}`;
+        loadSprite(scene, sprite, basePath, onProgress) {
+            const { name, filename } = sprite;
+            const path = `${basePath}/sprites/${filename || name}.png`;
 
-      switch (type) {
-        case "spritesheet":
-          scene.load.spritesheet(name, `${path}.png`, {
-            frameWidth: frameWidth || width,
-            frameHeight: frameHeight || height,
-          });
-          break;
-        case "atlas":
-          scene.load.atlas(name, `${path}.png`, `${path}.json`);
-          break;
-        case "animation":
-          scene.load.spritesheet(name, `${path}.png`, {
-            frameWidth: frameWidth || width,
-            frameHeight: frameHeight || height,
-            endFrame: frameCount,
-          });
-          // We'll create the animation in the createSprite function
-          break;
-        case "merge":
-        case undefined:
-        case null:
-        case "":
-        default:
-          // Treat as a regular image sprite
-          scene.load.image(name, `${path}.png`);
-          break;
-      }
+            scene.load.image(name, path);
+            scene.load.once(`filecomplete-image-${name}`, onProgress);
 
-      if (plugin.options.debug) {
-        console.log(`Loaded sprite: ${name} (${type || "image"})`);
-      }
-    },
+            if (plugin.options.debug) {
+                console.log(`Loading sprite: ${name} from ${path}`);
+            }
+        },
 
-    createSprite(scene, sprite) {
-      const { name, x, y, type, frameRate, repeat } = sprite;
+        create(scene, sprites) {
+            sprites.forEach((sprite) => {
+                const { name, x, y } = sprite;
+                scene.add.image(x, y, name);
+                
+                if (plugin.options.debug) {
+                    console.log(`Created sprite: ${name} at (${x}, ${y})`);
+                }
+            });
+        },
 
-      let createdSprite;
+        countSprites(sprites) {
+            return Array.isArray(sprites) ? sprites.length : 0;
+        },
 
-      switch (type) {
-        case "spritesheet":
-        case "atlas":
-          createdSprite = scene.add.sprite(x, y, name);
-          break;
-        case "animation":
-          createdSprite = scene.add.sprite(x, y, name);
-          // Create the animation
-          scene.anims.create({
-            key: `${name}_anim`,
-            frames: scene.anims.generateFrameNumbers(name, {
-              start: 0,
-              end: -1,
-            }),
-            frameRate: frameRate || 24,
-            repeat: repeat === undefined ? -1 : repeat,
-          });
-          createdSprite.play(`${name}_anim`);
-          break;
-        case "merge":
-        case undefined:
-        case null:
-        case "":
-        default:
-          // Above cases Treated as a regular image sprite
-          createdSprite = scene.add.image(x, y, name);
-          break;
-      }
+        place(scene, spriteName, psdKey) {
+            const psdData = plugin.getData(psdKey);
+            if (!psdData) {
+                console.warn(`PSD data for key '${psdKey}' not found.`);
+                return null;
+            }
 
-      if (plugin.options.debug) {
-        console.log(`Created sprite: ${name} at (${x}, ${y})`);
-      }
+            const spriteData = psdData.sprites.find(s => s.name === spriteName);
+            
+            if (!spriteData) {
+                console.warn(`Sprite '${spriteName}' not found in PSD data for key '${psdKey}'.`);
+                return null;
+            }
 
-      return createdSprite;
-    },
+            const { x, y, width, height } = spriteData;
 
-    countSprites(sprites) {
-      if (!Array.isArray(sprites)) return 0;
+            // Check if the texture is loaded
+            if (!scene.textures.exists(spriteName)) {
+                console.warn(`Texture for sprite '${spriteName}' not found. Attempting to load it now.`);
+                this.loadSprite(scene, spriteData, psdData.basePath, () => {
+                    console.log(`Texture for sprite '${spriteName}' loaded.`);
+                    this.placeLoadedSprite(scene, spriteName, x, y, width, height);
+                });
+                return null;
+            }
 
-      return sprites.reduce((count, sprite) => {
-        if (sprite.type === "multi" && Array.isArray(sprite.components)) {
-          return count + this.countSprites(sprite.components);
+            return this.placeLoadedSprite(scene, spriteName, x, y, width, height);
+        },
+
+        placeLoadedSprite(scene, spriteName, x, y, width, height) {
+            const sprite = scene.add.image(x, y, spriteName);
+
+            // Set the origin to top-left (0, 0) to match the PSD coordinates
+            sprite.setOrigin(0, 0);
+
+            // Set the display size to match the PSD dimensions
+            sprite.setDisplaySize(width, height);
+
+            if (plugin.options.debug) {
+                console.log(`Placed sprite: ${spriteName} at (${x}, ${y}) with dimensions ${width}x${height}`);
+            }
+
+            return sprite;
         }
-        return count + 1;
-      }, 0);
-    },
-  };
+    };
 }

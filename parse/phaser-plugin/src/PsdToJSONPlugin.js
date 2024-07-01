@@ -8,7 +8,7 @@ export default class PsdToJSONPlugin extends Phaser.Plugins.BasePlugin {
     constructor(pluginManager) {
         super(pluginManager);
         this.psdData = {};
-        this.options = { debug: false }; // Default options
+        this.options = { debug: false };
     }
 
     boot() {
@@ -16,10 +16,8 @@ export default class PsdToJSONPlugin extends Phaser.Plugins.BasePlugin {
     }
 
     init(options = {}) {
-        // Merge provided options with defaults
         this.options = { ...this.options, ...options };
 
-        // Initialize modules
         this.data = dataModule(this);
         this.points = pointsModule(this);
         this.sprites = spritesModule(this);
@@ -31,7 +29,11 @@ export default class PsdToJSONPlugin extends Phaser.Plugins.BasePlugin {
         }
     }
 
-    load(scene, key, psdFolderPath){
-      this.data.load(scene, key, psdFolderPath)
+    load(scene, key, psdFolderPath) {
+        this.data.load(scene, key, psdFolderPath);
+    }
+
+    getData(key) {
+        return this.psdData[key];
     }
 }

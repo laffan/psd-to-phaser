@@ -1,151 +1,142 @@
-function h(s) {
-  let t = 0, i = !1;
+function g(a) {
+  let o = 0, t = !1;
   return {
-    load(e, o, a, r = {}) {
-      const n = `${a}/data.json`;
-      e.load.json(o, n), e.load.once("complete", () => {
-        const d = e.cache.json.get(o);
-        this.processJSON(e, o, d, a, r);
+    load(e, i, s) {
+      const n = `${s}/data.json`;
+      e.load.json(i, n), e.load.once("complete", () => {
+        const l = e.cache.json.get(i);
+        this.processJSON(e, i, l, s);
       });
     },
-    processJSON(e, o, a, r, n) {
-      e.game.registry.set(o, a), s.psdData[o] = a, s.options.debug && console.log(`Loaded JSON for key "${o}":`, a), n.noPreloading ? (i = !0, e.events.emit("psdAssetsLoadComplete"), s.options.debug && console.log("JSON loaded. Skipping asset preloading.")) : this.loadAssetsFromJSON(e, a, r);
+    processJSON(e, i, s, n) {
+      a.psdData[i] = {
+        ...s,
+        basePath: n
+      }, a.options.debug && console.log(`Loaded JSON for key "${i}":`, a.psdData[i]), this.loadAssetsFromJSON(e, i, a.psdData[i]);
     },
-    loadAssetsFromJSON(e, o, a) {
-      const r = (o.sprites || []).filter((p) => !p.lazyLoad), n = (o.tiles || []).filter((p) => !p.lazyLoad);
-      let d = s.sprites.countSprites(r) + s.tiles.countTiles(n), l = 0;
-      s.options.debug && (console.log(`Total assets to load: ${d}`), console.log(`Sprites to preload: ${r.length}`), console.log(`Tiles to preload: ${n.length}`)), r.length > 0 && s.sprites.load(e, r, a), n.length > 0 && s.tiles.load(e, n, a), e.load.on("filecomplete", () => {
-        l++, t = l / d, e.events.emit("psdAssetsLoadProgress", t), s.options.debug && (console.log(`Loaded asset ${l} of ${d}`), console.log(`Loading progress: ${(t * 100).toFixed(2)}%`));
-      }), e.load.on("complete", () => {
-        i = !0, t = 1, e.events.emit("psdAssetsLoadComplete"), s.options.debug && console.log("All preloaded PSD assets loaded"), s.sprites.create(e, r);
-      }), e.load.start();
+    loadAssetsFromJSON(e, i, s) {
+      const n = s.sprites || [], l = s.tiles || {};
+      let r = a.sprites.countSprites(n) + a.tiles.countTiles(l), d = 0;
+      a.options.debug && console.log(`Total assets to load: ${r}`);
+      const c = () => {
+        d++, o = d / r, e.events.emit("psdAssetsLoadProgress", o), a.options.debug && (console.log(`Loaded asset ${d} of ${r}`), console.log(`Loading progress: ${(o * 100).toFixed(2)}%`)), d === r && (t = !0, e.events.emit("psdAssetsLoadComplete"), a.options.debug && console.log("All PSD assets loaded"));
+      };
+      n.length > 0 && a.sprites.load(e, n, s.basePath, c), l.layers && l.layers.length > 0 && a.tiles.load(e, l, s.basePath, c), r === 0 && (t = !0, e.events.emit("psdAssetsLoadComplete")), e.load.isLoading() || e.load.start();
     },
     get progress() {
-      return t;
+      return o;
     },
     get complete() {
-      return i;
+      return t;
     }
   };
 }
-function m(s) {
+function h(a) {
   return {
     // Implementation for points
   };
 }
-function $(s) {
+function $(a) {
   return {
-    load(t, i, e) {
-      if (!Array.isArray(i)) {
-        console.warn("No sprites to load or invalid sprites data");
-        return;
-      }
-      i.forEach((o) => {
-        this.loadSprite(t, o, e);
+    load(o, t, e, i) {
+      t.forEach((s) => {
+        this.loadSprite(o, s, e, i);
       });
     },
-    loadSprite(t, i, e) {
-      const {
-        name: o,
-        type: a,
-        filename: r,
-        x: n,
-        y: d,
-        width: l,
-        height: p,
-        frameWidth: g,
-        frameHeight: c,
-        frameCount: f
-      } = i, u = `${e}/sprites/${r || o}`;
-      switch (a) {
-        case "spritesheet":
-          t.load.spritesheet(o, `${u}.png`, {
-            frameWidth: g || l,
-            frameHeight: c || p
-          });
-          break;
-        case "atlas":
-          t.load.atlas(o, `${u}.png`, `${u}.json`);
-          break;
-        case "animation":
-          t.load.spritesheet(o, `${u}.png`, {
-            frameWidth: g || l,
-            frameHeight: c || p,
-            endFrame: f
-          });
-          break;
-        case "merge":
-        case void 0:
-        case null:
-        case "":
-        default:
-          t.load.image(o, `${u}.png`);
-          break;
-      }
-      s.options.debug && console.log(`Loaded sprite: ${o} (${a || "image"})`);
+    loadSprite(o, t, e, i) {
+      const { name: s, filename: n } = t, l = `${e}/sprites/${n || s}.png`;
+      o.load.image(s, l), o.load.once(`filecomplete-image-${s}`, i), a.options.debug && console.log(`Loading sprite: ${s} from ${l}`);
     },
-    createSprite(t, i) {
-      const { name: e, x: o, y: a, type: r, frameRate: n, repeat: d } = i;
-      let l;
-      switch (r) {
-        case "spritesheet":
-        case "atlas":
-          l = t.add.sprite(o, a, e);
-          break;
-        case "animation":
-          l = t.add.sprite(o, a, e), t.anims.create({
-            key: `${e}_anim`,
-            frames: t.anims.generateFrameNumbers(e, {
-              start: 0,
-              end: -1
-            }),
-            frameRate: n || 24,
-            repeat: d === void 0 ? -1 : d
-          }), l.play(`${e}_anim`);
-          break;
-        case "merge":
-        case void 0:
-        case null:
-        case "":
-        default:
-          l = t.add.image(o, a, e);
-          break;
-      }
-      return s.options.debug && console.log(`Created sprite: ${e} at (${o}, ${a})`), l;
+    create(o, t) {
+      t.forEach((e) => {
+        const { name: i, x: s, y: n } = e;
+        o.add.image(s, n, i), a.options.debug && console.log(`Created sprite: ${i} at (${s}, ${n})`);
+      });
     },
-    countSprites(t) {
-      return Array.isArray(t) ? t.reduce((i, e) => e.type === "multi" && Array.isArray(e.components) ? i + this.countSprites(e.components) : i + 1, 0) : 0;
+    countSprites(o) {
+      return Array.isArray(o) ? o.length : 0;
+    },
+    place(o, t, e) {
+      const i = a.getData(e);
+      if (!i)
+        return console.warn(`PSD data for key '${e}' not found.`), null;
+      const s = i.sprites.find((c) => c.name === t);
+      if (!s)
+        return console.warn(`Sprite '${t}' not found in PSD data for key '${e}'.`), null;
+      const { x: n, y: l, width: r, height: d } = s;
+      return o.textures.exists(t) ? this.placeLoadedSprite(o, t, n, l, r, d) : (console.warn(`Texture for sprite '${t}' not found. Attempting to load it now.`), this.loadSprite(o, s, i.basePath, () => {
+        console.log(`Texture for sprite '${t}' loaded.`), this.placeLoadedSprite(o, t, n, l, r, d);
+      }), null);
+    },
+    placeLoadedSprite(o, t, e, i, s, n) {
+      const l = o.add.image(e, i, t);
+      return l.setOrigin(0, 0), l.setDisplaySize(s, n), a.options.debug && console.log(`Placed sprite: ${t} at (${e}, ${i}) with dimensions ${s}x${n}`), l;
     }
   };
 }
-function b(s) {
+function m(a) {
   return {
-    load(t, i) {
+    load(o, t, e, i) {
+      if (!t || !t.layers || t.layers.length === 0) {
+        console.warn("No tiles to load or invalid tiles data");
+        return;
+      }
+      t.layers.forEach((s) => {
+        for (let n = 0; n < t.columns; n++)
+          for (let l = 0; l < t.rows; l++) {
+            const r = `${s.name}_tile_${n}_${l}`, d = `${e}/tiles/${t.tile_slice_size}/${r}.jpg`;
+            o.load.image(r, d), o.load.once(`filecomplete-image-${r}`, i), a.options.debug && console.log(`Loading tile: ${r} from ${d}`);
+          }
+      });
     },
-    countTiles(t) {
-      return t ? t.layers.length * t.columns * t.rows : 0;
+    create(o, t) {
+    },
+    countTiles(o) {
+      return !o || !o.layers ? 0 : o.layers.length * o.columns * o.rows;
+    },
+    place(o, t, e) {
+      const i = a.getData(e);
+      if (!i || !i.tiles)
+        return console.warn(`Tiles data for key '${e}' not found.`), null;
+      const s = i.tiles;
+      if (!s.layers.find((r) => r.name === t))
+        return console.warn(`Tile layer '${t}' not found in PSD data for key '${e}'.`), null;
+      const l = o.add.container(0, 0);
+      for (let r = 0; r < s.columns; r++)
+        for (let d = 0; d < s.rows; d++) {
+          const c = `${t}_tile_${r}_${d}`, u = r * s.tile_slice_size, f = d * s.tile_slice_size;
+          if (o.textures.exists(c)) {
+            const p = o.add.image(u, f, c).setOrigin(0, 0);
+            l.add(p), a.options.debug && console.log(`Placed tile: ${c} at (${u}, ${f})`);
+          } else
+            console.warn(`Texture for tile ${c} not found`);
+        }
+      return l;
     }
   };
 }
-function S(s) {
+function S(a) {
   return {
     // Implementation for zones
   };
 }
-class y extends Phaser.Plugins.BasePlugin {
-  constructor(t) {
-    super(t), this.psdData = {}, this.options = { debug: !1 };
+class P extends Phaser.Plugins.BasePlugin {
+  constructor(o) {
+    super(o), this.psdData = {}, this.options = { debug: !1 };
   }
   boot() {
     this.pluginManager.game.events.once("destroy", this.destroy, this);
   }
-  init(t = {}) {
-    this.options = { ...this.options, ...t }, this.data = h(this), this.points = m(), this.sprites = $(this), this.tiles = b(), this.zones = S(), this.options.debug && console.log("PsdToJSONPlugin initialized with options:", this.options);
+  init(o = {}) {
+    this.options = { ...this.options, ...o }, this.data = g(this), this.points = h(), this.sprites = $(this), this.tiles = m(this), this.zones = S(), this.options.debug && console.log("PsdToJSONPlugin initialized with options:", this.options);
   }
-  load(t, i, e) {
-    this.data.load(t, i, e);
+  load(o, t, e) {
+    this.data.load(o, t, e);
+  }
+  getData(o) {
+    return this.psdData[o];
   }
 }
 export {
-  y as default
+  P as default
 };

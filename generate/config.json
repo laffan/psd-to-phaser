@@ -2,14 +2,14 @@
   "input_dir": "../demos/psds",
   "output_dir": "../demos/phaser-platformer/public/assets",
   "psds": [
-    "psd-json-demo.psd"
+    "psd-json-demo.psd",
+    "simple.psd"
   ],
   "tile_slice_size": 500,
   "tile_scaled_versions": [250],
   "optimizePNGs": {
     "forceAllSprites": true,
     "forceAllTiles": true
-  }
+  },
+  "generateOnSave": true
 }
-
-
