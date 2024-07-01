@@ -1,64 +1,37 @@
-// src/PsdToJSONPlugin.js
-
-// import { setupLazyLoading, checkLayerVisibility } from './modules/lazyLoading';
-// import { createZones } from './modules/zoneManager';
-// import { createPoints } from './modules/pointManager';
-// import { createBaseLayers } from './modules/utils';
+import dataModule from './modules/data';
+import pointsModule from './modules/points';
+import spritesModule from './modules/sprites';
+import tilesModule from './modules/tiles';
+import zonesModule from './modules/zones';
 
 export default class PsdToJSONPlugin extends Phaser.Plugins.BasePlugin {
-  constructor(pluginManager) {
-    super(pluginManager);
-    this.psdData = [];
-  }
-
-  init() {
-    this.game.events.once("destroy", this.destroy, this);
-  }
-
-  loadJSON(scene, key, filePath) {
-    scene.load.json(key, filePath);
-    scene.load.once("complete", () => {
-      const data = scene.cache.json.get(key);
-      this.processJSON(scene, key, data);
-    });
-  }
-
-  processJSON(scene, key, data) {
-    // Store the data in the game's registry
-    scene.game.registry.set(key, data);
-    console.log( scene.game.registry );
-    // Also store it in the plugin for easy access
-    this.psdData[key] = data;
-    console.log( this.psdData );
-  }
-
-  addPsd(scene, key, psdFilename) {
-    console.log(`Adding PSD: ${key} from ${psdFilename}`);
-
-    // Retrieve the data from the registry
-    const data = this.psdData[psdFilename];
-
-    if (!data) {
-      console.error(`No PSD data found for ${psdFilename}`);
-      return;
+    constructor(pluginManager) {
+        super(pluginManager);
+        this.psdData = {};
+        this.options = { debug: false }; // Default options
     }
 
-    const psdData = data.psds.find((psd) => psd.filename === psdFilename);
-
-    if (!psdData) {
-      console.error(`No PSD named ${psdFilename} found in the data`);
-      return;
+    boot() {
+        this.pluginManager.game.events.once('destroy', this.destroy, this);
     }
 
-    // Here you would typically process the PSD data to create game objects
-    // For now, we'll just log some information
-    console.log(`Adding PSD ${key}:`);
-    console.log(`Dimensions: ${psdData.width}x${psdData.height}`);
-    console.log(`Number of sprites: ${psdData.sprites.length}`);
-    console.log(`Number of zones: ${psdData.zones.length}`);
-    console.log(`Number of points: ${psdData.points.length}`);
+    init(options = {}) {
+        // Merge provided options with defaults
+        this.options = { ...this.options, ...options };
 
-    // You could return the processed PSD data or created game objects here
-    return psdData;
-  }
+        // Initialize modules
+        this.data = dataModule(this);
+        this.points = pointsModule(this);
+        this.sprites = spritesModule(this);
+        this.tiles = tilesModule(this);
+        this.zones = zonesModule(this);
+
+        if (this.options.debug) {
+            console.log('PsdToJSONPlugin initialized with options:', this.options);
+        }
+    }
+
+    load(scene, key, psdFolderPath){
+      this.data.load(scene, key, psdFolderPath)
+    }
 }

@@ -57,6 +57,10 @@ def extract_tiles(tiles_group, output_dir, slice_size, scaled, psd):
             # Generate tiles for the exported image
             create_tiles(tile_image, os.path.join(output_dir, 'tiles'), name_type_dict["name"], slice_size, scaled, is_transparent)
 
+            # Remove the full-size export
+            os.remove(image_path)
+            print(f'Removed full-size export: {image_path}')
+
             # Store the tile information
             tile_info = {
                 **name_type_dict,
