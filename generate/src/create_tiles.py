@@ -1,11 +1,9 @@
-# process_tiles.py
-
 import os
 from PIL import Image
 
 Image.MAX_IMAGE_PIXELS = None  # Disable the DecompressionBombWarning
 
-def create_tiles(image, output_dir, image_name, slice_size, scaled, transparent):
+def create_tiles(image, output_dir, image_name, slice_size, scaled, transparent, jpgQuality):
     width, height = image.size
 
     # Calculate the number of tiles in each dimension
@@ -32,7 +30,7 @@ def create_tiles(image, output_dir, image_name, slice_size, scaled, transparent)
                 tile.save(os.path.join(tiles_dir, tile_filename), 'PNG')
             else:
                 tile_filename = f"{image_name}_tile_{x}_{y}.jpg"
-                tile.save(os.path.join(tiles_dir, tile_filename), 'JPEG')
+                tile.save(os.path.join(tiles_dir, tile_filename), 'JPEG', quality=jpgQuality)
 
     # Create scaled versions of the tiles
     for size in scaled:
@@ -54,4 +52,4 @@ def create_tiles(image, output_dir, image_name, slice_size, scaled, transparent)
                 if transparent:
                     scaled_tile.save(scaled_tile_path, 'PNG')
                 else:
-                    scaled_tile.save(scaled_tile_path, 'JPEG')
+                    scaled_tile.save(scaled_tile_path, 'JPEG', quality=jpgQuality)

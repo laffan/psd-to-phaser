@@ -11,7 +11,7 @@ def get_file_mtime(filepath):
     except FileNotFoundError:
         return 0
 
-def process_single_psd(psd_path, config, output_dir, slice_size, scaled, optimizePNGs):
+def process_single_psd(psd_path, config, output_dir, slice_size, scaled, optimizePNGs, jpgQuality):
     full_input_path = os.path.join(config['input_dir'], psd_path)
     
     if not os.path.exists(full_input_path):
@@ -26,7 +26,7 @@ def process_single_psd(psd_path, config, output_dir, slice_size, scaled, optimiz
     psd_output_dir = os.path.join(output_dir, psd_relative_dir, psd_name)
     os.makedirs(psd_output_dir, exist_ok=True)
     
-    psd_data = process_psd(full_input_path, psd_output_dir, slice_size, scaled, psd_name)
+    psd_data = process_psd(full_input_path, psd_output_dir, slice_size, scaled, psd_name, jpgQuality)
     
     psd_data["generatedTimestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     psd_data["slice_size"] = slice_size
@@ -40,7 +40,7 @@ def process_single_psd(psd_path, config, output_dir, slice_size, scaled, optimiz
     optimize_pngs(psd_output_dir, optimizePNGs)
     print(f"PNG optimization completed for {psd_filename}")
 
-def check_and_process_changes(psds, last_modified_times, config, output_dir, slice_size, scaled, optimizePNGs):
+def check_and_process_changes(psds, last_modified_times, config, output_dir, slice_size, scaled, optimizePNGs, jpgQuality):
     changes_detected = False
     last_processed_file = None
     for psd in psds:
@@ -48,7 +48,7 @@ def check_and_process_changes(psds, last_modified_times, config, output_dir, sli
         current_mtime = get_file_mtime(full_path)
         if current_mtime > last_modified_times[psd]:
             print(f"Change detected in {psd}")
-            process_single_psd(psd, config, output_dir, slice_size, scaled, optimizePNGs)
+            process_single_psd(psd, config, output_dir, slice_size, scaled, optimizePNGs, jpgQuality)
             last_modified_times[psd] = current_mtime
             changes_detected = True
             last_processed_file = psd
@@ -65,10 +65,11 @@ def main():
     scaled = config['tile_scaled_versions']
     optimizePNGs = config.get('optimizePNGs', {"forceAllSprites": False, "forceAllTiles": False})
     generate_on_save = config.get('generateOnSave', False)
+    jpgQuality = config.get('jpgQuality', 85)  # Default to 85 if not specified
 
     # Initial processing of all PSD files
     for psd_path in psds:
-        process_single_psd(psd_path, config, output_dir, slice_size, scaled, optimizePNGs)
+        process_single_psd(psd_path, config, output_dir, slice_size, scaled, optimizePNGs, jpgQuality)
 
     if generate_on_save:
         print("---\nWatching for PSD file changes...")
@@ -76,7 +77,7 @@ def main():
 
         try:
             while True:
-                changes_detected, last_processed_file = check_and_process_changes(psds, last_modified_times, config, output_dir, slice_size, scaled, optimizePNGs)
+                changes_detected, last_processed_file = check_and_process_changes(psds, last_modified_times, config, output_dir, slice_size, scaled, optimizePNGs, jpgQuality)
                 if changes_detected:
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     print(f"---\nUpdated {last_processed_file} at {timestamp}\nWatching for PSD file changes...")

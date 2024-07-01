@@ -5,7 +5,7 @@ from src.parsers import parse_attributes
 
 Image.MAX_IMAGE_PIXELS = None  # Disable the DecompressionBombWarning
 
-def extract_tiles(tiles_group, output_dir, slice_size, scaled, psd):
+def extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality):
     print("Processing tiles layer group...")
 
     # Calculate number of rows and columns based on the PSD size
@@ -51,11 +51,11 @@ def extract_tiles(tiles_group, output_dir, slice_size, scaled, psd):
                 if tile_image.mode == 'RGBA':
                     tile_image = tile_image.convert('RGB')
                 image_path = os.path.join(output_dir, f'{name_type_dict["name"]}.jpg')
-                tile_image.save(image_path, 'JPEG')
+                tile_image.save(image_path, 'JPEG', quality=jpgQuality)
                 print(f'Exported {name_type_dict["name"]} layer group as {name_type_dict["name"]}.jpg')
 
             # Generate tiles for the exported image
-            create_tiles(tile_image, os.path.join(output_dir, 'tiles'), name_type_dict["name"], slice_size, scaled, is_transparent)
+            create_tiles(tile_image, os.path.join(output_dir, 'tiles'), name_type_dict["name"], slice_size, scaled, is_transparent, jpgQuality)
 
             # Remove the full-size export
             os.remove(image_path)

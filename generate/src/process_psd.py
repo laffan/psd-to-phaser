@@ -12,7 +12,7 @@ from src.parsers import *
 
 Image.MAX_IMAGE_PIXELS = None  # Disable the DecompressionBombWarning
 
-def process_psd(psd_path, output_dir, slice_size, scaled, psd_name):
+def process_psd(psd_path, output_dir, slice_size, scaled, psd_name, jpgQuality):
     # Load the PSD file
     print(f"Processing PSD file: {os.path.basename(psd_path)}")
     psd = PSDImage.open(psd_path)
@@ -39,7 +39,7 @@ def process_psd(psd_path, output_dir, slice_size, scaled, psd_name):
             break
           
     if tiles_group:
-        json_data["tiles"] = extract_tiles(tiles_group, output_dir, slice_size, scaled, psd)
+        json_data["tiles"] = extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality)
     else:
         print('Layer group "tiles" not found') 
 
