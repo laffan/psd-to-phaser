@@ -51,7 +51,7 @@ def create_texture_atlas(group, output_dir):
         }
 
     # Save the atlas image
-    atlas_filename = f'{atlas_name}_atlas.png'
+    atlas_filename = f'{atlas_name}.png'
     atlas_image_path = f'{output_dir}/{atlas_filename}'
     atlas_image.save(atlas_image_path, 'PNG')
 

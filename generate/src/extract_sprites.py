@@ -48,7 +48,7 @@ def extract_sprites(sprites_group, output_dir):
                             layer.visible = True
 
                         frames, width, height = create_animation(item)
-                        spritesheet_path = os.path.join(output_path, f"{name_type_dict['name']}_animation.png")
+                        spritesheet_path = os.path.join(output_path, f"{name_type_dict['name']}.png")
                         spritesheet_data = create_spritesheet(frames, spritesheet_path, width, height)
                         sprite_data.update(spritesheet_data)
                         sprite_data["width"] = width
