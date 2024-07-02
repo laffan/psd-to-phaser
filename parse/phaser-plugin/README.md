@@ -41,7 +41,7 @@ Note that the optional debug mode is on, which gives you simple visualizations o
 
 ### Loading
 
-Load in PsdToJSON data by passing in the containing folder. Any assets in the JSON that are not lazyLoad will  automatically start loading. 
+Load in PsdToJSON data by passing in the containing folder. Any assets in the JSON that are not lazyLoad will automatically start loading.
 
 ```js
 // Load the JSON
@@ -111,6 +111,41 @@ this.P2J.sprites.place(
   "simple_psd",
   { useImage: true }
 );
+```
+
+### Animations
+
+PsdToJSON generates an animation spritesheet for any layer that has a type of "animation". This is all handled automatically, so if you've done your layer naming properly, you should just see an animated sprite when loading the JSON.  Animations are just phaser animations, so all associated functions (play(), pause(), resume() etc) should work as expected. 
+
+You can override the default animation properties at several points.
+
+1. Layer naming : In Photoshop, the attributes of the layer name itself can control animation properties. If you pass valid animation parameters, they will be merged in when instantiating the animation.
+
+```
+bounce | animation | frameRate: 5, yoyo: true
+```
+
+2. Instantiation : When instantiating the sprite, you can also pass in animation parameters, so the same thing could be acheived like so :
+
+```js
+// For individual sprites
+this.P2J.sprites.place(this, "nested/bounce", "simple_psd", {
+  animationOptions: {
+    frameRate: 5,
+    yoyo: true,
+  },
+});
+```
+
+3. Using get() : You can always use get() to retreive the sprite and then use updateAnimation():
+
+```js
+this.bounce = this.P2J.sprites.get("simple_psd", "nested/bounce");
+
+this.bounce.updateAnimation({
+  frameRate: 5,
+  yoyo: true,
+});
 ```
 
 ## Development
