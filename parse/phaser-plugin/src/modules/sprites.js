@@ -73,6 +73,18 @@ export default function spritesModule(plugin) {
       return result;
     },
 
+    placeAll(scene, psdKey, options = {}) {
+      const psdData = plugin.getData(psdKey);
+      if (!psdData || !psdData.sprites) {
+        console.warn(`Sprite data for key '${psdKey}' not found.`);
+        return null;
+      }
+
+      return psdData.sprites.map((rootSprite) =>
+        this.placeSprite(scene, rootSprite, options)
+      );
+    },
+
     countSprites(sprites) {
       return this.countSpritesRecursive(sprites);
     },

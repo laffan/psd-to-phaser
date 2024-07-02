@@ -1,18 +1,21 @@
 # PSD to JSON Phaser Plugin
 
-This is a bunch of convenience functions to get PSD to JSON up and running in your phaser project.
+PsdToJSON's phaser plugin is a bunch of convenience functions to get PSD to JSON up and running in your phaser project more quickly.
 
-## Notes
+## ToDo
 
- 🚨🚨 STOP 🚨🚨 
- 
- Hold off on developing this until a plugin-free version of the project is working.  
- 
- 🚨 🚨🚨🚨🚨🚨🚨
+- [ ] placeAll() 
+- [ ] Access loaded/nested content. (Move stuff, add physics, setPos, etc)
+- [ ] Spritesheets
+- [ ] Atlas
+- [ ] Animation
+- [ ] Root x/y (+ placing multiple psds in a single scene)
+- [ ] Instance (loop back around to generate first)
+- [ ] 
 
 ## Development
 
-When developing, run : `npm run watch` to build plugin on save. 
+When developing, run : `npm run watch` to build plugin on save.
 
 To link plugin to your project locally, run `npm link` in this folder, and then `npm link psd-to-json-plugin` in the project you'd like to use it in.
 
