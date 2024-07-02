@@ -1,56 +1,65 @@
-// modules/zones.js
-import { createPSDObject } from "./psdObject";
+// modules/zonesModule.js
 
 export default function zonesModule(plugin) {
-  return {
-    place(scene, zoneName, psdKey, options = {}) {
-      const psdData = plugin.getData(psdKey);
-      if (!psdData || !psdData.zones) {
-        console.warn(`Zone data for key '${psdKey}' not found.`);
-        return null;
-      }
+    return {
+        place(scene, zonePath, psdKey, options = {}) {
+            const psdData = plugin.getData(psdKey);
+            if (!psdData || !psdData.zones) {
+                console.warn(`Zone data for key '${psdKey}' not found.`);
+                return null;
+            }
 
-      const zoneData = psdData.zones.find((z) => z.name === zoneName);
-      if (!zoneData) {
-        console.warn(
-          `Zone '${zoneName}' not found in PSD data for key '${psdKey}'.`
-        );
-        return null;
-      }
+            const rootZone = psdData.zones.find(z => zonePath.startsWith(z.name));
+            if (!rootZone) {
+                console.warn(`Zone '${zonePath}' not found in PSD data for key '${psdKey}'.`);
+                return null;
+            }
 
-      const zone = createPSDObject(zoneData);
-      let zoneObject;
+            const targetZone = rootZone.findByPath(zonePath);
+            if (!targetZone) {
+                console.warn(`Zone '${zonePath}' not found in PSD data for key '${psdKey}'.`);
+                return null;
+            }
 
-      const { left, top, right, bottom } = zone.bbox;
-      const width = right - left;
-      const height = bottom - top;
+            return this.placeZone(scene, targetZone, options);
+        },
 
-      zoneObject = scene.add.zone(left, top, width, height);
+        placeZone(scene, zone, options = {}) {
+            const { name, x, y, width, height } = zone;
+            const zoneObject = scene.add.zone(x, y, width, height);
 
-      // Enable physics if it's not already enabled
-      if (!scene.physics || !scene.physics.world) {
-        scene.physics.startSystem(Phaser.Physics.ARCADE);
-      }
-      scene.physics.add.existing(zoneObject, true); // true means it's static
+            if (!scene.physics || !scene.physics.world) {
+                scene.physics.startSystem(Phaser.Physics.ARCADE);
+            }
+            scene.physics.add.existing(zoneObject, true);  // true means it's static
 
-      const debugGraphics = zone.addDebugVisualization(
-        scene,
-        "zone",
-        plugin,
-        options
-      );
+            const debugGraphics = zone.addDebugVisualization(scene, 'zone', plugin, options);
 
-      if (plugin.options.debug) {
-        console.log(
-          `Placed zone: ${zoneName} at (${left}, ${top}) with dimensions ${width}x${height}`
-        );
-      }
+            if (plugin.options.debug) {
+                console.log(`Placed zone: ${name} at (${x}, ${y}) with dimensions ${width}x${height}`);
+            }
 
-      return { layerData: zone, zoneObject, debugGraphics };
-    },
+            const result = { layerData: zone, zoneObject, debugGraphics };
 
-    countZones(zones) {
-      return Array.isArray(zones) ? zones.length : 0;
-    },
-  };
+            if (zone.children) {
+                result.children = zone.children.map(child => this.placeZone(scene, child, options));
+            }
+
+            return result;
+        },
+
+        countZones(zones) {
+            return this.countZonesRecursive(zones);
+        },
+
+        countZonesRecursive(zones) {
+            return zones.reduce((count, zone) => {
+                let total = 1; // Count the current zone
+                if (zone.children) {
+                    total += this.countZonesRecursive(zone.children);
+                }
+                return count + total;
+            }, 0);
+        }
+    };
 }

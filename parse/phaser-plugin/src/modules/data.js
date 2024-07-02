@@ -1,7 +1,10 @@
 // modules/data.js
+import { createPSDObject } from './psdObject';
+
 export default function dataModule(plugin) {
     let progress = 0;
     let complete = false;
+    let lazyLoadQueue = [];
 
     return {
         load(scene, key, psdFolderPath) {
@@ -16,7 +19,10 @@ export default function dataModule(plugin) {
         processJSON(scene, key, data, psdFolderPath) {
             plugin.psdData[key] = {
                 ...data,
-                basePath: psdFolderPath
+                basePath: psdFolderPath,
+                sprites: data.sprites.map(spriteData => createPSDObject(spriteData)),
+                zones: data.zones.map(zoneData => createPSDObject(zoneData)),
+                points: data.points.map(pointData => createPSDObject(pointData))
             };
 
             if (plugin.options.debug) {
@@ -27,10 +33,10 @@ export default function dataModule(plugin) {
         },
 
         loadAssetsFromJSON(scene, key, data) {
-            const spritesToLoad = data.sprites || [];
+            const spritesToLoad = this.flattenObjects(data.sprites);
             const tilesToLoad = data.tiles || {};
 
-            let totalAssets = plugin.sprites.countSprites(spritesToLoad) + plugin.tiles.countTiles(tilesToLoad);
+            let totalAssets = this.countAssets(spritesToLoad) + plugin.tiles.countTiles(tilesToLoad);
             let loadedAssets = 0;
 
             if (plugin.options.debug) {
@@ -59,7 +65,7 @@ export default function dataModule(plugin) {
 
             // Load sprites
             if (spritesToLoad.length > 0) {
-                plugin.sprites.load(scene, spritesToLoad, data.basePath, updateProgress);
+                this.loadSprites(scene, spritesToLoad, data.basePath, updateProgress);
             }
 
             // Load tiles
@@ -77,6 +83,45 @@ export default function dataModule(plugin) {
             if (!scene.load.isLoading()) {
                 scene.load.start();
             }
+        },
+
+ flattenObjects(objects, prefix = '') {
+            return objects.reduce((acc, obj) => {
+                const path = prefix ? `${prefix}/${obj.name}` : obj.name;
+                if (obj.lazyLoad) {
+                    lazyLoadQueue.push({ path, obj });
+                } else if (!obj.children || obj.children.length === 0) {
+                    // Only add leaf nodes (sprites without children) to the list of sprites to load
+                    acc.push({ path, obj });
+                }
+                if (obj.children) {
+                    acc.push(...this.flattenObjects(obj.children, path));
+                }
+                return acc;
+            }, []);
+        },
+
+        loadSprites(scene, sprites, basePath, onProgress) {
+            sprites.forEach(({ path, obj }) => {
+                const filePath = `${basePath}/sprites/${path}.png`;
+                scene.load.image(path, filePath);
+                scene.load.once(`filecomplete-image-${path}`, () => {
+                    obj.isLoaded = true;
+                    onProgress();
+                });
+
+                if (plugin.options.debug) {
+                    console.log(`Loading sprite: ${path} from ${filePath}`);
+                }
+            });
+        },
+
+        countAssets(sprites) {
+            return sprites.length;
+        },
+
+        getLazyLoadQueue() {
+            return lazyLoadQueue;
         },
 
         get progress() {

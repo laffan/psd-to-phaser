@@ -1,86 +1,53 @@
-// modules/sprites.js
-import { createPSDObject } from "./psdObject";
+// modules/spritesModule.js
 
 export default function spritesModule(plugin) {
   return {
-    load(scene, sprites, basePath, onProgress) {
-      sprites.forEach((spriteData) => {
-        this.loadSprite(scene, spriteData, basePath, onProgress);
-      });
-    },
-
-    loadSprite(scene, spriteData, basePath, onProgress) {
-      const sprite = createPSDObject(spriteData);
-      const { name, filename } = sprite;
-      const path = `${basePath}/sprites/${filename || name}.png`;
-
-      scene.load.image(name, path);
-      scene.load.once(`filecomplete-image-${name}`, onProgress);
-
-      if (plugin.options.debug) {
-        console.log(`Loading sprite: ${name} from ${path}`);
-      }
-    },
-
-    create(scene, spritesData) {
-      return spritesData.map((spriteData) => {
-        const sprite = createPSDObject(spriteData);
-        const { name, x, y, width, height } = sprite;
-        const image = scene.add.image(x, y, name);
-
-        if (width !== undefined && height !== undefined) {
-          image.setDisplaySize(width, height);
-        }
-
-        if (plugin.options.debug) {
-          console.log(`Created sprite: ${name} at (${x}, ${y})`);
-        }
-
-        return { layerData: sprite, image };
-      });
-    },
-
-    place(scene, spriteName, psdKey) {
+    place(scene, spritePath, psdKey, options = {}) {
       const psdData = plugin.getData(psdKey);
       if (!psdData || !psdData.sprites) {
         console.warn(`Sprite data for key '${psdKey}' not found.`);
         return null;
       }
 
-      const spriteData = psdData.sprites.find((s) => s.name === spriteName);
-      if (!spriteData) {
+      const rootSprite = psdData.sprites.find((s) =>
+        spritePath.startsWith(s.name)
+      );
+      if (!rootSprite) {
         console.warn(
-          `Sprite '${spriteName}' not found in PSD data for key '${psdKey}'.`
+          `Sprite '${spritePath}' not found in PSD data for key '${psdKey}'.`
         );
         return null;
       }
 
-      const sprite = createPSDObject(spriteData);
-      const { x, y, width, height } = sprite;
-
-      if (!scene.textures.exists(spriteName)) {
+      const targetSprite = rootSprite.findByPath(spritePath);
+      if (!targetSprite) {
         console.warn(
-          `Texture for sprite '${spriteName}' not found. Attempting to load it now.`
+          `Sprite '${spritePath}' not found in PSD data for key '${psdKey}'.`
         );
-        this.loadSprite(scene, spriteData, psdData.basePath, () => {
-          console.log(`Texture for sprite '${spriteName}' loaded.`);
-          return this.placeLoadedSprite(scene, sprite);
-        });
         return null;
       }
 
-      return this.placeLoadedSprite(scene, sprite);
+      return this.placeSprite(scene, targetSprite, options);
     },
 
-    placeLoadedSprite(scene, sprite, options = {}) {
+    placeSprite(scene, sprite, options = {}) {
       const { name, x, y, width, height } = sprite;
-      const image = scene.add.image(x, y, name);
+      let image = null;
 
-      if (width !== undefined && height !== undefined) {
-        image.setDisplaySize(width, height);
+      if (!sprite.children || sprite.children.length === 0) {
+        // Only create an image for leaf nodes
+        if (sprite.lazyLoad && !sprite.isLoaded) {
+          console.warn(
+            `Sprite '${sprite.getPath()}' is set to lazy load and hasn't been loaded yet.`
+          );
+        } else {
+          image = scene.add.image(x, y, sprite.getPath());
+          if (width !== undefined && height !== undefined) {
+            image.setDisplaySize(width, height);
+          }
+          image.setOrigin(0, 0);
+        }
       }
-
-      image.setOrigin(0, 0);
 
       const debugGraphics = sprite.addDebugVisualization(
         scene,
@@ -89,10 +56,35 @@ export default function spritesModule(plugin) {
         options
       );
 
-      return { layerData: sprite, image, debugGraphics };
+      if (plugin.options.debug) {
+        console.log(
+          `Placed sprite: ${name} at (${x}, ${y}) with dimensions ${width}x${height}`
+        );
+      }
+
+      const result = { layerData: sprite, image, debugGraphics };
+
+      if (sprite.children) {
+        result.children = sprite.children.map((child) =>
+          this.placeSprite(scene, child, options)
+        );
+      }
+
+      return result;
     },
+
     countSprites(sprites) {
-      return Array.isArray(sprites) ? sprites.length : 0;
+      return this.countSpritesRecursive(sprites);
+    },
+
+    countSpritesRecursive(sprites) {
+      return sprites.reduce((count, sprite) => {
+        let total = 1; // Count the current sprite
+        if (sprite.children) {
+          total += this.countSpritesRecursive(sprite.children);
+        }
+        return count + total;
+      }, 0);
     },
   };
 }

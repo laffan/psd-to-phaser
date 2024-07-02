@@ -1,13 +1,18 @@
 // modules/psdObject.js
 
 export class PSDObject {
-    static standardProps = ['name'];
+    static standardProps = ['name', 'x', 'y', 'width', 'height', 'children', 'lazyLoad'];
 
-    constructor(data) {
-        this.name = data.name;
-        
+    constructor(data, parent = null) {
+        this.parent = parent;
+        this.children = [];
+        this.lazyLoad = false;
+        this.isLoaded = false;
+
         Object.keys(data).forEach(key => {
-            if (key !== 'name') {
+            if (key === 'children') {
+                this.children = data[key].map(childData => new PSDObject(childData, this));
+            } else {
                 this[key] = data[key];
             }
         });
@@ -19,32 +24,29 @@ export class PSDObject {
 
     getCustomAttributes() {
         return Object.keys(this)
-            .filter(key => !this.isStandardProp(key))
+            .filter(key => !this.isStandardProp(key) && key !== 'parent')
             .reduce((obj, key) => {
                 obj[key] = this[key];
                 return obj;
             }, {});
     }
 
-    addDebugVisualization(scene, type) {
+   addDebugVisualization(scene, type, plugin, options = {}) {
+        if (!this.shouldDebug(plugin, options)) return null;
+
+        let debugColor = "0xFF00FF";
         let debugGraphics;
-        const debugColor = "0xff00de";
         switch (type) {
             case 'sprite':
-                debugGraphics = scene.add.graphics();
-                debugGraphics.lineStyle(2, debugColor, 1); // Green outline
-                debugGraphics.strokeRect(this.x, this.y, this.width, this.height);
+                debugGraphics = scene.add.rectangle(this.x, this.y, this.width, this.height, debugColor, 0.5);
+                debugGraphics.setOrigin(0, 0);
                 break;
             case 'zone':
-                const debugContainer = scene.add.container(this.bbox.left, this.bbox.top);
-                if (this.subpaths && this.subpaths.length > 0) {
-                    const width = this.bbox.right - this.bbox.left;
-                    const height = this.bbox.bottom - this.bbox.top;
-                    const rectGraphics = scene.add.rectangle(0, 0, width, height, debugColor, 0.5);
-                    rectGraphics.setOrigin(0, 0);
-                    debugContainer.add(rectGraphics);
-                }
-                debugGraphics = debugContainer;
+                const { left, top, right, bottom } = this.bbox;
+                const width = right - left;
+                const height = bottom - top;
+                debugGraphics = scene.add.rectangle(left, top, width, height, debugColor, 0.5);
+                debugGraphics.setOrigin(0, 0);
                 break;
             case 'point':
                 debugGraphics = scene.add.circle(this.x, this.y, 10, debugColor, 0.5);
@@ -53,6 +55,25 @@ export class PSDObject {
                 console.warn(`Unknown debug visualization type: ${type}`);
         }
         return debugGraphics;
+    }
+
+    shouldDebug(plugin, options) {
+        return plugin.options.debug || options.debug;
+    }
+
+    getPath() {
+        return this.parent ? `${this.parent.getPath()}/${this.name}` : this.name;
+    }
+
+    findByPath(path) {
+        const parts = path.split('/');
+        if (parts[0] === this.name) {
+            if (parts.length === 1) return this;
+            const childName = parts[1];
+            const child = this.children.find(c => c.name === childName);
+            return child ? child.findByPath(parts.slice(1).join('/')) : null;
+        }
+        return null;
     }
 }
 
