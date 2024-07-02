@@ -1,4 +1,5 @@
 // modules/spritesModule.js
+import { PSDObject } from "./psdObject";
 
 export default function spritesModule(plugin) {
   return {
@@ -9,47 +10,41 @@ export default function spritesModule(plugin) {
         return null;
       }
 
-      const rootSprite = psdData.sprites.find((s) =>
-        spritePath.startsWith(s.name)
+      return PSDObject.place(
+        scene,
+        psdData,
+        "sprites",
+        spritePath,
+        this.placeSprite.bind(this),
+        options
       );
-      if (!rootSprite) {
-        console.warn(
-          `Sprite '${spritePath}' not found in PSD data for key '${psdKey}'.`
-        );
-        return null;
-      }
-
-      const targetSprite = rootSprite.findByPath(spritePath);
-      if (!targetSprite) {
-        console.warn(
-          `Sprite '${spritePath}' not found in PSD data for key '${psdKey}'.`
-        );
-        return null;
-      }
-
-      return this.placeSprite(scene, targetSprite, options);
     },
 
     placeSprite(scene, sprite, options = {}) {
       const { name, x, y, width, height } = sprite;
-      let image = null;
+      let spriteObject = null;
 
       if (!sprite.children || sprite.children.length === 0) {
-        // Only create an image for leaf nodes
+        // Only create a sprite/image for leaf nodes
         if (sprite.lazyLoad && !sprite.isLoaded) {
           console.warn(
             `Sprite '${sprite.getPath()}' is set to lazy load and hasn't been loaded yet.`
           );
         } else {
-          image = scene.add.image(x, y, sprite.getPath());
-          if (width !== undefined && height !== undefined) {
-            image.setDisplaySize(width, height);
+          if (options.useImage) {
+            spriteObject = scene.add.image(x, y, sprite.getPath());
+          } else {
+            spriteObject = scene.add.sprite(x, y, sprite.getPath());
           }
-          image.setOrigin(0, 0);
+          spriteObject.setName(name);
+          if (width !== undefined && height !== undefined) {
+            spriteObject.setDisplaySize(width, height);
+          }
+          spriteObject.setOrigin(0, 0);
         }
       }
 
-      const debugGraphics = sprite.addDebugVisualization(
+      const debugGraphics = sprite.createDebugBox(
         scene,
         "sprite",
         plugin,
@@ -58,11 +53,21 @@ export default function spritesModule(plugin) {
 
       if (plugin.options.debug) {
         console.log(
-          `Placed sprite: ${name} at (${x}, ${y}) with dimensions ${width}x${height}`
+          `Placed ${
+            options.useImage ? "image" : "sprite"
+          }: ${name} at (${x}, ${y}) with dimensions ${width}x${height}`
         );
       }
 
-      const result = { layerData: sprite, image, debugGraphics };
+      const result = {
+        layerData: sprite,
+        debugGraphics,
+      };
+
+      // Use 'sprite' or 'image' key based on what was created
+      if (spriteObject) {
+        result[options.useImage ? "image" : "sprite"] = spriteObject;
+      }
 
       if (sprite.children) {
         result.children = sprite.children.map((child) =>
@@ -81,22 +86,28 @@ export default function spritesModule(plugin) {
       }
 
       return psdData.sprites.map((rootSprite) =>
-        this.placeSprite(scene, rootSprite, options)
+        PSDObject.place(
+          scene,
+          psdData,
+          "sprites",
+          rootSprite.name,
+          this.placeSprite.bind(this),
+          options
+        )
       );
     },
 
-    countSprites(sprites) {
-      return this.countSpritesRecursive(sprites);
-    },
+    get(psdKey, path) {
+      const psdData = plugin.getData(psdKey);
+      if (!psdData || !psdData.placedSprites) {
+        console.warn(`Placed sprite data for key '${psdKey}' not found.`);
+        return null;
+      }
 
-    countSpritesRecursive(sprites) {
-      return sprites.reduce((count, sprite) => {
-        let total = 1; // Count the current sprite
-        if (sprite.children) {
-          total += this.countSpritesRecursive(sprite.children);
-        }
-        return count + total;
-      }, 0);
+      return psdData.placedSprites[path] || null;
+    },
+    countSprites(sprites) {
+      return PSDObject.countRecursive(sprites);
     },
   };
 }

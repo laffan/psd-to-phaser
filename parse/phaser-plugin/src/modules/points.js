@@ -1,4 +1,5 @@
 // modules/pointsModule.js
+import { PSDObject } from "./psdObject";
 
 export default function pointsModule(plugin) {
   return {
@@ -9,32 +10,22 @@ export default function pointsModule(plugin) {
         return null;
       }
 
-      const rootPoint = psdData.points.find((p) =>
-        pointPath.startsWith(p.name)
+      return PSDObject.place(
+        scene,
+        psdData,
+        "points",
+        pointPath,
+        this.placePoint.bind(this),
+        options
       );
-      if (!rootPoint) {
-        console.warn(
-          `Point '${pointPath}' not found in PSD data for key '${psdKey}'.`
-        );
-        return null;
-      }
-
-      const targetPoint = rootPoint.findByPath(pointPath);
-      if (!targetPoint) {
-        console.warn(
-          `Point '${pointPath}' not found in PSD data for key '${psdKey}'.`
-        );
-        return null;
-      }
-
-      return this.placePoint(scene, targetPoint, options);
     },
 
     placePoint(scene, point, options = {}) {
       const { name, x, y } = point;
-      const pointObject = scene.add.rectangle(x, y, 1, 1, 0xffffff, 0);
+      const pointObject = scene.add.circle(x, y, 5, 0xffffff, 1);
+      pointObject.setName(name);
 
-      const debugGraphics = point.addDebugVisualization(
+      const debugGraphics = point.createDebugBox(
         scene,
         "point",
         plugin,
@@ -45,7 +36,7 @@ export default function pointsModule(plugin) {
         console.log(`Placed point: ${name} at (${x}, ${y})`);
       }
 
-      const result = { layerData: point, pointObject, debugGraphics };
+      const result = { layerData: point, point: pointObject, debugGraphics };
 
       if (point.children) {
         result.children = point.children.map((child) =>
@@ -64,22 +55,29 @@ export default function pointsModule(plugin) {
       }
 
       return psdData.points.map((rootPoint) =>
-        this.placePoint(scene, rootPoint, options)
+        PSDObject.place(
+          scene,
+          psdData,
+          "points",
+          rootPoint.name,
+          this.placePoint.bind(this),
+          options
+        )
       );
     },
 
-    countPoints(points) {
-      return this.countPointsRecursive(points);
+    get(psdKey, path) {
+      const psdData = plugin.getData(psdKey);
+      if (!psdData || !psdData.placedPoints) {
+        console.warn(`Placed point data for key '${psdKey}' not found.`);
+        return null;
+      }
+
+      return psdData.placedPoints[path] || null;
     },
 
-    countPointsRecursive(points) {
-      return points.reduce((count, point) => {
-        let total = 1; // Count the current point
-        if (point.children) {
-          total += this.countPointsRecursive(point.children);
-        }
-        return count + total;
-      }, 0);
+    countPoints(points) {
+      return PSDObject.countRecursive(points);
     },
   };
 }
