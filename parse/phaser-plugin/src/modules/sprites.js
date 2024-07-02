@@ -44,12 +44,10 @@ export default function spritesModule(plugin) {
         }
       }
 
-      const debugGraphics = sprite.createDebugBox(
-        scene,
-        "sprite",
-        plugin,
-        options
-      );
+      const debugBox = sprite.createDebugBox(scene, "sprite", plugin, options);
+      if (debugBox) {
+        debugBox.setPosition(x, y);
+      }
 
       if (plugin.options.debug) {
         console.log(
@@ -61,12 +59,26 @@ export default function spritesModule(plugin) {
 
       const result = {
         layerData: sprite,
-        debugGraphics,
+        debugBox,
       };
 
       // Use 'sprite' or 'image' key based on what was created
       if (spriteObject) {
         result[options.useImage ? "image" : "sprite"] = spriteObject;
+
+        // Add update listener to spriteObject
+        spriteObject.on("changeposition", () => {
+          if (debugBox) {
+            debugBox.setPosition(spriteObject.x, spriteObject.y);
+          }
+        });
+
+        // Override setPosition method to emit 'changeposition' event
+        const originalSetPosition = spriteObject.setPosition;
+        spriteObject.setPosition = function (x, y) {
+          originalSetPosition.call(this, x, y);
+          this.emit("changeposition");
+        };
       }
 
       if (sprite.children) {
@@ -77,7 +89,6 @@ export default function spritesModule(plugin) {
 
       return result;
     },
-
     placeAll(scene, psdKey, options = {}) {
       const psdData = plugin.getData(psdKey);
       if (!psdData || !psdData.sprites) {

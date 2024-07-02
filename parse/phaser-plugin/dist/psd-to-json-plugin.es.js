@@ -1,6 +1,6 @@
 var w = Object.defineProperty;
 var D = (l, t, e) => t in l ? w(l, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : l[t] = e;
-var $ = (l, t, e) => (D(l, typeof t != "symbol" ? t + "" : t, e), e);
+var b = (l, t, e) => (D(l, typeof t != "symbol" ? t + "" : t, e), e);
 const g = class g {
   constructor(t, e = null) {
     this.parent = e, this.children = [], this.lazyLoad = !1, this.isLoaded = !1, Object.keys(t).forEach((s) => {
@@ -23,22 +23,27 @@ const g = class g {
   createDebugBox(t, e, s, n = {}) {
     if (!this.shouldDebug(s, n))
       return null;
-    const o = t.add.container(0, 0), a = t.add.graphics();
-    o.add(a);
-    const i = () => {
-      if (a.clear(), a.lineStyle(2, 16711935, 1), this.bbox) {
-        const { left: c, top: d, right: u, bottom: f } = this.bbox;
-        a.strokeRect(c, d, u - c, f - d);
-      } else
-        this.width !== void 0 && this.height !== void 0 ? a.strokeRect(0, 0, this.width, this.height) : a.fillCircle(0, 0, 5);
-    };
-    i();
-    const r = this.getTargetObject(t, e);
-    return r && (r.on("changeposition", () => {
-      o.setPosition(r.x, r.y);
-    }), r.on("changesize", () => {
-      i();
-    }), o.setPosition(r.x, r.y)), o;
+    let o, a = 16711935;
+    if (e === "zone") {
+      const { left: i, top: r, right: c, bottom: d } = this.bbox, u = c - i, f = d - r;
+      o = t.add.rectangle(
+        i,
+        r,
+        u,
+        f,
+        a,
+        0.5
+      ), o.setOrigin(0, 0);
+    } else
+      e === "sprite" || e === "image" ? (o = t.add.rectangle(
+        this.x,
+        this.y,
+        this.width,
+        this.height,
+        a,
+        0.5
+      ), o.setOrigin(0, 0)) : e === "point" && (o = t.add.circle(this.x, this.y, 5, a, 0.5));
+    return o;
   }
   getTargetObject(t, e) {
     switch (e) {
@@ -128,7 +133,7 @@ const g = class g {
     }, 0);
   }
 };
-$(g, "standardProps", [
+b(g, "standardProps", [
   "name",
   "x",
   "y",
@@ -138,10 +143,10 @@ $(g, "standardProps", [
   "lazyLoad"
 ]);
 let h = g;
-function p(l) {
+function $(l) {
   return new h(l);
 }
-function z(l) {
+function x(l) {
   let t = 0, e = !1, s = [];
   return {
     load(n, o, a) {
@@ -155,9 +160,9 @@ function z(l) {
       l.psdData[o] = {
         ...a,
         basePath: i,
-        sprites: a.sprites.map((r) => p(r)),
-        zones: a.zones.map((r) => p(r)),
-        points: a.points.map((r) => p(r))
+        sprites: a.sprites.map((r) => $(r)),
+        zones: a.zones.map((r) => $(r)),
+        points: a.points.map((r) => $(r))
       }, l.options.debug && console.log(`Loaded JSON for key "${o}":`, l.psdData[o]), this.loadAssetsFromJSON(n, o, l.psdData[o]);
     },
     loadAssetsFromJSON(n, o, a) {
@@ -197,7 +202,7 @@ function z(l) {
     }
   };
 }
-function x(l) {
+function z(l) {
   return {
     place(t, e, s, n = {}) {
       const o = l.getData(s);
@@ -266,20 +271,24 @@ function S(l) {
       (!e.children || e.children.length === 0) && (e.lazyLoad && !e.isLoaded ? console.warn(
         `Sprite '${e.getPath()}' is set to lazy load and hasn't been loaded yet.`
       ) : (s.useImage ? c = t.add.image(o, a, e.getPath()) : c = t.add.sprite(o, a, e.getPath()), c.setName(n), i !== void 0 && r !== void 0 && c.setDisplaySize(i, r), c.setOrigin(0, 0)));
-      const d = e.createDebugBox(
-        t,
-        "sprite",
-        l,
-        s
-      );
-      l.options.debug && console.log(
+      const d = e.createDebugBox(t, "sprite", l, s);
+      d && d.setPosition(o, a), l.options.debug && console.log(
         `Placed ${s.useImage ? "image" : "sprite"}: ${n} at (${o}, ${a}) with dimensions ${i}x${r}`
       );
       const u = {
         layerData: e,
-        debugGraphics: d
+        debugBox: d
       };
-      return c && (u[s.useImage ? "image" : "sprite"] = c), e.children && (u.children = e.children.map(
+      if (c) {
+        u[s.useImage ? "image" : "sprite"] = c, c.on("changeposition", () => {
+          d && d.setPosition(c.x, c.y);
+        });
+        const f = c.setPosition;
+        c.setPosition = function(m, p) {
+          f.call(this, m, p), this.emit("changeposition");
+        };
+      }
+      return e.children && (u.children = e.children.map(
         (f) => this.placeSprite(t, f, s)
       )), u;
     },
@@ -305,7 +314,7 @@ function S(l) {
     }
   };
 }
-function y(l) {
+function A(l) {
   return {
     load(t, e, s, n) {
       if (!e || !e.layers || e.layers.length === 0) {
@@ -374,7 +383,7 @@ function y(l) {
     }
   };
 }
-function A(l) {
+function L(l) {
   return {
     place(t, e, s, n = {}) {
       const o = l.getData(s);
@@ -390,14 +399,14 @@ function A(l) {
     placeZone(t, e, s = {}) {
       const { name: n, bbox: o } = e, { left: a, top: i, right: r, bottom: c } = o, d = r - a, u = c - i, f = t.add.zone(a, i, d, u);
       f.setName(n), (!t.physics || !t.physics.world) && t.physics.startSystem(Phaser.Physics.ARCADE), t.physics.add.existing(f, !0);
-      const b = e.createDebugBox(t, "zone", l, s);
+      const m = e.createDebugBox(t, "zone", l, s);
       l.options.debug && console.log(
         `Placed zone: ${n} at (${a}, ${i}) with dimensions ${d}x${u}`
       );
-      const m = { layerData: e, zone: f, debugGraphics: b };
-      return e.children && (m.children = e.children.map(
+      const p = { layerData: e, zone: f, debugGraphics: m };
+      return e.children && (p.children = e.children.map(
         (P) => this.placeZone(t, P, s)
-      )), m;
+      )), p;
     },
     placeAll(t, e, s = {}) {
       const n = l.getData(e);
@@ -421,7 +430,7 @@ function A(l) {
     }
   };
 }
-class O extends Phaser.Plugins.BasePlugin {
+class y extends Phaser.Plugins.BasePlugin {
   constructor(t) {
     super(t), this.psdData = {}, this.options = { debug: !1 };
   }
@@ -429,7 +438,7 @@ class O extends Phaser.Plugins.BasePlugin {
     this.pluginManager.game.events.once("destroy", this.destroy, this);
   }
   init(t = {}) {
-    this.options = { ...this.options, ...t }, this.data = z(this), this.points = x(this), this.sprites = S(this), this.tiles = y(this), this.zones = A(this), this.options.debug && console.log("PsdToJSONPlugin initialized with options:", this.options);
+    this.options = { ...this.options, ...t }, this.data = x(this), this.points = z(this), this.sprites = S(this), this.tiles = A(this), this.zones = L(this), this.options.debug && console.log("PsdToJSONPlugin initialized with options:", this.options);
   }
   load(t, e, s) {
     this.data.load(t, e, s);
@@ -439,5 +448,5 @@ class O extends Phaser.Plugins.BasePlugin {
   }
 }
 export {
-  O as default
+  y as default
 };

@@ -54,42 +54,37 @@ export class PSDObject {
   createDebugBox(scene, type, plugin, options = {}) {
     if (!this.shouldDebug(plugin, options)) return null;
 
-    const debugContainer = scene.add.container(0, 0);
-    const debugGraphics = scene.add.graphics();
-    debugContainer.add(debugGraphics);
+    let debugGraphics;
+    let debugColor = 0xff00ff ;
 
-    const updateDebugGraphics = () => {
-      debugGraphics.clear();
-      debugGraphics.lineStyle(2, 0xff00ff, 1);
-
-      if (this.bbox) {
-        const { left, top, right, bottom } = this.bbox;
-        debugGraphics.strokeRect(left, top, right - left, bottom - top);
-      } else if (this.width !== undefined && this.height !== undefined) {
-        debugGraphics.strokeRect(0, 0, this.width, this.height);
-      } else {
-        debugGraphics.fillCircle(0, 0, 5);
-      }
-    };
-
-    updateDebugGraphics();
-
-    // Set up listeners for position and size changes
-    const target = this.getTargetObject(scene, type);
-    if (target) {
-      target.on("changeposition", () => {
-        debugContainer.setPosition(target.x, target.y);
-      });
-
-      target.on("changesize", () => {
-        updateDebugGraphics();
-      });
-
-      // Initial position
-      debugContainer.setPosition(target.x, target.y);
+    if (type === "zone") {
+      const { left, top, right, bottom } = this.bbox;
+      const width = right - left;
+      const height = bottom - top;
+      debugGraphics = scene.add.rectangle(
+        left,
+        top,
+        width,
+        height,
+        debugColor,
+        0.5
+      );
+      debugGraphics.setOrigin(0, 0); // Set origin to top-left corner
+    } else if (type === "sprite" || type === "image") {
+      debugGraphics = scene.add.rectangle(
+        this.x,
+        this.y,
+        this.width,
+        this.height,
+        debugColor,
+        0.5
+      );
+      debugGraphics.setOrigin(0, 0); // Set origin to top-left corner
+    } else if (type === "point") {
+      debugGraphics = scene.add.circle(this.x, this.y, 5, debugColor, 0.5);
     }
 
-    return debugContainer;
+    return debugGraphics;
   }
 
   getTargetObject(scene, type) {
