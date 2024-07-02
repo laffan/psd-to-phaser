@@ -105,18 +105,35 @@ export default function dataModule(plugin) {
     loadSprites(scene, sprites, basePath, onProgress) {
       sprites.forEach(({ path, obj }) => {
         const filePath = `${basePath}/sprites/${path}.png`;
-        scene.load.image(path, filePath);
-        scene.load.once(`filecomplete-image-${path}`, () => {
-          obj.isLoaded = true;
-          onProgress();
-        });
+
+        if (obj.type === "animation") {
+          scene.load.spritesheet(path, filePath, {
+            frameWidth: obj.frame_width,
+            frameHeight: obj.frame_height,
+          });
+        } else {
+          scene.load.image(path, filePath);
+        }
+
+        scene.load.once(
+          `filecomplete-${
+            obj.type === "animation" ? "spritesheet" : "image"
+          }-${path}`,
+          () => {
+            obj.isLoaded = true;
+            onProgress();
+          }
+        );
 
         if (plugin.options.debug) {
-          console.log(`Loading sprite: ${path} from ${filePath}`);
+          console.log(
+            `Loading ${
+              obj.type === "animation" ? "spritesheet" : "sprite"
+            }: ${path} from ${filePath}`
+          );
         }
       });
     },
-
     countAssets(sprites) {
       return sprites.length;
     },
