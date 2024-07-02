@@ -1,0 +1,436 @@
+{
+  "filename": "psd-json-demo",
+  "width": 2000,
+  "height": 1000,
+  "points": [
+    {
+      "name": "start",
+      "x": 335.0,
+      "y": 255.5
+    }
+  ],
+  "sprites": [
+    {
+      "name": "pickups",
+      "x": 952,
+      "y": 104,
+      "width": 181,
+      "height": 314,
+      "children": [
+        {
+          "name": "Triangle 1",
+          "x": 1087,
+          "y": 378,
+          "width": 46,
+          "height": 40
+        },
+        {
+          "name": "Triangle 1 copy",
+          "x": 1087,
+          "y": 104,
+          "width": 46,
+          "height": 40
+        },
+        {
+          "name": "twotri",
+          "type": "merge",
+          "x": 952,
+          "y": 287,
+          "width": 104,
+          "height": 44,
+          "image": "pickups/twotri.png"
+        }
+      ]
+    },
+    {
+      "name": "player",
+      "x": 296,
+      "y": 297,
+      "width": 63,
+      "height": 84,
+      "children": [
+        {
+          "name": "playerMoveA",
+          "type": "animation",
+          "x": 296,
+          "y": 297,
+          "width": 83,
+          "height": 84,
+          "filename": "playerMoveA_animation.png",
+          "frame_width": 83,
+          "frame_height": 84,
+          "frame_count": 3,
+          "columns": 2,
+          "rows": 2
+        },
+        {
+          "name": "playerMoveB",
+          "type": "animation",
+          "x": 296,
+          "y": 297,
+          "width": 83,
+          "height": 84,
+          "filename": "playerMoveB_animation.png",
+          "frame_width": 83,
+          "frame_height": 84,
+          "frame_count": 3,
+          "columns": 2,
+          "rows": 2
+        }
+      ]
+    },
+    {
+      "name": "pyramids",
+      "type": "merge",
+      "x": 199,
+      "y": 493,
+      "width": 199,
+      "height": 216,
+      "compress": true,
+      "image": "pyramids.png"
+    },
+    {
+      "name": "platforms",
+      "x": 257,
+      "y": 155,
+      "width": 1619,
+      "height": 633,
+      "color": "blue",
+      "children": [
+        {
+          "name": "Rectangle 1",
+          "x": 257,
+          "y": 397,
+          "width": 332,
+          "height": 35
+        },
+        {
+          "name": "Rectangle 1 copy",
+          "x": 614,
+          "y": 567,
+          "width": 330,
+          "height": 35
+        },
+        {
+          "name": "Rectangle 1 copy 2",
+          "x": 954,
+          "y": 429,
+          "width": 202,
+          "height": 35
+        },
+        {
+          "name": "Rectangle 1 copy 5",
+          "x": 1308,
+          "y": 656,
+          "width": 202,
+          "height": 35
+        },
+        {
+          "name": "Rectangle 1 copy 6",
+          "x": 1674,
+          "y": 656,
+          "width": 202,
+          "height": 35
+        },
+        {
+          "name": "Rectangle 1 copy 3",
+          "x": 778,
+          "y": 753,
+          "width": 202,
+          "height": 35
+        },
+        {
+          "name": "Rectangle 1 copy 4",
+          "x": 941,
+          "y": 155,
+          "width": 202,
+          "height": 35
+        }
+      ]
+    },
+    {
+      "name": "winFlower",
+      "x": 1722,
+      "y": 533,
+      "width": 107,
+      "height": 103
+    },
+    {
+      "name": "gates",
+      "x": 878,
+      "y": 48,
+      "width": 803,
+      "height": 520,
+      "lazyLoad": true,
+      "children": [
+        {
+          "name": "gateA",
+          "x": 878,
+          "y": 48,
+          "width": 46,
+          "height": 250
+        },
+        {
+          "name": "groupOfGates ",
+          "x": 1561,
+          "y": 49,
+          "width": 120,
+          "height": 519,
+          "children": [
+            {
+              "name": "gateB",
+              "x": 1564,
+              "y": 49,
+              "width": 46,
+              "height": 249
+            },
+            {
+              "name": "gateB copy",
+              "x": 1635,
+              "y": 49,
+              "width": 46,
+              "height": 250
+            },
+            {
+              "name": "yetAnotherGroup",
+              "x": 1561,
+              "y": 318,
+              "width": 116,
+              "height": 250,
+              "difficulty": 7,
+              "children": [
+                {
+                  "name": "gateB",
+                  "x": 1561,
+                  "y": 318,
+                  "width": 46,
+                  "height": 249
+                },
+                {
+                  "name": "gateB copy",
+                  "x": 1632,
+                  "y": 318,
+                  "width": 45,
+                  "height": 250
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bounceFlower",
+      "type": "animation",
+      "x": 668,
+      "y": 402,
+      "width": 266,
+      "height": 168,
+      "hidden": true,
+      "filename": "bounceFlower_animation.png",
+      "frame_width": 266,
+      "frame_height": 168,
+      "frame_count": 9,
+      "columns": 3,
+      "rows": 3
+    },
+    {
+      "name": "adornments",
+      "type": "atlas",
+      "x": 577,
+      "y": 117,
+      "width": 800,
+      "height": 617,
+      "atlas_image": "adornments_atlas.png",
+      "atlas_data": {
+        "frames": {
+          "Shape 48 1": {
+            "frame": {
+              "x": 205,
+              "y": 188,
+              "w": 173,
+              "h": 176
+            },
+            "sourceSize": {
+              "w": 173,
+              "h": 176
+            }
+          },
+          "Shape 43 1": {
+            "frame": {
+              "x": 0,
+              "y": 0,
+              "w": 205,
+              "h": 222
+            },
+            "sourceSize": {
+              "w": 205,
+              "h": 222
+            }
+          },
+          "Giraffe 1": {
+            "frame": {
+              "x": 0,
+              "y": 222,
+              "w": 54,
+              "h": 121
+            },
+            "sourceSize": {
+              "w": 54,
+              "h": 121
+            }
+          },
+          "Kangaroo 1": {
+            "frame": {
+              "x": 205,
+              "y": 0,
+              "w": 204,
+              "h": 188
+            },
+            "sourceSize": {
+              "w": 204,
+              "h": 188
+            }
+          }
+        },
+        "meta": {
+          "image": "adornments_atlas.png",
+          "size": {
+            "w": 444,
+            "h": 444
+          },
+          "scale": "1"
+        }
+      }
+    },
+    {
+      "name": "adornmentSheet",
+      "type": "spritesheet",
+      "x": 315,
+      "y": 122,
+      "width": 800,
+      "height": 281,
+      "filename": "adornmentSheet.png",
+      "frame_width": 243,
+      "frame_height": 222,
+      "frame_count": 3,
+      "columns": 2,
+      "rows": 2
+    }
+  ],
+  "zones": [
+    {
+      "name": "deadZone",
+      "subpaths": [
+        [
+          [
+            0,
+            489
+          ],
+          [
+            2156,
+            489
+          ],
+          [
+            2156,
+            557
+          ],
+          [
+            0,
+            557
+          ]
+        ]
+      ],
+      "bbox": {
+        "left": -1,
+        "top": 878,
+        "right": 2077,
+        "bottom": 1001
+      },
+      "type": "vector"
+    },
+    {
+      "name": "triggerGate",
+      "subpaths": [
+        [
+          [
+            638,
+            248
+          ],
+          [
+            798,
+            248
+          ],
+          [
+            798,
+            315
+          ],
+          [
+            638,
+            315
+          ]
+        ]
+      ],
+      "bbox": {
+        "left": 614,
+        "top": 444,
+        "right": 771,
+        "bottom": 568
+      },
+      "type": "vector"
+    },
+    {
+      "name": "triggerGate copy",
+      "subpaths": [
+        [
+          [
+            1383,
+            297
+          ],
+          [
+            1543,
+            297
+          ],
+          [
+            1543,
+            365
+          ],
+          [
+            1383,
+            365
+          ]
+        ]
+      ],
+      "bbox": {
+        "left": 1331,
+        "top": 534,
+        "right": 1487,
+        "bottom": 658
+      },
+      "type": "vector"
+    }
+  ],
+  "tiles": {
+    "tile_slice_size": 500,
+    "tile_scaled_versions": [
+      250
+    ],
+    "columns": 4,
+    "rows": 2,
+    "layers": [
+      {
+        "name": "background"
+      },
+      {
+        "name": "towers",
+        "type": "transparent",
+        "lazyLoad": true
+      }
+    ]
+  },
+  "generatedTimestamp": "2024-07-01 12:45:33",
+  "slice_size": 500,
+  "sizes": [
+    250
+  ]
+}

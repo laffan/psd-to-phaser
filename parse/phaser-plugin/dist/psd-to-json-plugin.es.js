@@ -1,12 +1,12 @@
 var w = Object.defineProperty;
-var D = (l, t, e) => t in l ? w(l, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : l[t] = e;
-var b = (l, t, e) => (D(l, typeof t != "symbol" ? t + "" : t, e), e);
+var z = (l, e, t) => e in l ? w(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t;
+var b = (l, e, t) => (z(l, typeof e != "symbol" ? e + "" : e, t), t);
 const g = class g {
-  constructor(t, e = null) {
-    this.parent = e, this.children = [], this.lazyLoad = !1, this.isLoaded = !1, Object.keys(t).forEach((s) => {
-      s === "children" ? this.children = t[s].map(
+  constructor(e, t = null) {
+    this.parent = t, this.children = [], this.lazyLoad = !1, this.isLoaded = !1, Object.keys(e).forEach((s) => {
+      s === "children" ? this.children = e[s].map(
         (n) => new g(n, this)
-      ) : this[s] = t[s];
+      ) : this[s] = e[s];
     }), this.bbox || (this.bbox = {
       left: this.x,
       top: this.y,
@@ -14,19 +14,19 @@ const g = class g {
       bottom: this.y + this.height
     });
   }
-  isStandardProp(t) {
-    return g.standardProps.includes(t);
+  isStandardProp(e) {
+    return g.standardProps.includes(e);
   }
   getCustomAttributes() {
-    return Object.keys(this).filter((t) => !this.isStandardProp(t) && t !== "parent").reduce((t, e) => (t[e] = this[e], t), {});
+    return Object.keys(this).filter((e) => !this.isStandardProp(e) && e !== "parent").reduce((e, t) => (e[t] = this[t], e), {});
   }
-  createDebugBox(t, e, s, n = {}) {
+  createDebugBox(e, t, s, n = {}) {
     if (!this.shouldDebug(s, n))
       return null;
     let o, a = 16711935;
-    if (e === "zone") {
+    if (t === "zone") {
       const { left: i, top: r, right: c, bottom: d } = this.bbox, u = c - i, f = d - r;
-      o = t.add.rectangle(
+      o = e.add.rectangle(
         i,
         r,
         u,
@@ -35,53 +35,53 @@ const g = class g {
         0.5
       ), o.setOrigin(0, 0);
     } else
-      e === "sprite" || e === "image" ? (o = t.add.rectangle(
+      t === "sprite" || t === "image" ? (o = e.add.rectangle(
         this.x,
         this.y,
         this.width,
         this.height,
         a,
         0.5
-      ), o.setOrigin(0, 0)) : e === "point" && (o = t.add.circle(this.x, this.y, 5, a, 0.5));
+      ), o.setOrigin(0, 0)) : t === "point" && (o = e.add.circle(this.x, this.y, 5, a, 0.5));
     return o;
   }
-  getTargetObject(t, e) {
-    switch (e) {
+  getTargetObject(e, t) {
+    switch (t) {
       case "sprite":
-        return t.children.getByName(this.name);
+        return e.children.getByName(this.name);
       case "zone":
-        return t.children.getByName(this.name);
+        return e.children.getByName(this.name);
       case "point":
-        return t.children.getByName(this.name);
+        return e.children.getByName(this.name);
       default:
         return null;
     }
   }
-  shouldDebug(t, e) {
-    return t.options.debug || e.debug;
+  shouldDebug(e, t) {
+    return e.options.debug || t.debug;
   }
   getPath() {
     return this.parent ? `${this.parent.getPath()}/${this.name}` : this.name;
   }
-  findByPath(t) {
-    const e = t.split("/");
-    if (e[0] === this.name) {
-      if (e.length === 1)
+  findByPath(e) {
+    const t = e.split("/");
+    if (t[0] === this.name) {
+      if (t.length === 1)
         return this;
-      const s = e[1], n = this.children.find((o) => o.name === s);
-      return n ? n.findByPath(e.slice(1).join("/")) : null;
+      const s = t[1], n = this.children.find((o) => o.name === s);
+      return n ? n.findByPath(t.slice(1).join("/")) : null;
     }
     return null;
   }
-  static place(t, e, s, n, o, a = {}) {
-    if (!e || !e[s])
+  static place(e, t, s, n, o, a = {}) {
+    if (!t || !t[s])
       return console.warn(`${s} data not found.`), null;
     let i;
     if (s === "tiles")
-      i = e[s].layers.find((c) => c.name === n);
+      i = t[s].layers.find((c) => c.name === n);
     else {
       const c = n.split("/");
-      i = e[s].find((d) => d.name === c[0]);
+      i = t[s].find((d) => d.name === c[0]);
       for (let d = 1; d < c.length; d++) {
         if (!i || !i.children)
           return null;
@@ -92,29 +92,29 @@ const g = class g {
     }
     if (!i)
       return console.warn(`${s} '${n}' not found in PSD data.`), null;
-    const r = o(t, i, a);
-    return r && (e[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] || (e[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] = {}), e[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`][n] = r, r.children && this.storeNestedObjects(e, s, n, r.children)), r;
+    const r = o(e, i, a);
+    return r && (t[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] || (t[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] = {}), t[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`][n] = r, r.children && this.storeNestedObjects(t, s, n, r.children)), r;
   }
-  static storeNestedObjects(t, e, s, n) {
+  static storeNestedObjects(e, t, s, n) {
     n.forEach((o) => {
       const a = `${s}/${o.layerData.name}`;
-      t[`placed${e.charAt(0).toUpperCase() + e.slice(1)}`][a] = o, o.children && this.storeNestedObjects(t, e, a, o.children);
+      e[`placed${t.charAt(0).toUpperCase() + t.slice(1)}`][a] = o, o.children && this.storeNestedObjects(e, t, a, o.children);
     });
   }
-  static placeAll(t, e, s, n, o = {}) {
-    if (!e || !e[s])
+  static placeAll(e, t, s, n, o = {}) {
+    if (!t || !t[s])
       return console.warn(`${s} data not found.`), null;
-    const a = e[s].map(
-      (i) => n(t, i, o)
+    const a = t[s].map(
+      (i) => n(e, i, o)
     );
-    return e[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] = a, a;
+    return t[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] = a, a;
   }
-  static get(t, e, s) {
-    const n = `placed${e.charAt(0).toUpperCase() + e.slice(1)}`;
-    if (!t || !t[n])
-      return console.warn(`Placed ${e} data not found.`), null;
+  static get(e, t, s) {
+    const n = `placed${t.charAt(0).toUpperCase() + t.slice(1)}`;
+    if (!e || !e[n])
+      return console.warn(`Placed ${t} data not found.`), null;
     const o = s.split("/");
-    let a = t[n].find(
+    let a = e[n].find(
       (i) => i.layerData.name === o[0]
     );
     for (let i = 1; i < o.length; i++) {
@@ -126,10 +126,10 @@ const g = class g {
     }
     return a;
   }
-  static countRecursive(t) {
-    return t.reduce((e, s) => {
+  static countRecursive(e) {
+    return e.reduce((t, s) => {
       let n = 1;
-      return s.children && s.children.length > 0 && (n += this.countRecursive(s.children)), e + n;
+      return s.children && s.children.length > 0 && (n += this.countRecursive(s.children)), t + n;
     }, 0);
   }
 };
@@ -146,8 +146,8 @@ let h = g;
 function $(l) {
   return new h(l);
 }
-function x(l) {
-  let t = 0, e = !1, s = [];
+function D(l) {
+  let e = 0, t = !1, s = [];
   return {
     load(n, o, a) {
       const i = `${a}/data.json`;
@@ -170,9 +170,9 @@ function x(l) {
       let c = this.countAssets(i) + l.tiles.countTiles(r), d = 0;
       l.options.debug && console.log(`Total assets to load: ${c}`);
       const u = () => {
-        d++, t = d / c, n.events.emit("psdAssetsLoadProgress", t), l.options.debug && (console.log(`Loaded asset ${d} of ${c}`), console.log(`Loading progress: ${(t * 100).toFixed(2)}%`)), d === c && (e = !0, n.events.emit("psdAssetsLoadComplete"), l.options.debug && console.log("All PSD assets loaded"));
+        d++, e = d / c, n.events.emit("psdAssetsLoadProgress", e), l.options.debug && (console.log(`Loaded asset ${d} of ${c}`), console.log(`Loading progress: ${(e * 100).toFixed(2)}%`)), d === c && (t = !0, n.events.emit("psdAssetsLoadComplete"), l.options.debug && console.log("All PSD assets loaded"));
       };
-      i.length > 0 && this.loadSprites(n, i, a.basePath, u), r.layers && r.layers.length > 0 && l.tiles.load(n, r, a.basePath, u), c === 0 && (e = !0, n.events.emit("psdAssetsLoadComplete")), n.load.isLoading() || n.load.start();
+      i.length > 0 && this.loadSprites(n, i, a.basePath, u), r.layers && r.layers.length > 0 && l.tiles.load(n, r, a.basePath, u), c === 0 && (t = !0, n.events.emit("psdAssetsLoadComplete")), n.load.isLoading() || n.load.start();
     },
     flattenObjects(n, o = "") {
       return n.reduce((a, i) => {
@@ -195,46 +195,46 @@ function x(l) {
       return s;
     },
     get progress() {
-      return t;
+      return e;
     },
     get complete() {
-      return e;
+      return t;
     }
   };
 }
-function z(l) {
+function x(l) {
   return {
-    place(t, e, s, n = {}) {
+    place(e, t, s, n = {}) {
       const o = l.getData(s);
       return !o || !o.points ? (console.warn(`Point data for key '${s}' not found.`), null) : h.place(
-        t,
+        e,
         o,
         "points",
-        e,
+        t,
         this.placePoint.bind(this),
         n
       );
     },
-    placePoint(t, e, s = {}) {
-      const { name: n, x: o, y: a } = e, i = t.add.circle(o, a, 5, 16777215, 1);
+    placePoint(e, t, s = {}) {
+      const { name: n, x: o, y: a } = t, i = e.add.circle(o, a, 5, 16777215, 1);
       i.setName(n);
-      const r = e.createDebugBox(
-        t,
+      const r = t.createDebugBox(
+        e,
         "point",
         l,
         s
       );
       l.options.debug && console.log(`Placed point: ${n} at (${o}, ${a})`);
-      const c = { layerData: e, point: i, debugGraphics: r };
-      return e.children && (c.children = e.children.map(
-        (d) => this.placePoint(t, d, s)
+      const c = { layerData: t, point: i, debugGraphics: r };
+      return t.children && (c.children = t.children.map(
+        (d) => this.placePoint(e, d, s)
       )), c;
     },
-    placeAll(t, e, s = {}) {
-      const n = l.getData(e);
-      return !n || !n.points ? (console.warn(`Point data for key '${e}' not found.`), null) : n.points.map(
+    placeAll(e, t, s = {}) {
+      const n = l.getData(t);
+      return !n || !n.points ? (console.warn(`Point data for key '${t}' not found.`), null) : n.points.map(
         (o) => h.place(
-          t,
+          e,
           n,
           "points",
           o.name,
@@ -243,40 +243,40 @@ function z(l) {
         )
       );
     },
-    get(t, e) {
-      const s = l.getData(t);
-      return !s || !s.placedPoints ? (console.warn(`Placed point data for key '${t}' not found.`), null) : s.placedPoints[e] || null;
+    get(e, t) {
+      const s = l.getData(e);
+      return !s || !s.placedPoints ? (console.warn(`Placed point data for key '${e}' not found.`), null) : s.placedPoints[t] || null;
     },
-    countPoints(t) {
-      return h.countRecursive(t);
+    countPoints(e) {
+      return h.countRecursive(e);
     }
   };
 }
 function S(l) {
   return {
-    place(t, e, s, n = {}) {
+    place(e, t, s, n = {}) {
       const o = l.getData(s);
       return !o || !o.sprites ? (console.warn(`Sprite data for key '${s}' not found.`), null) : h.place(
-        t,
+        e,
         o,
         "sprites",
-        e,
+        t,
         this.placeSprite.bind(this),
         n
       );
     },
-    placeSprite(t, e, s = {}) {
-      const { name: n, x: o, y: a, width: i, height: r } = e;
+    placeSprite(e, t, s = {}) {
+      const { name: n, x: o, y: a, width: i, height: r } = t;
       let c = null;
-      (!e.children || e.children.length === 0) && (e.lazyLoad && !e.isLoaded ? console.warn(
-        `Sprite '${e.getPath()}' is set to lazy load and hasn't been loaded yet.`
-      ) : (s.useImage ? c = t.add.image(o, a, e.getPath()) : c = t.add.sprite(o, a, e.getPath()), c.setName(n), i !== void 0 && r !== void 0 && c.setDisplaySize(i, r), c.setOrigin(0, 0)));
-      const d = e.createDebugBox(t, "sprite", l, s);
+      (!t.children || t.children.length === 0) && (t.lazyLoad && !t.isLoaded ? console.warn(
+        `Sprite '${t.getPath()}' is set to lazy load and hasn't been loaded yet.`
+      ) : (s.useImage ? c = e.add.image(o, a, t.getPath()) : c = e.add.sprite(o, a, t.getPath()), c.setName(n), i !== void 0 && r !== void 0 && c.setDisplaySize(i, r), c.setOrigin(0, 0)));
+      const d = t.createDebugBox(e, "sprite", l, s);
       d && d.setPosition(o, a), l.options.debug && console.log(
         `Placed ${s.useImage ? "image" : "sprite"}: ${n} at (${o}, ${a}) with dimensions ${i}x${r}`
       );
       const u = {
-        layerData: e,
+        layerData: t,
         debugBox: d
       };
       if (c) {
@@ -288,15 +288,15 @@ function S(l) {
           f.call(this, m, p), this.emit("changeposition");
         };
       }
-      return e.children && (u.children = e.children.map(
-        (f) => this.placeSprite(t, f, s)
+      return t.children && (u.children = t.children.map(
+        (f) => this.placeSprite(e, f, s)
       )), u;
     },
-    placeAll(t, e, s = {}) {
-      const n = l.getData(e);
-      return !n || !n.sprites ? (console.warn(`Sprite data for key '${e}' not found.`), null) : n.sprites.map(
+    placeAll(e, t, s = {}) {
+      const n = l.getData(t);
+      return !n || !n.sprites ? (console.warn(`Sprite data for key '${t}' not found.`), null) : n.sprites.map(
         (o) => h.place(
-          t,
+          e,
           n,
           "sprites",
           o.name,
@@ -305,148 +305,130 @@ function S(l) {
         )
       );
     },
-    get(t, e) {
-      const s = l.getData(t);
-      return !s || !s.placedSprites ? (console.warn(`Placed sprite data for key '${t}' not found.`), null) : s.placedSprites[e] || null;
+    get(e, t) {
+      const s = l.getData(e);
+      return !s || !s.placedSprites ? (console.warn(`Placed sprite data for key '${e}' not found.`), null) : s.placedSprites[t] || null;
     },
-    countSprites(t) {
-      return h.countRecursive(t);
+    countSprites(e) {
+      return h.countRecursive(e);
     }
   };
 }
-function A(l) {
+function L(l) {
   return {
-    load(t, e, s, n) {
-      if (!e || !e.layers || e.layers.length === 0) {
+    load(e, t, s, n) {
+      if (!t || !t.layers || t.layers.length === 0) {
         console.warn("No tiles to load or invalid tiles data");
         return;
       }
-      e.layers.forEach((o) => {
-        for (let a = 0; a < e.columns; a++)
-          for (let i = 0; i < e.rows; i++) {
-            const r = `${o.name}_tile_${a}_${i}`, c = `${s}/tiles/${e.tile_slice_size}/${r}.jpg`;
-            t.load.image(r, c), t.load.once(`filecomplete-image-${r}`, n), l.options.debug && console.log(`Loading tile: ${r} from ${c}`);
+      t.layers.forEach((o) => {
+        for (let a = 0; a < t.columns; a++)
+          for (let i = 0; i < t.rows; i++) {
+            const r = `${o.name}_tile_${a}_${i}`, c = `${s}/tiles/${t.tile_slice_size}/${r}.jpg`;
+            e.load.image(r, c), e.load.once(`filecomplete-image-${r}`, n), l.options.debug && console.log(`Loading tile: ${r} from ${c}`);
           }
       });
     },
-    countTiles(t) {
-      return !t || !t.layers ? 0 : t.layers.length * t.columns * t.rows;
+    countTiles(e) {
+      return !e || !e.layers ? 0 : e.layers.length * e.columns * e.rows;
     },
-    place(t, e, s, n = {}) {
+    place(e, t, s, n = {}) {
       const o = l.getData(s);
       return !o || !o.tiles ? (console.warn(`Tiles data for key '${s}' not found.`), null) : h.place(
-        t,
+        e,
         o,
         "tiles",
-        e,
+        t,
         this.placeTileLayer.bind(this),
         { ...n, psdKey: s, tilesData: o.tiles }
       );
     },
-    placeTileLayer(t, e, s) {
-      const { tilesData: n } = s, o = t.add.container(0, 0);
-      o.setName(e.name);
+    placeTileLayer(e, t, s) {
+      const { tilesData: n } = s, o = e.add.container(0, 0);
+      o.setName(t.name);
       for (let i = 0; i < n.columns; i++)
         for (let r = 0; r < n.rows; r++) {
-          const c = `${e.name}_tile_${i}_${r}`, d = i * n.tile_slice_size, u = r * n.tile_slice_size;
-          if (t.textures.exists(c)) {
-            const f = t.add.image(d, u, c).setOrigin(0, 0);
+          const c = `${t.name}_tile_${i}_${r}`, d = i * n.tile_slice_size, u = r * n.tile_slice_size;
+          if (e.textures.exists(c)) {
+            const f = e.add.image(d, u, c).setOrigin(0, 0);
             o.add(f), l.options.debug && console.log(`Placed tile: ${c} at (${d}, ${u})`);
           } else
             console.warn(`Texture for tile ${c} not found`);
         }
       const a = this.addDebugVisualization(
-        t,
         e,
+        t,
         n,
         s
       );
-      return a && o.add(a), { layerData: e, tileLayer: o, debugGraphics: a };
+      return a && o.add(a), { layerData: t, tileLayer: o, debugGraphics: a };
     },
-    placeAll(t, e, s = {}) {
-      const n = l.getData(e);
-      return !n || !n.tiles || !n.tiles.layers ? (console.warn(`Tiles data for key '${e}' not found.`), null) : n.tiles.layers.map(
-        (o) => this.place(t, o.name, e, s)
+    placeAll(e, t, s = {}) {
+      const n = l.getData(t);
+      return !n || !n.tiles || !n.tiles.layers ? (console.warn(`Tiles data for key '${t}' not found.`), null) : n.tiles.layers.map(
+        (o) => this.place(e, o.name, t, s)
       );
     },
-    get(t, e) {
-      const s = l.getData(t);
-      return !s || !s.placedTiles ? (console.warn(`Placed tile layer data for key '${t}' not found.`), null) : s.placedTiles[e] || null;
+    get(e, t) {
+      const s = l.getData(e);
+      return !s || !s.placedTiles ? (console.warn(`Placed tile layer data for key '${e}' not found.`), null) : s.placedTiles[t] || null;
     },
-    addDebugVisualization(t, e, s, n) {
+    addDebugVisualization(e, t, s, n) {
       if (!n.debug && !l.options.debug)
         return null;
-      const o = t.add.graphics();
+      const o = e.add.graphics();
       o.lineStyle(2, 16711935, 1);
       const a = s.columns * s.tile_slice_size, i = s.rows * s.tile_slice_size;
       return o.strokeRect(0, 0, a, i), o;
     }
   };
 }
-function L(l) {
+function O(l) {
   return {
-    place(t, e, s, n = {}) {
+    place(e, t, s, n = {}) {
       const o = l.getData(s);
-      return !o || !o.zones ? (console.warn(`Zone data for key '${s}' not found.`), null) : h.place(
-        t,
-        o,
-        "zones",
-        e,
-        this.placeZone.bind(this),
-        n
+      return !o || !o.zones ? (console.warn(`Zone data for key '${s}' not found.`), null) : h.place(e, o, "zones", t, this.placeZone.bind(this), n);
+    },
+    placeZone(e, t, s = {}) {
+      const { name: n, bbox: o } = t, { left: a, top: i, right: r, bottom: c } = o, d = r - a, u = c - i, f = e.add.zone(a, i, d, u);
+      f.setName(n);
+      const m = t.createDebugBox(e, "zone", l, s);
+      l.options.debug && console.log(`Placed zone: ${n} at (${a}, ${i}) with dimensions ${d}x${u}`);
+      const p = { layerData: t, zone: f, debugGraphics: m };
+      return t.children && (p.children = t.children.map((P) => this.placeZone(e, P, s))), p;
+    },
+    placeAll(e, t, s = {}) {
+      const n = l.getData(t);
+      return !n || !n.zones ? (console.warn(`Zone data for key '${t}' not found.`), null) : n.zones.map(
+        (o) => h.place(e, n, "zones", o.name, this.placeZone.bind(this), s)
       );
     },
-    placeZone(t, e, s = {}) {
-      const { name: n, bbox: o } = e, { left: a, top: i, right: r, bottom: c } = o, d = r - a, u = c - i, f = t.add.zone(a, i, d, u);
-      f.setName(n), (!t.physics || !t.physics.world) && t.physics.startSystem(Phaser.Physics.ARCADE), t.physics.add.existing(f, !0);
-      const m = e.createDebugBox(t, "zone", l, s);
-      l.options.debug && console.log(
-        `Placed zone: ${n} at (${a}, ${i}) with dimensions ${d}x${u}`
-      );
-      const p = { layerData: e, zone: f, debugGraphics: m };
-      return e.children && (p.children = e.children.map(
-        (P) => this.placeZone(t, P, s)
-      )), p;
+    get(e, t) {
+      const s = l.getData(e);
+      return !s || !s.placedZones ? (console.warn(`Placed zone data for key '${e}' not found.`), null) : s.placedZones[t] || null;
     },
-    placeAll(t, e, s = {}) {
-      const n = l.getData(e);
-      return !n || !n.zones ? (console.warn(`Zone data for key '${e}' not found.`), null) : n.zones.map(
-        (o) => h.place(
-          t,
-          n,
-          "zones",
-          o.name,
-          this.placeZone.bind(this),
-          s
-        )
-      );
-    },
-    get(t, e) {
-      const s = l.getData(t);
-      return !s || !s.placedZones ? (console.warn(`Placed zone data for key '${t}' not found.`), null) : s.placedZones[e] || null;
-    },
-    countZones(t) {
-      return h.countRecursive(t);
+    countZones(e) {
+      return h.countRecursive(e);
     }
   };
 }
-class y extends Phaser.Plugins.BasePlugin {
-  constructor(t) {
-    super(t), this.psdData = {}, this.options = { debug: !1 };
+class N extends Phaser.Plugins.BasePlugin {
+  constructor(e) {
+    super(e), this.psdData = {}, this.options = { debug: !1 };
   }
   boot() {
     this.pluginManager.game.events.once("destroy", this.destroy, this);
   }
-  init(t = {}) {
-    this.options = { ...this.options, ...t }, this.data = x(this), this.points = z(this), this.sprites = S(this), this.tiles = A(this), this.zones = L(this), this.options.debug && console.log("PsdToJSONPlugin initialized with options:", this.options);
+  init(e = {}) {
+    this.options = { ...this.options, ...e }, this.data = D(this), this.points = x(this), this.sprites = S(this), this.tiles = L(this), this.zones = O(this), this.options.debug && console.log("PsdToJSONPlugin initialized with options:", this.options);
   }
-  load(t, e, s) {
-    this.data.load(t, e, s);
+  load(e, t, s) {
+    this.data.load(e, t, s);
   }
-  getData(t) {
-    return this.psdData[t];
+  getData(e) {
+    return this.psdData[e];
   }
 }
 export {
-  y as default
+  N as default
 };

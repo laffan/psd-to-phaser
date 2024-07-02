@@ -1,0 +1,71 @@
+{
+  "filename": "simple",
+  "width": 809,
+  "height": 500,
+  "points": [
+    {
+      "name": "start",
+      "x": 375.0,
+      "y": 202.5
+    }
+  ],
+  "sprites": [
+    {
+      "name": "simpleSprite",
+      "x": 341,
+      "y": 247,
+      "width": 67,
+      "height": 57
+    }
+  ],
+  "zones": [
+    {
+      "name": "zoneA",
+      "subpaths": [
+        [
+          [
+            5,
+            9
+          ],
+          [
+            24,
+            9
+          ],
+          [
+            24,
+            42
+          ],
+          [
+            5,
+            42
+          ]
+        ]
+      ],
+      "bbox": {
+        "left": 34,
+        "top": 37,
+        "right": 160,
+        "bottom": 166
+      },
+      "type": "vector"
+    }
+  ],
+  "tiles": {
+    "tile_slice_size": 500,
+    "tile_scaled_versions": [
+      250
+    ],
+    "columns": 2,
+    "rows": 1,
+    "layers": [
+      {
+        "name": "background"
+      }
+    ]
+  },
+  "generatedTimestamp": "2024-07-01 01:33:38",
+  "slice_size": 500,
+  "sizes": [
+    250
+  ]
+}

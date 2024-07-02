@@ -1,0 +1,108 @@
+{
+  "filename": "simple",
+  "width": 809,
+  "height": 500,
+  "points": [
+    {
+      "name": "start",
+      "x": 485.0,
+      "y": 176.5
+    }
+  ],
+  "sprites": [
+    {
+      "name": "simpleSprite",
+      "x": 297,
+      "y": 278,
+      "width": 67,
+      "height": 57,
+      "demoString": "lunar",
+      "demoInt": 3
+    },
+    {
+      "name": "nestedSprites",
+      "x": 392,
+      "y": 336,
+      "width": 211,
+      "height": 85,
+      "children": [
+        {
+          "name": "aNestedSprite",
+          "x": 392,
+          "y": 336,
+          "width": 67,
+          "height": 57,
+          "message": "hello!"
+        },
+        {
+          "name": "moreNested",
+          "x": 536,
+          "y": 364,
+          "width": 67,
+          "height": 57,
+          "message": "I'm the middle nest!",
+          "children": [
+            {
+              "name": "aNestedSprite",
+              "x": 536,
+              "y": 364,
+              "width": 67,
+              "height": 57,
+              "message": "deep nest"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "zones": [
+    {
+      "name": "zoneA",
+      "subpaths": [
+        [
+          [
+            18,
+            10
+          ],
+          [
+            37,
+            10
+          ],
+          [
+            37,
+            43
+          ],
+          [
+            18,
+            43
+          ]
+        ]
+      ],
+      "bbox": {
+        "left": 118,
+        "top": 38,
+        "right": 244,
+        "bottom": 168
+      },
+      "type": "vector"
+    }
+  ],
+  "tiles": {
+    "tile_slice_size": 500,
+    "tile_scaled_versions": [
+      250
+    ],
+    "columns": 2,
+    "rows": 1,
+    "layers": [
+      {
+        "name": "background"
+      }
+    ]
+  },
+  "generatedTimestamp": "2024-07-01 18:24:52",
+  "slice_size": 500,
+  "sizes": [
+    250
+  ]
+}
