@@ -87,7 +87,7 @@ export default function dataModule(plugin) {
       }
     },
 
-loadSprites(scene, sprites, basePath, onProgress) {
+ loadSprites(scene, sprites, basePath, onProgress) {
   sprites.forEach(({ path, obj }) => {
     if (obj.lazyLoad) {
       if (plugin.options.debug) {
@@ -98,26 +98,51 @@ loadSprites(scene, sprites, basePath, onProgress) {
 
     const filePath = `${basePath}/sprites/${path}.png`;
 
-    if (obj.type === "animation" || obj.type === "spritesheet") {
+    if (obj.type === "atlas") {
+      // Load the atlas image
+      scene.load.image(path, filePath);
+      
+      // After the image is loaded, create the atlas
+      scene.load.once(`filecomplete-image-${path}`, () => {
+        scene.textures.addAtlas(path, scene.textures.get(path).getSourceImage(), obj.atlas_data);
+        obj.isLoaded = true;
+        onProgress();
+        if (plugin.options.debug) {
+          console.log(`Atlas loaded: ${path}`);
+        }
+      });
+    } else if (obj.type === "animation" || obj.type === "spritesheet") {
       scene.load.spritesheet(path, filePath, {
         frameWidth: obj.frame_width,
         frameHeight: obj.frame_height,
       });
+      scene.load.once(`filecomplete-spritesheet-${path}`, () => {
+        obj.isLoaded = true;
+        onProgress();
+      });
     } else {
       scene.load.image(path, filePath);
+      scene.load.once(`filecomplete-image-${path}`, () => {
+        obj.isLoaded = true;
+        onProgress();
+      });
     }
 
-    scene.load.once(`filecomplete-${obj.type === "animation" || obj.type === "spritesheet" ? "spritesheet" : "image"}-${path}`, () => {
-      obj.isLoaded = true;
-      onProgress();
-    });
-
     if (plugin.options.debug) {
-      console.log(`Loading ${obj.type === "animation" ? "animation" : obj.type === "spritesheet" ? "spritesheet" : "sprite"}: ${path} from ${filePath}`);
+      console.log(
+        `Loading ${
+          obj.type === "atlas"
+            ? "atlas"
+            : obj.type === "animation"
+            ? "animation spritesheet"
+            : obj.type === "spritesheet"
+            ? "spritesheet"
+            : "sprite"
+        }: ${path} from ${filePath}`
+      );
     }
   });
 },
-
     flattenObjects(objects, prefix = "") {
       return objects.reduce((acc, obj) => {
         const path = prefix ? `${prefix}/${obj.name}` : obj.name;
@@ -134,7 +159,9 @@ loadSprites(scene, sprites, basePath, onProgress) {
     },
 
     countAssets(sprites) {
-      return sprites.length;
+      return sprites.reduce((count, { obj }) => {
+    return count
+      }, 0);
     },
 
     getLazyLoadQueue() {

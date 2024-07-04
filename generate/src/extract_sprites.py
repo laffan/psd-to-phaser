@@ -34,34 +34,7 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
                 output_path = os.path.join(output_dir, 'sprites', current_path)
                 os.makedirs(output_path, exist_ok=True)
 
-                if group_type == "animation":
-                    try:
-                        # Store the original visibility states
-                        original_visibilities = {}
-                        for layer in item.descendants():
-                            original_visibilities[layer] = layer.visible
-                            layer.visible = True
-
-                        # Create the animation with all layers visible
-                        frames, width, height = create_animation(item)
-                        spritesheet_path = os.path.join(output_path, f"{name_type_dict['name']}.png")
-                        spritesheet_data = create_spritesheet(frames, spritesheet_path, width, height)
-                        sprite_data.update(spritesheet_data)
-                        sprite_data["width"] = width
-                        sprite_data["height"] = height
-                        sprite_data["filename"] = os.path.relpath(spritesheet_path, output_dir)
-
-                        # Restore the original visibility states
-                        for layer, visibility in original_visibilities.items():
-                            layer.visible = visibility
-
-                        print(f"Created animation for '{name_type_dict['name']}' with {len(frames)} frames")
-                    except ValueError as e:
-                        print(f"Error processing animation group '{name_type_dict['name']}': {str(e)}")
-                        continue
-                      
-
-                elif group_type == "atlas":
+                if group_type == "atlas":
                     try:
                         atlas_layers = []
                         for layer in item:
@@ -90,16 +63,44 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
                                 "type": "atlas",
                                 "x": item.left,
                                 "y": item.top,
-                                "width": atlas_data["meta"]["size"]["w"],
-                                "height": atlas_data["meta"]["size"]["h"],
+                                "width": atlas_image.width,
+                                "height": atlas_image.height,
                                 "atlas_image": os.path.relpath(atlas_image_path, output_dir),
-                                "atlas_data": atlas_data
+                                "atlas_data": atlas_data  # This now contains only 'frames' and 'placement'
                             })
                         else:
                             print(f"Warning: No valid layers found in atlas group '{name_type_dict['name']}'")
                     except Exception as e:
                         print(f"Error processing atlas group '{name_type_dict['name']}': {str(e)}")
                         continue
+                      
+                elif group_type == "animation":
+                    try:
+                        # Store the original visibility states
+                        original_visibilities = {}
+                        for layer in item.descendants():
+                            original_visibilities[layer] = layer.visible
+                            layer.visible = True
+
+                        # Create the animation with all layers visible
+                        frames, width, height = create_animation(item)
+                        spritesheet_path = os.path.join(output_path, f"{name_type_dict['name']}.png")
+                        spritesheet_data = create_spritesheet(frames, spritesheet_path, width, height)
+                        sprite_data.update(spritesheet_data)
+                        sprite_data["width"] = width
+                        sprite_data["height"] = height
+                        sprite_data["filename"] = os.path.relpath(spritesheet_path, output_dir)
+
+                        # Restore the original visibility states
+                        for layer, visibility in original_visibilities.items():
+                            layer.visible = visibility
+
+                        print(f"Created animation for '{name_type_dict['name']}' with {len(frames)} frames")
+                    except ValueError as e:
+                        print(f"Error processing animation group '{name_type_dict['name']}': {str(e)}")
+                        continue
+                      
+
                       
                 elif group_type == "spritesheet":
                     try:

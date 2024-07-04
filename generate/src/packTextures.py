@@ -45,22 +45,23 @@ def pack_textures(images, atlas_left, atlas_top):
 
     # Create the atlas data
     atlas_data = {
-        "frames": {},
-        "meta": {
-            "image": f"{atlas_left}_{atlas_top}.png",
-            "size": {"w": max_width, "h": max_height},
-            "scale": "1"
-        }
+        "frames": [],
+        "placement": []
     }
 
     for rect in packed_rects:
-        atlas_data["frames"][rect.name] = {
-            "frame": {
-                "x": rect.left,
-                "y": rect.top,
-                "w": rect.size[0],
-                "h": rect.size[1]
-            },
+        # Add frame data
+        atlas_data["frames"].append({
+            "name": rect.name,
+            "x": rect.left,
+            "y": rect.top,
+            "w": rect.size[0],
+            "h": rect.size[1]
+        })
+
+        # Add placement data
+        atlas_data["placement"].append({
+            "frame": rect.name,
             "relative": {
                 "x": rect.original_left - atlas_left,
                 "y": rect.original_top - atlas_top
@@ -69,6 +70,6 @@ def pack_textures(images, atlas_left, atlas_top):
                 "x": rect.original_left,
                 "y": rect.original_top
             }
-        }
+        })
 
     return atlas_image, atlas_data

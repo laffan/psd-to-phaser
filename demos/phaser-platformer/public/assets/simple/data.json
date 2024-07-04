@@ -13,87 +13,90 @@
     {
       "name": "head",
       "type": "atlas",
-      "x": 279,
-      "y": 134,
-      "width": 158,
-      "height": 194,
+      "x": 256,
+      "y": 146,
+      "width": 160,
+      "height": 197,
       "layerOrder": 2,
+      "rootInstance": true,
       "atlas_image": "sprites/head.png",
       "atlas_data": {
-        "frames": {
-          "head": {
-            "frame": {
-              "x": 0,
-              "y": 0,
-              "w": 158,
-              "h": 158
-            },
+        "frames": [
+          {
+            "name": "head",
+            "x": 0,
+            "y": 0,
+            "w": 160,
+            "h": 160
+          },
+          {
+            "name": "eyeLeft",
+            "x": 0,
+            "y": 160,
+            "w": 37,
+            "h": 37
+          },
+          {
+            "name": "eyeRight",
+            "x": 37,
+            "y": 160,
+            "w": 36,
+            "h": 36
+          },
+          {
+            "name": "mouth",
+            "x": 73,
+            "y": 160,
+            "w": 77,
+            "h": 34
+          }
+        ],
+        "placement": [
+          {
+            "frame": "head",
             "relative": {
               "x": 0,
               "y": 0
             },
             "absolute": {
-              "x": 279,
-              "y": 134
+              "x": 256,
+              "y": 146
             }
           },
-          "eyeLeft": {
-            "frame": {
-              "x": 0,
-              "y": 158,
-              "w": 36,
-              "h": 36
-            },
+          {
+            "frame": "eyeLeft",
             "relative": {
               "x": 23,
               "y": 44
             },
             "absolute": {
-              "x": 302,
-              "y": 178
+              "x": 279,
+              "y": 190
             }
           },
-          "eyeRight": {
-            "frame": {
-              "x": 36,
-              "y": 158,
-              "w": 36,
-              "h": 36
-            },
+          {
+            "frame": "eyeRight",
             "relative": {
-              "x": 96,
-              "y": 33
+              "x": 97,
+              "y": 34
             },
             "absolute": {
-              "x": 375,
-              "y": 167
+              "x": 353,
+              "y": 180
             }
           },
-          "mouth": {
-            "frame": {
-              "x": 72,
-              "y": 158,
-              "w": 77,
-              "h": 34
-            },
+          {
+            "frame": "mouth",
             "relative": {
-              "x": 53,
-              "y": 90
+              "x": 38,
+              "y": 115
             },
             "absolute": {
-              "x": 332,
-              "y": 224
+              "x": 294,
+              "y": 261
             }
           }
-        },
-        "meta": {
-          "image": "279_134.png",
-          "size": {
-            "w": 158,
-            "h": 194
-          },
-          "scale": "1"
-        }
+        ]
       }
     },
     {
@@ -107,9 +110,9 @@
         {
           "name": "aNestedSprite",
           "x": 385,
-          "y": 347,
+          "y": 346,
           "width": 67,
-          "height": 57,
+          "height": 58,
           "filename": "sprites/nestedSprites/aNestedSprite.png",
           "layerOrder": 4,
           "message": "hello!"
@@ -233,7 +236,7 @@
       }
     ]
   },
-  "generatedTimestamp": "2024-07-04 04:54:06",
+  "generatedTimestamp": "2024-07-04 06:44:22",
   "slice_size": 500,
   "sizes": [
     250

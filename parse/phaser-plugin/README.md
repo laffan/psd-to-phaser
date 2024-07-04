@@ -8,8 +8,8 @@ PsdToJSON's phaser plugin is a bunch of convenience functions to get PSD to JSON
 - [x] Access loaded/nested content. (Move stuff, add physics, setPos, etc)
 - [x] Animations
 - [x] Spritesheets
-- [👉] Atlas
-- [ ] Instances (loop back around to generate first and get this working)
+- [x] Atlas
+- [👉] Instances (loop back around to generate first and get this working)
 
       The functionality could be super simple : if the folder has "instanced: true", there 
       has to be a layer with rootInstance: layerName . (If it isn't there, error aborts export.)

@@ -148,44 +148,45 @@ export default function spritesModule(plugin) {
     },
 
     createAtlasSprite(scene, sprite, options) {
-      const { name, x, y, width, height, atlas_image, atlas_data } = sprite;
+      const { name, x, y, width, height, atlas_image, atlas_data, layerOrder } =
+        sprite;
 
       if (!scene.textures.exists(atlas_image)) {
-        // If the texture doesn't exist as an atlas, create it
+        // Create the atlas texture
+        const frames = {};
+        atlas_data.frames.forEach((frame) => {
+          frames[frame.name] = {
+            frame: { x: frame.x, y: frame.y, w: frame.w, h: frame.h },
+          };
+        });
+        const atlasJSON = { frames, meta: atlas_data.meta };
         scene.textures.addAtlas(
           atlas_image,
           scene.textures.get(sprite.getPath()).getSourceImage(),
-          atlas_data
+          atlasJSON
         );
       }
 
-      // Create a container to hold all frames
       const container = scene.add.container(x, y);
       container.setName(name);
 
-      // Get all frame names from the atlas
-      const frameNames = Object.keys(atlas_data.frames);
-
-      // Create a sprite for each frame and add it to the container
-      frameNames.forEach((frameName) => {
-        const frameData = atlas_data.frames[frameName];
+      atlas_data.placement.forEach((place, index) => {
         const frameSprite = scene.add.sprite(
-          frameData.relative.x,
-          frameData.relative.y,
+          place.relative.x,
+          place.relative.y,
           atlas_image,
-          frameName
+          place.frame
         );
-        frameSprite.setName(`${name}_${frameName}`);
+        frameSprite.setName(`${name}_${place.frame}`);
         frameSprite.setOrigin(0, 0);
+        frameSprite.setDepth(index); // Set depth within container
 
-        // All frames are visible by default now
         container.add(frameSprite);
       });
 
-      // Set the size of the container
       container.setSize(width, height);
+      container.setDepth(layerOrder);
 
-      // Add method to get a specific frame sprite
       container.getFrameSprite = (frameName) => {
         return container.list.find(
           (child) => child.name === `${name}_${frameName}`
@@ -194,7 +195,7 @@ export default function spritesModule(plugin) {
 
       if (plugin.options.debug) {
         console.log(
-          `Created atlas sprite '${name}' with ${frameNames.length} frames`
+          `Created atlas sprite '${name}' with ${atlas_data.placement.length} frames at depth ${layerOrder}`
         );
       }
 

@@ -16,20 +16,25 @@
       "y": 104,
       "width": 181,
       "height": 314,
+      "layerOrder": 3,
       "children": [
         {
           "name": "Triangle 1",
           "x": 1087,
           "y": 378,
           "width": 46,
-          "height": 40
+          "height": 40,
+          "filename": "sprites/pickups/Triangle 1.png",
+          "layerOrder": 4
         },
         {
           "name": "Triangle 1 copy",
           "x": 1087,
           "y": 104,
           "width": 46,
-          "height": 40
+          "height": 40,
+          "filename": "sprites/pickups/Triangle 1 copy.png",
+          "layerOrder": 5
         },
         {
           "name": "twotri",
@@ -38,7 +43,8 @@
           "y": 287,
           "width": 104,
           "height": 44,
-          "image": "pickups/twotri.png"
+          "layerOrder": 6,
+          "filename": "sprites/pickups/twotri.png"
         }
       ]
     },
@@ -48,6 +54,7 @@
       "y": 297,
       "width": 63,
       "height": 84,
+      "layerOrder": 7,
       "children": [
         {
           "name": "playerMoveA",
@@ -56,7 +63,8 @@
           "y": 297,
           "width": 83,
           "height": 84,
-          "filename": "playerMoveA_animation.png",
+          "layerOrder": 8,
+          "filename": "sprites/player/playerMoveA.png",
           "frame_width": 83,
           "frame_height": 84,
           "frame_count": 3,
@@ -70,7 +78,8 @@
           "y": 297,
           "width": 83,
           "height": 84,
-          "filename": "playerMoveB_animation.png",
+          "layerOrder": 9,
+          "filename": "sprites/player/playerMoveB.png",
           "frame_width": 83,
           "frame_height": 84,
           "frame_count": 3,
@@ -86,8 +95,9 @@
       "y": 493,
       "width": 199,
       "height": 216,
+      "layerOrder": 10,
       "compress": true,
-      "image": "pyramids.png"
+      "filename": "sprites/pyramids.png"
     },
     {
       "name": "platforms",
@@ -95,6 +105,7 @@
       "y": 155,
       "width": 1619,
       "height": 633,
+      "layerOrder": 11,
       "color": "blue",
       "children": [
         {
@@ -102,49 +113,63 @@
           "x": 257,
           "y": 397,
           "width": 332,
-          "height": 35
+          "height": 35,
+          "filename": "sprites/platforms/Rectangle 1.png",
+          "layerOrder": 12
         },
         {
           "name": "Rectangle 1 copy",
           "x": 614,
           "y": 567,
           "width": 330,
-          "height": 35
+          "height": 35,
+          "filename": "sprites/platforms/Rectangle 1 copy.png",
+          "layerOrder": 13
         },
         {
           "name": "Rectangle 1 copy 2",
           "x": 954,
           "y": 429,
           "width": 202,
-          "height": 35
+          "height": 35,
+          "filename": "sprites/platforms/Rectangle 1 copy 2.png",
+          "layerOrder": 14
         },
         {
           "name": "Rectangle 1 copy 5",
           "x": 1308,
           "y": 656,
           "width": 202,
-          "height": 35
+          "height": 35,
+          "filename": "sprites/platforms/Rectangle 1 copy 5.png",
+          "layerOrder": 15
         },
         {
           "name": "Rectangle 1 copy 6",
           "x": 1674,
           "y": 656,
           "width": 202,
-          "height": 35
+          "height": 35,
+          "filename": "sprites/platforms/Rectangle 1 copy 6.png",
+          "layerOrder": 16
         },
         {
           "name": "Rectangle 1 copy 3",
           "x": 778,
           "y": 753,
           "width": 202,
-          "height": 35
+          "height": 35,
+          "filename": "sprites/platforms/Rectangle 1 copy 3.png",
+          "layerOrder": 17
         },
         {
           "name": "Rectangle 1 copy 4",
           "x": 941,
           "y": 155,
           "width": 202,
-          "height": 35
+          "height": 35,
+          "filename": "sprites/platforms/Rectangle 1 copy 4.png",
+          "layerOrder": 18
         }
       ]
     },
@@ -153,7 +178,9 @@
       "x": 1722,
       "y": 533,
       "width": 107,
-      "height": 103
+      "height": 103,
+      "filename": "sprites/winFlower.png",
+      "layerOrder": 19
     },
     {
       "name": "gates",
@@ -161,6 +188,7 @@
       "y": 48,
       "width": 803,
       "height": 520,
+      "layerOrder": 20,
       "lazyLoad": true,
       "children": [
         {
@@ -168,7 +196,9 @@
           "x": 878,
           "y": 48,
           "width": 46,
-          "height": 250
+          "height": 250,
+          "filename": "sprites/gates/gateA.png",
+          "layerOrder": 21
         },
         {
           "name": "groupOfGates ",
@@ -176,20 +206,25 @@
           "y": 49,
           "width": 120,
           "height": 519,
+          "layerOrder": 22,
           "children": [
             {
               "name": "gateB",
               "x": 1564,
               "y": 49,
               "width": 46,
-              "height": 249
+              "height": 249,
+              "filename": "sprites/gates/groupOfGates /gateB.png",
+              "layerOrder": 23
             },
             {
               "name": "gateB copy",
               "x": 1635,
               "y": 49,
               "width": 46,
-              "height": 250
+              "height": 250,
+              "filename": "sprites/gates/groupOfGates /gateB copy.png",
+              "layerOrder": 24
             },
             {
               "name": "yetAnotherGroup",
@@ -197,6 +232,7 @@
               "y": 318,
               "width": 116,
               "height": 250,
+              "layerOrder": 25,
               "difficulty": 7,
               "children": [
                 {
@@ -204,14 +240,18 @@
                   "x": 1561,
                   "y": 318,
                   "width": 46,
-                  "height": 249
+                  "height": 249,
+                  "filename": "sprites/gates/groupOfGates /yetAnotherGroup/gateB.png",
+                  "layerOrder": 26
                 },
                 {
                   "name": "gateB copy",
                   "x": 1632,
                   "y": 318,
                   "width": 45,
-                  "height": 250
+                  "height": 250,
+                  "filename": "sprites/gates/groupOfGates /yetAnotherGroup/gateB copy.png",
+                  "layerOrder": 27
                 }
               ]
             }
@@ -226,8 +266,9 @@
       "y": 402,
       "width": 266,
       "height": 168,
+      "layerOrder": 28,
       "hidden": true,
-      "filename": "bounceFlower_animation.png",
+      "filename": "sprites/bounceFlower.png",
       "frame_width": 266,
       "frame_height": 168,
       "frame_count": 9,
@@ -239,68 +280,87 @@
       "type": "atlas",
       "x": 577,
       "y": 117,
-      "width": 800,
-      "height": 617,
-      "atlas_image": "adornments_atlas.png",
+      "width": 227,
+      "height": 586,
+      "layerOrder": 29,
+      "atlas_image": "sprites/adornments.png",
       "atlas_data": {
-        "frames": {
-          "Shape 48 1": {
-            "frame": {
-              "x": 205,
-              "y": 188,
-              "w": 173,
-              "h": 176
-            },
-            "sourceSize": {
-              "w": 173,
-              "h": 176
-            }
+        "frames": [
+          {
+            "name": "Shape 43 1",
+            "x": 0,
+            "y": 0,
+            "w": 205,
+            "h": 222
           },
-          "Shape 43 1": {
-            "frame": {
+          {
+            "name": "Kangaroo 1",
+            "x": 0,
+            "y": 222,
+            "w": 204,
+            "h": 188
+          },
+          {
+            "name": "Shape 48 1",
+            "x": 0,
+            "y": 410,
+            "w": 173,
+            "h": 176
+          },
+          {
+            "name": "Giraffe 1",
+            "x": 173,
+            "y": 410,
+            "w": 54,
+            "h": 121
+          }
+        ],
+        "placement": [
+          {
+            "frame": "Shape 43 1",
+            "relative": {
               "x": 0,
-              "y": 0,
-              "w": 205,
-              "h": 222
+              "y": 0
             },
-            "sourceSize": {
-              "w": 205,
-              "h": 222
+            "absolute": {
+              "x": 577,
+              "y": 117
             }
           },
-          "Giraffe 1": {
-            "frame": {
-              "x": 0,
-              "y": 222,
-              "w": 54,
-              "h": 121
+          {
+            "frame": "Kangaroo 1",
+            "relative": {
+              "x": 511,
+              "y": 429
             },
-            "sourceSize": {
-              "w": 54,
-              "h": 121
+            "absolute": {
+              "x": 1088,
+              "y": 546
             }
           },
-          "Kangaroo 1": {
-            "frame": {
-              "x": 205,
-              "y": 0,
-              "w": 204,
-              "h": 188
+          {
+            "frame": "Shape 48 1",
+            "relative": {
+              "x": 627,
+              "y": 105
             },
-            "sourceSize": {
-              "w": 204,
-              "h": 188
+            "absolute": {
+              "x": 1204,
+              "y": 222
+            }
+          },
+          {
+            "frame": "Giraffe 1",
+            "relative": {
+              "x": 128,
+              "y": 126
+            },
+            "absolute": {
+              "x": 705,
+              "y": 243
             }
           }
-        },
-        "meta": {
-          "image": "adornments_atlas.png",
-          "size": {
-            "w": 444,
-            "h": 444
-          },
-          "scale": "1"
-        }
+        ]
       }
     },
     {
@@ -310,12 +370,32 @@
       "y": 122,
       "width": 800,
       "height": 281,
-      "filename": "adornmentSheet.png",
+      "layerOrder": 30,
+      "pandas": true,
+      "marmadukes": true,
+      "filename": "sprites/adornmentSheet.png",
       "frame_width": 243,
       "frame_height": 222,
       "frame_count": 3,
       "columns": 2,
-      "rows": 2
+      "rows": 2,
+      "placement": [
+        {
+          "frame": 0,
+          "x": 627,
+          "y": 105
+        },
+        {
+          "frame": 1,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "frame": 2,
+          "x": 100,
+          "y": 90
+        }
+      ]
     }
   ],
   "zones": [
@@ -419,16 +499,18 @@
     "rows": 2,
     "layers": [
       {
-        "name": "background"
+        "name": "background",
+        "layerOrder": 1
       },
       {
         "name": "towers",
         "type": "transparent",
+        "layerOrder": 2,
         "lazyLoad": true
       }
     ]
   },
-  "generatedTimestamp": "2024-07-01 12:45:33",
+  "generatedTimestamp": "2024-07-04 06:25:47",
   "slice_size": 500,
   "sizes": [
     250
