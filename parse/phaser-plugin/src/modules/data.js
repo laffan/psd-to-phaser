@@ -104,9 +104,17 @@ export default function dataModule(plugin) {
 
     loadSprites(scene, sprites, basePath, onProgress) {
       sprites.forEach(({ path, obj }) => {
+        if (obj.lazyLoad) {
+          // Skip loading for lazy-loaded sprites
+          if (plugin.options.debug) {
+            console.log(`Skipping load for lazy-loaded sprite: ${path}`);
+          }
+          return;
+        }
+
         const filePath = `${basePath}/sprites/${path}.png`;
 
-        if (obj.type === "animation") {
+        if (obj.type === "animation" || obj.type === "spritesheet") {
           scene.load.spritesheet(path, filePath, {
             frameWidth: obj.frame_width,
             frameHeight: obj.frame_height,
@@ -117,7 +125,9 @@ export default function dataModule(plugin) {
 
         scene.load.once(
           `filecomplete-${
-            obj.type === "animation" ? "spritesheet" : "image"
+            obj.type === "animation" || obj.type === "spritesheet"
+              ? "spritesheet"
+              : "image"
           }-${path}`,
           () => {
             obj.isLoaded = true;
@@ -128,7 +138,11 @@ export default function dataModule(plugin) {
         if (plugin.options.debug) {
           console.log(
             `Loading ${
-              obj.type === "animation" ? "spritesheet" : "sprite"
+              obj.type === "animation"
+                ? "animation spritesheet"
+                : obj.type === "spritesheet"
+                ? "spritesheet"
+                : "sprite"
             }: ${path} from ${filePath}`
           );
         }

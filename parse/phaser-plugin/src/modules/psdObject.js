@@ -55,7 +55,7 @@ export class PSDObject {
     if (!this.shouldDebug(plugin, options)) return null;
 
     let debugGraphics;
-    let debugColor = 0xff00ff ;
+    let debugColor = 0xff00ff;
 
     if (type === "zone") {
       const { left, top, right, bottom } = this.bbox;
@@ -69,17 +69,33 @@ export class PSDObject {
         debugColor,
         0.5
       );
-      debugGraphics.setOrigin(0, 0); // Set origin to top-left corner
+      debugGraphics.setOrigin(0, 0);
     } else if (type === "sprite" || type === "image") {
-      debugGraphics = scene.add.rectangle(
-        this.x,
-        this.y,
-        this.width,
-        this.height,
-        debugColor,
-        0.5
-      );
-      debugGraphics.setOrigin(0, 0); // Set origin to top-left corner
+      if (this.type === "spritesheet") {
+        debugGraphics = scene.add.group();
+        this.placement.forEach((place) => {
+          const rect = scene.add.rectangle(
+            this.x + place.x,
+            this.y + place.y,
+            this.frame_width,
+            this.frame_height,
+            debugColor,
+            0.5
+          );
+          rect.setOrigin(0, 0);
+          debugGraphics.add(rect);
+        });
+      } else {
+        debugGraphics = scene.add.rectangle(
+          this.x,
+          this.y,
+          this.width,
+          this.height,
+          debugColor,
+          0.5
+        );
+        debugGraphics.setOrigin(0, 0);
+      }
     } else if (type === "point") {
       debugGraphics = scene.add.circle(this.x, this.y, 5, debugColor, 0.5);
     }

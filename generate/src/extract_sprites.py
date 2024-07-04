@@ -69,6 +69,7 @@ def extract_sprites(sprites_group, output_dir):
                     except Exception as e:
                         print(f"Error processing atlas group '{name_type_dict['name']}': {str(e)}")
                         continue
+
                 elif group_type == "spritesheet":
                     try:
                         # Temporarily make all layers visible
@@ -80,7 +81,8 @@ def extract_sprites(sprites_group, output_dir):
                         # Process frames
                         frames = []
                         max_width = max_height = 0
-                        for sub_item in sorted(item, key=lambda x: x.name):
+                        placement = []
+                        for index, sub_item in enumerate(item):
                             if sub_item.is_group():
                                 frame = sub_item.composite()
                             else:
@@ -88,6 +90,13 @@ def extract_sprites(sprites_group, output_dir):
                             frames.append(frame)
                             max_width = max(max_width, frame.width)
                             max_height = max(max_height, frame.height)
+                            
+                            # Calculate the placement
+                            placement.append({
+                                "frame": index,
+                                "x": sub_item.left - item.left,  # Relative to spritesheet group
+                                "y": sub_item.top - item.top     # Relative to spritesheet group
+                            })
 
                         # Create centered frames
                         centered_frames = []
@@ -103,6 +112,7 @@ def extract_sprites(sprites_group, output_dir):
                         sprite_data.update(spritesheet_data)
                         sprite_data["frame_width"] = max_width
                         sprite_data["frame_height"] = max_height
+                        sprite_data["placement"] = placement  # Add the placement data
 
                         # Restore original visibility
                         for layer, visibility in original_visibilities.items():
@@ -112,6 +122,8 @@ def extract_sprites(sprites_group, output_dir):
                     except Exception as e:
                         print(f"Error processing spritesheet group '{name_type_dict['name']}': {str(e)}")
                         continue
+                      
+
                 elif group_type == "merge":
                     try:
                         # Temporarily make all layers visible

@@ -21,10 +21,10 @@
     },
     {
       "name": "nestedSprites",
-      "x": 392,
-      "y": 336,
-      "width": 211,
-      "height": 85,
+      "x": 8,
+      "y": 38,
+      "width": 595,
+      "height": 383,
       "children": [
         {
           "name": "aNestedSprite",
@@ -51,6 +51,54 @@
               "message": "deep nest"
             }
           ]
+        },
+        {
+          "name": "bounce",
+          "type": "animation",
+          "x": 8,
+          "y": 38,
+          "width": 86,
+          "height": 424,
+          "frameRate": 5,
+          "yoyo": true,
+          "filename": "bounce.png",
+          "frame_width": 86,
+          "frame_height": 424,
+          "frame_count": 4,
+          "columns": 2,
+          "rows": 2
+        }
+      ]
+    },
+    {
+      "name": "demoSh",
+      "type": "spritesheet",
+      "x": 333,
+      "y": 35,
+      "width": 239,
+      "height": 115,
+      "autoplacement": false,
+      "filename": "demoSh.png",
+      "frame_width": 31,
+      "frame_height": 31,
+      "frame_count": 3,
+      "columns": 2,
+      "rows": 2,
+      "placement": [
+        {
+          "frame": 0,
+          "x": 126,
+          "y": 0
+        },
+        {
+          "frame": 1,
+          "x": 209,
+          "y": 58
+        },
+        {
+          "frame": 2,
+          "x": 0,
+          "y": 84
         }
       ]
     }
@@ -100,7 +148,7 @@
       }
     ]
   },
-  "generatedTimestamp": "2024-07-01 18:24:52",
+  "generatedTimestamp": "2024-07-03 23:42:23",
   "slice_size": 500,
   "sizes": [
     250
