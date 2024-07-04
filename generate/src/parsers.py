@@ -101,11 +101,22 @@ def parse_attributes(name):
     bracket_count = 0
     brace_count = 0
     
-    for char in attributes:
+    for i, char in enumerate(attributes):
         if char == ':' and not quote_open and bracket_count == 0 and brace_count == 0:
             key_mode = False
+            # Check if the next non-space character is a comma or end of string
+            next_char = next((c for c in attributes[i+1:] if not c.isspace()), None)
+            if next_char in [',', None]:
+                # This is a boolean attribute without an explicit value
+                attributes_dict[current_key.strip()] = True
+                current_key = ''
+                key_mode = True
         elif char == ',' and not quote_open and bracket_count == 0 and brace_count == 0:
-            attributes_dict[current_key.strip()] = parse_value(current_value.strip())
+            if key_mode:
+                # This is a boolean attribute without a colon
+                attributes_dict[current_key.strip()] = True
+            else:
+                attributes_dict[current_key.strip()] = parse_value(current_value.strip())
             current_key = ''
             current_value = ''
             key_mode = True
@@ -125,8 +136,13 @@ def parse_attributes(name):
             else:
                 current_value += char
     
+    # Handle the last attribute
     if current_key:
-        attributes_dict[current_key.strip()] = parse_value(current_value.strip())
+        if key_mode:
+            # This is a boolean attribute without a colon at the end
+            attributes_dict[current_key.strip()] = True
+        else:
+            attributes_dict[current_key.strip()] = parse_value(current_value.strip())
     
     name_type_dict = {"name": name}
     if type_info:
