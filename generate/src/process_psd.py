@@ -17,7 +17,7 @@ def process_psd(psd_path, output_dir, slice_size, scaled, psd_name, jpgQuality):
     psd = PSDImage.open(psd_path)
 
     os.makedirs(output_dir, exist_ok=True)
-        
+
     json_data = {
         "filename": os.path.splitext(os.path.basename(psd_path))[0],
         "width": psd.width,
@@ -27,21 +27,21 @@ def process_psd(psd_path, output_dir, slice_size, scaled, psd_name, jpgQuality):
         "zones": [],
         "tiles": {}
     }
-    
+
     # Initialize a counter for layer order
     layer_order = 0
-    
+
     # Process tiles
     tiles_group = None
     for layer in psd:
         if layer.is_group() and layer.name == 'tiles':
             tiles_group = layer
             break
-          
+
     if tiles_group:
         json_data["tiles"], layer_order = extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality, layer_order)
     else:
-        print('Layer group "tiles" not found') 
+        print('Layer group "tiles" not found')
 
     # Process sprites
     sprites_group = None

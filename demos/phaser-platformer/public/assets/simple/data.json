@@ -5,8 +5,8 @@
   "points": [
     {
       "name": "start",
-      "x": 485.0,
-      "y": 176.5
+      "x": 731.0,
+      "y": 80.5
     }
   ],
   "sprites": [
@@ -16,9 +16,9 @@
       "x": 256,
       "y": 146,
       "width": 160,
-      "height": 197,
+      "height": 160,
       "layerOrder": 2,
-      "rootInstance": true,
+      "useInstances": true,
       "atlas_image": "sprites/head.png",
       "atlas_data": {
         "frames": [
@@ -54,6 +54,7 @@
         "placement": [
           {
             "frame": "head",
+            "instanceName": "head_0",
             "relative": {
               "x": 0,
               "y": 0
@@ -65,6 +66,7 @@
           },
           {
             "frame": "eyeLeft",
+            "instanceName": "eyeLeft_0",
             "relative": {
               "x": 23,
               "y": 44
@@ -75,7 +77,21 @@
             }
           },
           {
+            "frame": "eyeLeft",
+            "instanceName": "eyeLeft_1",
+            "relative": {
+              "x": 66,
+              "y": 77
+            },
+            "absolute": {
+              "x": 322,
+              "y": 223
+            },
+            "customAttribute": "panda"
+          },
+          {
             "frame": "eyeRight",
+            "instanceName": "eyeRight_0",
             "relative": {
               "x": 97,
               "y": 34
@@ -87,6 +103,7 @@
           },
           {
             "frame": "mouth",
+            "instanceName": "mouth_0",
             "relative": {
               "x": 38,
               "y": 115
@@ -100,60 +117,98 @@
       }
     },
     {
-      "name": "nestedSprites",
+      "name": "aNestedSprite",
+      "x": 385,
+      "y": 346,
+      "width": 67,
+      "height": 58,
+      "layerOrder": 4,
+      "message": "hello!",
+      "filename": "sprites/aNestedSprite.png"
+    },
+    {
+      "name": "nestedSprites/aNestedSprite",
+      "x": 536,
+      "y": 364,
+      "width": 67,
+      "height": 57,
+      "layerOrder": 6,
+      "message": "deep nest",
+      "filename": "sprites/nestedSprites/aNestedSprite.png"
+    },
+    {
+      "name": "bounce",
+      "type": "animation",
       "x": 8,
       "y": 38,
-      "width": 595,
-      "height": 383,
-      "layerOrder": 3,
-      "children": [
+      "width": 86,
+      "height": 424,
+      "layerOrder": 7,
+      "frameRate": 5,
+      "yoyo": true,
+      "filename": "sprites/nestedSprites/bounce.png",
+      "frame_width": 86,
+      "frame_height": 424,
+      "frame_count": 4,
+      "columns": 2,
+      "rows": 2
+    },
+    {
+      "name": "demoInst",
+      "type": "spritesheet",
+      "x": 436,
+      "y": 49,
+      "width": 249,
+      "height": 146,
+      "layerOrder": 8,
+      "useInstances": true,
+      "filename": "sprites/nestedSprites/demoInst.png",
+      "frame_width": 64,
+      "frame_height": 64,
+      "frame_count": 4,
+      "columns": 2,
+      "rows": 2,
+      "placement": [
         {
-          "name": "aNestedSprite",
-          "x": 385,
-          "y": 346,
-          "width": 67,
-          "height": 58,
-          "filename": "sprites/nestedSprites/aNestedSprite.png",
-          "layerOrder": 4,
-          "message": "hello!"
+          "frame": 0,
+          "x": 132,
+          "y": 0
         },
         {
-          "name": "moreNested",
-          "x": 536,
-          "y": 364,
-          "width": 67,
-          "height": 57,
-          "layerOrder": 5,
-          "message": "I'm the middle nest!",
-          "children": [
-            {
-              "name": "aNestedSprite",
-              "x": 536,
-              "y": 364,
-              "width": 67,
-              "height": 57,
-              "filename": "sprites/nestedSprites/moreNested/aNestedSprite.png",
-              "layerOrder": 6,
-              "message": "deep nest"
-            }
-          ]
+          "frame": 1,
+          "x": 219,
+          "y": 53
         },
         {
-          "name": "bounce",
-          "type": "animation",
-          "x": 8,
-          "y": 38,
-          "width": 86,
-          "height": 424,
-          "layerOrder": 7,
-          "frameRate": 5,
-          "yoyo": true,
-          "filename": "sprites/nestedSprites/bounce.png",
-          "frame_width": 86,
-          "frame_height": 424,
-          "frame_count": 4,
-          "columns": 2,
-          "rows": 2
+          "frame": 2,
+          "x": 45,
+          "y": 82
+        },
+        {
+          "frame": 3,
+          "x": 160,
+          "y": 85
+        },
+        {
+          "frame": 1,
+          "x": 106,
+          "y": 85,
+          "tint": "purple"
+        },
+        {
+          "frame": 1,
+          "x": 62,
+          "y": 71
+        },
+        {
+          "frame": 2,
+          "x": 44,
+          "y": 18
+        },
+        {
+          "frame": 1,
+          "x": 0,
+          "y": 14
         }
       ]
     },
@@ -161,31 +216,26 @@
       "name": "demoSh",
       "type": "spritesheet",
       "x": 326,
-      "y": 35,
-      "width": 246,
-      "height": 133,
-      "layerOrder": 8,
+      "y": 96,
+      "width": 151,
+      "height": 132,
+      "layerOrder": 9,
       "filename": "sprites/demoSh.png",
       "frame_width": 63,
       "frame_height": 72,
-      "frame_count": 3,
+      "frame_count": 2,
       "columns": 2,
-      "rows": 2,
+      "rows": 1,
       "placement": [
         {
           "frame": 0,
-          "x": 133,
+          "x": 0,
           "y": 0
         },
         {
           "frame": 1,
-          "x": 216,
-          "y": 58
-        },
-        {
-          "frame": 2,
-          "x": 0,
-          "y": 61
+          "x": 91,
+          "y": 72
         }
       ]
     }
@@ -236,7 +286,7 @@
       }
     ]
   },
-  "generatedTimestamp": "2024-07-04 06:44:22",
+  "generatedTimestamp": "2024-07-04 14:39:55",
   "slice_size": 500,
   "sizes": [
     250
