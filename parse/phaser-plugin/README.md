@@ -7,10 +7,32 @@ PsdToJSON's phaser plugin is a bunch of convenience functions to get PSD to JSON
 - [x] placeAll()
 - [x] Access loaded/nested content. (Move stuff, add physics, setPos, etc)
 - [x] Animations
-- [x] Spritesheets - build in placement? (any advantage over Atlas?)
+- [x] Spritesheets
 - [👉] Atlas
 - [ ] Instances (loop back around to generate first and get this working)
+
+      The functionality could be super simple : if the folder has "instanced: true", there 
+      has to be a layer with rootInstance: layerName . (If it isn't there, error aborts export.)
+
+      Then it just exports that layer like normal (could be any time), and to the folder 
+      attaches an "instances" object that looks  like so : 
+
+      instances : [{
+        name : layerName,
+        instances: [{
+          x: 0,
+          y: 0,
+          attributes: {
+            ...
+          }
+        }]
+      }]
+
+      Which causes place and placeAll to loop through and treat them like new sprites, 
+      just with an instanceID attached. (ie. layerName_01) 
+
 - [ ] Root x/y (+ placing multiple psds in a single scene)
+- [ ] Light reactor. Split apart modules into smaller files
 
 ## Usage
 

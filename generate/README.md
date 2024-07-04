@@ -8,11 +8,12 @@ Ensure you have the following Python libraries installed:
 
 - [psd-tools](https://github.com/psd-tools/psd-tools)
 - [Pillow (PIL)](https://pillow.readthedocs.io/en/stable/)
+- [pypng](https://pypi.org/project/pypng/)
 
 You can install them using pip:
 
 ```bash
-pip install psd-tools Pillow
+pip install psd-tools Pillow pypng
 ```
 
 For the optional PNG optimization, you'll need to install:
@@ -179,3 +180,9 @@ PNG compression is pretty quick, so you'll see that both sprites and tiles have 
 ```
 
 However if you'd rather not compress everything, you can switch to `false` and pass in a layer attribute - `compress: true` - which will compress just the output of that layer. 
+
+
+## Credits
+
+
+Texture packing thanks to : https://github.com/Ezphares/TextureAtlas

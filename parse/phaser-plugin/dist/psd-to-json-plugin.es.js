@@ -1,12 +1,12 @@
-var x = Object.defineProperty;
-var A = (c, t, e) => t in c ? x(c, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : c[t] = e;
-var z = (c, t, e) => (A(c, typeof t != "symbol" ? t + "" : t, e), e);
-const P = class P {
+var A = Object.defineProperty;
+var _ = (c, t, e) => t in c ? A(c, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : c[t] = e;
+var z = (c, t, e) => (_(c, typeof t != "symbol" ? t + "" : t, e), e);
+const b = class b {
   constructor(t, e = null) {
-    this.parent = e, this.children = [], this.lazyLoad = !1, this.isLoaded = !1, Object.keys(t).forEach((s) => {
-      s === "children" ? this.children = t[s].map(
-        (n) => new P(n, this)
-      ) : this[s] = t[s];
+    this.parent = e, this.children = [], this.lazyLoad = !1, this.isLoaded = !1, Object.keys(t).forEach((a) => {
+      a === "children" ? this.children = t[a].map(
+        (s) => new b(s, this)
+      ) : this[a] = t[a];
     }), this.bbox || (this.bbox = {
       left: this.x,
       top: this.y,
@@ -15,44 +15,27 @@ const P = class P {
     });
   }
   isStandardProp(t) {
-    return P.standardProps.includes(t);
+    return b.standardProps.includes(t);
   }
   getCustomAttributes() {
     return Object.keys(this).filter((t) => !this.isStandardProp(t) && t !== "parent").reduce((t, e) => (t[e] = this[e], t), {});
   }
-  createDebugBox(t, e, s, n = {}) {
-    if (!this.shouldDebug(s, n))
+  createDebugBox(t, e, a, s = {}) {
+    if (!this.shouldDebug(a, s))
       return null;
-    let i, o = 16711935;
-    if (e === "zone") {
-      const { left: a, top: r, right: l, bottom: d } = this.bbox, u = l - a, f = d - r;
-      i = t.add.rectangle(
-        a,
-        r,
-        u,
-        f,
-        o,
-        0.5
-      ), i.setOrigin(0, 0);
+    const i = t.add.graphics(), n = 16711935, r = 2;
+    if (i.lineStyle(r, n), e === "zone") {
+      const { left: o, top: l, right: d, bottom: h } = this.bbox, u = d - o, m = h - l;
+      i.strokeRect(o, l, u, m);
     } else
-      e === "sprite" || e === "image" ? this.type === "spritesheet" ? (i = t.add.group(), this.placement.forEach((a) => {
-        const r = t.add.rectangle(
-          this.x + a.x,
-          this.y + a.y,
+      e === "sprite" || e === "image" ? this.type === "spritesheet" ? this.placement.forEach((o) => {
+        i.strokeRect(
+          this.x + o.x,
+          this.y + o.y,
           this.frame_width,
-          this.frame_height,
-          o,
-          0.5
+          this.frame_height
         );
-        r.setOrigin(0, 0), i.add(r);
-      })) : (i = t.add.rectangle(
-        this.x,
-        this.y,
-        this.width,
-        this.height,
-        o,
-        0.5
-      ), i.setOrigin(0, 0)) : e === "point" && (i = t.add.circle(this.x, this.y, 5, o, 0.5));
+      }) : i.strokeRect(this.x, this.y, this.width, this.height) : e === "point" && i.strokeCircle(this.x, this.y, 5);
     return i;
   }
   getTargetObject(t, e) {
@@ -78,72 +61,72 @@ const P = class P {
     if (e[0] === this.name) {
       if (e.length === 1)
         return this;
-      const s = e[1], n = this.children.find((i) => i.name === s);
-      return n ? n.findByPath(e.slice(1).join("/")) : null;
+      const a = e[1], s = this.children.find((i) => i.name === a);
+      return s ? s.findByPath(e.slice(1).join("/")) : null;
     }
     return null;
   }
-  static place(t, e, s, n, i, o = {}) {
-    if (!e || !e[s])
-      return console.warn(`${s} data not found.`), null;
-    let a;
-    if (s === "tiles")
-      a = e[s].layers.find((l) => l.name === n);
+  static place(t, e, a, s, i, n = {}) {
+    if (!e || !e[a])
+      return console.warn(`${a} data not found.`), null;
+    let r;
+    if (a === "tiles")
+      r = e[a].layers.find((l) => l.name === s);
     else {
-      const l = n.split("/");
-      a = e[s].find((d) => d.name === l[0]);
+      const l = s.split("/");
+      r = e[a].find((d) => d.name === l[0]);
       for (let d = 1; d < l.length; d++) {
-        if (!a || !a.children)
+        if (!r || !r.children)
           return null;
-        a = a.children.find(
-          (u) => u.name === l[d]
+        r = r.children.find(
+          (h) => h.name === l[d]
         );
       }
     }
-    if (!a)
-      return console.warn(`${s} '${n}' not found in PSD data.`), null;
-    const r = i(t, a, o);
-    return r && (e[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] || (e[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] = {}), e[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`][n] = r, r.children && this.storeNestedObjects(e, s, n, r.children)), r;
+    if (!r)
+      return console.warn(`${a} '${s}' not found in PSD data.`), null;
+    const o = i(t, r, n);
+    return o && (e[`placed${a.charAt(0).toUpperCase() + a.slice(1)}`] || (e[`placed${a.charAt(0).toUpperCase() + a.slice(1)}`] = {}), e[`placed${a.charAt(0).toUpperCase() + a.slice(1)}`][s] = o, o.children && this.storeNestedObjects(e, a, s, o.children)), o;
   }
-  static storeNestedObjects(t, e, s, n) {
-    n.forEach((i) => {
-      const o = `${s}/${i.layerData.name}`;
-      t[`placed${e.charAt(0).toUpperCase() + e.slice(1)}`][o] = i, i.children && this.storeNestedObjects(t, e, o, i.children);
+  static storeNestedObjects(t, e, a, s) {
+    s.forEach((i) => {
+      const n = `${a}/${i.layerData.name}`;
+      t[`placed${e.charAt(0).toUpperCase() + e.slice(1)}`][n] = i, i.children && this.storeNestedObjects(t, e, n, i.children);
     });
   }
-  static placeAll(t, e, s, n, i = {}) {
-    if (!e || !e[s])
-      return console.warn(`${s} data not found.`), null;
-    const o = e[s].map(
-      (a) => n(t, a, i)
+  static placeAll(t, e, a, s, i = {}) {
+    if (!e || !e[a])
+      return console.warn(`${a} data not found.`), null;
+    const n = e[a].map(
+      (r) => s(t, r, i)
     );
-    return e[`placed${s.charAt(0).toUpperCase() + s.slice(1)}`] = o, o;
+    return e[`placed${a.charAt(0).toUpperCase() + a.slice(1)}`] = n, n;
   }
-  static get(t, e, s) {
-    const n = `placed${e.charAt(0).toUpperCase() + e.slice(1)}`;
-    if (!t || !t[n])
+  static get(t, e, a) {
+    const s = `placed${e.charAt(0).toUpperCase() + e.slice(1)}`;
+    if (!t || !t[s])
       return console.warn(`Placed ${e} data not found.`), null;
-    const i = s.split("/");
-    let o = t[n].find(
-      (a) => a.layerData.name === i[0]
+    const i = a.split("/");
+    let n = t[s].find(
+      (r) => r.layerData.name === i[0]
     );
-    for (let a = 1; a < i.length; a++) {
-      if (!o || !o.children)
+    for (let r = 1; r < i.length; r++) {
+      if (!n || !n.children)
         return null;
-      o = o.children.find(
-        (r) => r.layerData.name === i[a]
+      n = n.children.find(
+        (o) => o.layerData.name === i[r]
       );
     }
-    return o;
+    return n;
   }
   static countRecursive(t) {
-    return t.reduce((e, s) => {
-      let n = 1;
-      return s.children && s.children.length > 0 && (n += this.countRecursive(s.children)), e + n;
+    return t.reduce((e, a) => {
+      let s = 1;
+      return a.children && a.children.length > 0 && (s += this.countRecursive(a.children)), e + s;
     }, 0);
   }
 };
-z(P, "standardProps", [
+z(b, "standardProps", [
   "name",
   "x",
   "y",
@@ -152,69 +135,63 @@ z(P, "standardProps", [
   "children",
   "lazyLoad"
 ]);
-let m = P;
+let $ = b;
 function D(c) {
-  return new m(c);
+  return new $(c);
 }
-function _(c) {
-  let t = 0, e = !1, s = [];
+function O(c) {
+  let t = 0, e = !1, a = [], s = 0, i = 0;
   return {
-    load(n, i, o) {
-      const a = `${o}/data.json`;
-      n.load.json(i, a), n.load.once("complete", () => {
-        const r = n.cache.json.get(i);
-        this.processJSON(n, i, r, o);
+    load(n, r, o) {
+      const l = `${o}/data.json`;
+      n.load.json(r, l), n.load.once("complete", () => {
+        const d = n.cache.json.get(r);
+        this.processJSON(n, r, d, o);
       });
     },
-    processJSON(n, i, o, a) {
-      c.psdData[i] = {
+    processJSON(n, r, o, l) {
+      c.psdData[r] = {
         ...o,
-        basePath: a,
-        sprites: o.sprites.map((r) => D(r)),
-        zones: o.zones.map((r) => D(r)),
-        points: o.points.map((r) => D(r))
-      }, c.options.debug && console.log(`Loaded JSON for key "${i}":`, c.psdData[i]), this.loadAssetsFromJSON(n, i, c.psdData[i]);
+        basePath: l,
+        sprites: o.sprites.map((d) => D(d)),
+        zones: o.zones.map((d) => D(d)),
+        points: o.points.map((d) => D(d))
+      }, c.options.debug && console.log(`Loaded JSON for key "${r}":`, c.psdData[r]), this.loadAssetsFromJSON(n, r, c.psdData[r]);
     },
-    loadAssetsFromJSON(n, i, o) {
-      const a = this.flattenObjects(o.sprites), r = o.tiles || {};
-      let l = this.countAssets(a) + c.tiles.countTiles(r), d = 0;
-      c.options.debug && console.log(`Total assets to load: ${l}`);
-      const u = () => {
-        d++, t = d / l, n.events.emit("psdAssetsLoadProgress", t), c.options.debug && (console.log(`Loaded asset ${d} of ${l}`), console.log(`Loading progress: ${(t * 100).toFixed(2)}%`)), d === l && (e = !0, n.events.emit("psdAssetsLoadComplete"), c.options.debug && console.log("All PSD assets loaded"));
+    loadAssetsFromJSON(n, r, o) {
+      const l = this.flattenObjects(o.sprites), d = o.tiles || {};
+      s = this.countAssets(l) + c.tiles.countTiles(d), i = 0, c.options.debug && console.log(`Total assets to load: ${s}`);
+      const h = () => {
+        i++, t = i / s, n.events.emit("psdAssetsLoadProgress", t), c.options.debug && (console.log(`Loaded asset ${i} of ${s}`), console.log(`Loading progress: ${(t * 100).toFixed(2)}%`)), i === s && (e = !0, n.events.emit("psdAssetsLoadComplete"), c.options.debug && console.log("All PSD assets loaded"));
       };
-      a.length > 0 && this.loadSprites(n, a, o.basePath, u), r.layers && r.layers.length > 0 && c.tiles.load(n, r, o.basePath, u), l === 0 && (e = !0, n.events.emit("psdAssetsLoadComplete")), n.load.isLoading() || n.load.start();
+      l.length > 0 && this.loadSprites(n, l, o.basePath, h), d.layers && d.layers.length > 0 && c.tiles.load(n, d, o.basePath, h), s === 0 && (e = !0, n.events.emit("psdAssetsLoadComplete")), n.load.isLoading() || n.load.start();
     },
-    flattenObjects(n, i = "") {
-      return n.reduce((o, a) => {
-        const r = i ? `${i}/${a.name}` : a.name;
-        return a.lazyLoad ? s.push({ path: r, obj: a }) : (!a.children || a.children.length === 0) && o.push({ path: r, obj: a }), a.children && o.push(...this.flattenObjects(a.children, r)), o;
-      }, []);
-    },
-    loadSprites(n, i, o, a) {
-      i.forEach(({ path: r, obj: l }) => {
-        if (l.lazyLoad) {
-          c.options.debug && console.log(`Skipping load for lazy-loaded sprite: ${r}`);
+    loadSprites(n, r, o, l) {
+      r.forEach(({ path: d, obj: h }) => {
+        if (h.lazyLoad) {
+          c.options.debug && console.log(`Skipping load for lazy-loaded sprite: ${d}`);
           return;
         }
-        const d = `${o}/sprites/${r}.png`;
-        l.type === "animation" || l.type === "spritesheet" ? n.load.spritesheet(r, d, {
-          frameWidth: l.frame_width,
-          frameHeight: l.frame_height
-        }) : n.load.image(r, d), n.load.once(
-          `filecomplete-${l.type === "animation" || l.type === "spritesheet" ? "spritesheet" : "image"}-${r}`,
-          () => {
-            l.isLoaded = !0, a();
-          }
-        ), c.options.debug && console.log(
-          `Loading ${l.type === "animation" ? "animation spritesheet" : l.type === "spritesheet" ? "spritesheet" : "sprite"}: ${r} from ${d}`
-        );
+        const u = `${o}/sprites/${d}.png`;
+        h.type === "animation" || h.type === "spritesheet" ? n.load.spritesheet(d, u, {
+          frameWidth: h.frame_width,
+          frameHeight: h.frame_height
+        }) : n.load.image(d, u), n.load.once(`filecomplete-${h.type === "animation" || h.type === "spritesheet" ? "spritesheet" : "image"}-${d}`, () => {
+          h.isLoaded = !0, l();
+        }), c.options.debug && console.log(`Loading ${h.type === "animation" ? "animation" : h.type === "spritesheet" ? "spritesheet" : "sprite"}: ${d} from ${u}`);
       });
+    },
+    flattenObjects(n, r = "") {
+      return n.reduce((o, l) => {
+        const d = r ? `${r}/${l.name}` : l.name;
+        return l.lazyLoad ? a.push({ path: d, obj: l }) : (!l.children || l.children.length === 0) && o.push({ path: d, obj: l }), l.children && o.push(...this.flattenObjects(l.children, d)), o;
+      }, []);
     },
     countAssets(n) {
       return n.length;
     },
     getLazyLoadQueue() {
-      return s;
+      return a;
     },
     get progress() {
       return t;
@@ -226,82 +203,82 @@ function _(c) {
 }
 function L(c) {
   return {
-    place(t, e, s, n = {}) {
-      const i = c.getData(s);
-      return !i || !i.points ? (console.warn(`Point data for key '${s}' not found.`), null) : m.place(
+    place(t, e, a, s = {}) {
+      const i = c.getData(a);
+      return !i || !i.points ? (console.warn(`Point data for key '${a}' not found.`), null) : $.place(
         t,
         i,
         "points",
         e,
         this.placePoint.bind(this),
-        n
+        s
       );
     },
-    placePoint(t, e, s = {}) {
-      const { name: n, x: i, y: o } = e, a = t.add.circle(i, o, 5, 16777215, 1);
-      a.setName(n);
-      const r = e.createDebugBox(
+    placePoint(t, e, a = {}) {
+      const { name: s, x: i, y: n } = e, r = t.add.circle(i, n, 5, 16777215, 1);
+      r.setName(s);
+      const o = e.createDebugBox(
         t,
         "point",
         c,
-        s
+        a
       );
-      c.options.debug && console.log(`Placed point: ${n} at (${i}, ${o})`);
-      const l = { layerData: e, point: a, debugGraphics: r };
+      c.options.debug && console.log(`Placed point: ${s} at (${i}, ${n})`);
+      const l = { layerData: e, point: r, debugGraphics: o };
       return e.children && (l.children = e.children.map(
-        (d) => this.placePoint(t, d, s)
+        (d) => this.placePoint(t, d, a)
       )), l;
     },
-    placeAll(t, e, s = {}) {
-      const n = c.getData(e);
-      return !n || !n.points ? (console.warn(`Point data for key '${e}' not found.`), null) : n.points.map(
-        (i) => m.place(
+    placeAll(t, e, a = {}) {
+      const s = c.getData(e);
+      return !s || !s.points ? (console.warn(`Point data for key '${e}' not found.`), null) : s.points.map(
+        (i) => $.place(
           t,
-          n,
+          s,
           "points",
           i.name,
           this.placePoint.bind(this),
-          s
+          a
         )
       );
     },
     get(t, e) {
-      const s = c.getData(t);
-      return !s || !s.placedPoints ? (console.warn(`Placed point data for key '${t}' not found.`), null) : s.placedPoints[e] || null;
+      const a = c.getData(t);
+      return !a || !a.placedPoints ? (console.warn(`Placed point data for key '${t}' not found.`), null) : a.placedPoints[e] || null;
     },
     countPoints(t) {
-      return m.countRecursive(t);
+      return $.countRecursive(t);
     }
   };
 }
-function N(c) {
+function k(c) {
   return {
-    place(t, e, s, n = {}) {
-      const i = c.getData(s);
-      return !i || !i.sprites ? (console.warn(`Sprite data for key '${s}' not found.`), null) : m.place(
+    place(t, e, a, s = {}) {
+      const i = c.getData(a);
+      return !i || !i.sprites ? (console.warn(`Sprite data for key '${a}' not found.`), null) : $.place(
         t,
         i,
         "sprites",
         e,
         this.placeSprite.bind(this),
-        n
+        s
       );
     },
-    placeSprite(t, e, s = {}) {
+    placeSprite(t, e, a = {}) {
       const {
-        name: n,
+        name: s,
         x: i,
-        y: o,
-        width: a,
-        height: r,
+        y: n,
+        width: r,
+        height: o,
         type: l,
         frame_width: d,
-        frame_height: u,
-        placement: f,
-        autoplacement: g = !0,
+        frame_height: h,
+        placement: u,
+        autoplacement: m = !0,
         lazyLoad: y
       } = e;
-      let h = [], $ = null;
+      let f = [], P = null;
       if (!e.children || e.children.length === 0) {
         if (y)
           return c.options.debug && console.log(
@@ -309,60 +286,97 @@ function N(c) {
           ), { layerData: e, sprites: [], debugGraphics: null };
         if (!e.isLoaded)
           return console.warn(`Sprite '${e.getPath()}' hasn't been loaded yet.`), { layerData: e, sprites: [], debugGraphics: null };
-        if (l === "animation") {
+        if (l === "atlas") {
+          const p = this.createAtlasSprite(t, e, a);
+          f.push(p);
+        } else if (l === "animation") {
           const p = this.createAnimatedSprite(
             t,
             e,
-            s
+            a
           );
-          h.push(p.sprite), $ = p;
-        } else if (l === "spritesheet" && g)
-          f.forEach((p, O) => {
+          f.push(p.sprite), P = p;
+        } else if (l === "spritesheet" && m)
+          u.forEach((p, x) => {
             const w = t.add.sprite(
               i + p.x,
-              o + p.y,
+              n + p.y,
               e.getPath(),
               p.frame
             );
-            w.setName(`${n}_${O}`), w.setDisplaySize(d, u), w.setOrigin(0, 0), h.push(w);
+            w.setName(`${s}_${x}`), w.setDisplaySize(d, h), w.setOrigin(0, 0), f.push(w);
           });
-        else if (l !== "spritesheet" || g) {
-          const p = s.useImage ? t.add.image(i, o, e.getPath()) : t.add.sprite(i, o, e.getPath());
-          p.setName(n), a !== void 0 && r !== void 0 && p.setDisplaySize(a, r), p.setOrigin(0, 0), h.push(p);
+        else if (l !== "spritesheet" || m) {
+          const p = a.useImage ? t.add.image(i, n, e.getPath()) : t.add.sprite(i, n, e.getPath());
+          p.setName(s), r !== void 0 && o !== void 0 && p.setDisplaySize(r, o), p.setOrigin(0, 0), f.push(p);
         }
       }
-      const S = g && !y ? e.createDebugBox(t, "sprite", c, s) : null;
-      c.options.debug && g && !y && console.log(
-        `Placed ${l === "spritesheet" ? "spritesheet" : l === "animation" ? "animated sprite" : s.useImage ? "image" : "sprite"}: ${n} at (${i}, ${o}) with dimensions ${d || a}x${u || r}`
+      const S = e.createDebugBox(
+        t,
+        "sprite",
+        c,
+        a
       );
-      const b = {
+      c.options.debug && console.log(
+        `Placed ${l === "atlas" ? "atlas" : l === "spritesheet" ? "spritesheet" : l === "animation" ? "animated sprite" : a.useImage ? "image" : "sprite"}: ${s} at (${i}, ${n}) with dimensions ${r}x${o}`
+      );
+      const g = {
         layerData: e,
-        sprites: h,
+        sprites: f,
         debugGraphics: S
       };
-      return $ && (b.animation = $.animation, b.animationKey = $.animationKey, b.play = $.play, b.pause = $.pause, b.resume = $.resume, b.stop = $.stop), e.children && (b.children = e.children.map(
-        (p) => this.placeSprite(t, p, s)
-      )), b;
+      return l === "atlas" ? g.getFrameSprite = f[0].getFrameSprite : P && (g.animation = P.animation, g.animationKey = P.animationKey, g.play = P.play, g.pause = P.pause, g.resume = P.resume, g.stop = P.stop, g.updateAnimation = P.updateAnimation), e.children && (g.children = e.children.map(
+        (p) => this.placeSprite(t, p, a)
+      )), g;
     },
-    placeSpritesheet(t, e, s, n, i, o = 0) {
-      const a = c.getData(e);
-      if (!a || !a.sprites)
-        return console.warn(`Sprite data for key '${e}' not found.`), null;
-      const r = this.findSpriteByPath(
-        a.sprites,
-        s
+    createAtlasSprite(t, e, a) {
+      const { name: s, x: i, y: n, width: r, height: o, atlas_image: l, atlas_data: d } = e;
+      t.textures.exists(l) || t.textures.addAtlas(
+        l,
+        t.textures.get(e.getPath()).getSourceImage(),
+        d
       );
-      if (!r || r.type !== "spritesheet")
-        return console.warn(
-          `Spritesheet '${s}' not found or is not a spritesheet.`
-        ), null;
-      const l = t.add.sprite(n, i, s, o);
-      return l.setDisplaySize(r.frame_width, r.frame_height), l.setOrigin(0, 0), l;
+      const h = t.add.container(i, n);
+      h.setName(s);
+      const u = Object.keys(d.frames);
+      return u.forEach((m) => {
+        const y = d.frames[m], f = t.add.sprite(
+          y.relative.x,
+          y.relative.y,
+          l,
+          m
+        );
+        f.setName(`${s}_${m}`), f.setOrigin(0, 0), h.add(f);
+      }), h.setSize(r, o), h.getFrameSprite = (m) => h.list.find(
+        (y) => y.name === `${s}_${m}`
+      ), c.options.debug && console.log(
+        `Created atlas sprite '${s}' with ${u.length} frames`
+      ), h;
     },
-    createAnimatedSprite(t, e, s = {}) {
-      const { name: n, x: i, y: o, frame_width: a, frame_height: r } = e, l = t.add.sprite(i, o, e.getPath());
-      l.setName(n), l.setDisplaySize(a, r), l.setOrigin(0, 0);
-      const d = [
+    createAnimatedSprite(t, e, a = {}) {
+      const {
+        name: s,
+        x: i,
+        y: n,
+        frame_width: r,
+        frame_height: o,
+        frame_count: l,
+        columns: d,
+        rows: h
+      } = e, u = t.add.sprite(i, n, e.getPath());
+      u.setName(s), u.setDisplaySize(r, o), u.setOrigin(0, 0), t.textures.exists(e.getPath()) || t.textures.addSpriteSheet(
+        e.getPath(),
+        t.textures.get(e.getPath()).getSourceImage(),
+        {
+          frameWidth: r,
+          frameHeight: o,
+          startFrame: 0,
+          endFrame: l - 1,
+          margin: 0,
+          spacing: 0
+        }
+      );
+      const m = [
         "frameRate",
         "duration",
         "delay",
@@ -373,205 +387,251 @@ function N(c) {
         "hideOnComplete",
         "skipMissedFrames",
         "timeScale"
-      ], u = {
+      ], y = {
         key: `${e.getPath()}_animated`,
         frames: t.anims.generateFrameNumbers(e.getPath(), {
           start: 0,
-          end: e.frame_count - 1
+          end: l - 1
         }),
         frameRate: 10,
-        repeat: -1,
-        play: !0
+        repeat: -1
       };
-      d.forEach((h) => {
-        e[h] !== void 0 && (u[h] = e[h]);
+      m.forEach((S) => {
+        e[S] !== void 0 && (y[S] = e[S]);
       });
       const f = {
-        ...u,
-        ...s.animationOptions
-      }, g = t.anims.create(f);
-      f.play && l.play(f.key);
-      const y = (h) => (Object.entries(h).forEach(([$, S]) => {
-        d.includes($) && (g[$] = S);
-      }), h.frames && (g.frames = t.anims.generateFrameNumbers(
-        e.getPath(),
-        h.frames
-      )), h.paused !== void 0 && (h.paused ? l.anims.pause() : l.anims.resume()), l.anims.play(g), g);
+        ...y,
+        ...a.animationOptions
+      };
+      t.anims.exists(f.key) || t.anims.create(f), u.play(f.key);
+      const P = (S) => {
+        const g = t.anims.get(f.key);
+        if (g)
+          return Object.entries(S).forEach(([p, x]) => {
+            m.includes(p) && (g[p] = x);
+          }), S.frames && (g.frames = t.anims.generateFrameNumbers(
+            e.getPath(),
+            S.frames
+          )), S.paused !== void 0 && (S.paused ? u.anims.pause() : u.anims.resume()), u.play(f.key), g;
+      };
       return {
-        sprite: l,
-        animation: g,
+        sprite: u,
         animationKey: f.key,
-        play: () => l.play(f.key),
-        pause: () => l.anims.pause(),
-        resume: () => l.anims.resume(),
-        stop: () => l.anims.stop(),
-        updateAnimation: y
+        play: () => u.play(f.key),
+        pause: () => u.anims.pause(),
+        resume: () => u.anims.resume(),
+        stop: () => u.anims.stop(),
+        updateAnimation: P
       };
     },
-    placeAll(t, e, s = {}) {
-      const n = c.getData(e);
-      return !n || !n.sprites ? (console.warn(`Sprite data for key '${e}' not found.`), null) : n.sprites.map(
-        (i) => m.place(
+    placeAll(t, e, a = {}) {
+      const s = c.getData(e);
+      return !s || !s.sprites ? (console.warn(`Sprite data for key '${e}' not found.`), null) : s.sprites.map(
+        (i) => $.place(
           t,
-          n,
+          s,
           "sprites",
           i.name,
           this.placeSprite.bind(this),
-          s
+          a
         )
       );
     },
     get(t, e) {
-      const s = c.getData(t);
-      if (!s || !s.sprites)
+      const a = c.getData(t);
+      if (!a || !a.sprites)
         return console.warn(`Sprite data for key '${t}' not found.`), null;
       const i = e.split("/").join("/");
-      let o = s.placedSprites ? s.placedSprites[i] : null;
-      if (!o) {
-        const r = this.findSpriteByPath(s.sprites, i);
-        r && (o = { layerData: r });
+      let n = a.placedSprites ? a.placedSprites[i] : null;
+      if (!n) {
+        const o = this.findSpriteByPath(a.sprites, i);
+        o && (n = { layerData: o });
       }
-      if (!o)
+      if (!n)
         return null;
-      const { layerData: a } = o;
-      if (a.type === "spritesheet")
+      const { layerData: r } = n;
+      if (r.type === "atlas") {
+        const o = n.sprites[0];
         return {
-          layerData: a,
-          getSprite: (r = 0) => ({
-            texture: a.getPath(),
-            frame: r
-          })
+          sprite: o,
+          setFrame: (l) => o.setFrame(l)
         };
-      if (a.type === "animation") {
-        const r = o.sprites[0], l = r.anims.currentAnim;
-        return {
-          sprite: r,
-          animation: l,
-          animationKey: l.key,
-          play: () => r.play(l.key),
-          pause: () => r.anims.pause(),
-          resume: () => r.anims.resume(),
-          stop: () => r.anims.stop(),
-          updateAnimation: (d) => {
-          }
-        };
+      } else {
+        if (r.type === "spritesheet")
+          return {
+            layerData: r,
+            getSprite: (o = 0) => ({
+              texture: r.getPath(),
+              frame: o
+            })
+          };
+        if (r.type === "animation") {
+          const o = n.sprites[0], l = o.anims.currentAnim;
+          return {
+            sprite: o,
+            animation: l,
+            animationKey: l.key,
+            play: () => o.play(l.key),
+            pause: () => o.anims.pause(),
+            resume: () => o.anims.resume(),
+            stop: () => o.anims.stop(),
+            updateAnimation: (d) => {
+            }
+          };
+        }
       }
-      return o.sprites[0];
+      return n.sprites[0];
     },
     getTexture(t, e) {
-      const s = c.getData(t);
-      return !s || !s.sprites ? (console.warn(`Sprite data for key '${t}' not found.`), null) : this.findSpriteByPath(s.sprites, e) ? e : (console.warn(`Sprite '${e}' not found.`), null);
+      const a = c.getData(t);
+      if (!a || !a.sprites)
+        return console.warn(`Sprite data for key '${t}' not found.`), null;
+      const s = this.findSpriteByPath(a.sprites, e);
+      if (!s)
+        return console.warn(`Sprite '${e}' not found.`), null;
+      if (s.type === "atlas") {
+        const i = e.split("/");
+        return i.length > 1 ? {
+          texture: s.atlas_image,
+          frame: i[i.length - 1]
+        } : Object.keys(s.atlas_data.frames).map((n) => ({
+          texture: s.atlas_image,
+          frame: n
+        }));
+      } else if (s.type === "spritesheet")
+        return s.getPath();
+      return e;
     },
     findSpriteByPath(t, e) {
-      const s = e.split("/");
-      let n = t.find((i) => i.name === s[0]);
-      for (let i = 1; i < s.length; i++) {
-        if (!n || !n.children)
+      const a = e.split("/");
+      let s = t.find((i) => i.name === a[0]);
+      for (let i = 1; i < a.length; i++) {
+        if (!s || !s.children)
           return null;
-        n = n.children.find((o) => o.name === s[i]);
+        s = s.children.find((n) => n.name === a[i]);
       }
-      return n;
+      return s;
     },
     countSprites(t) {
-      return m.countRecursive(t);
+      return $.countRecursive(t);
+    },
+    loadSprites(t, e, a, s) {
+      e.forEach(({ path: i, obj: n }) => {
+        if (n.lazyLoad) {
+          c.options.debug && console.log(`Skipping load for lazy-loaded sprite: ${i}`);
+          return;
+        }
+        const r = `${a}/sprites/${i}.png`;
+        n.type === "atlas" ? t.load.atlas(i, r, n.atlas_data) : n.type === "animation" || n.type === "spritesheet" ? t.load.spritesheet(i, r, {
+          frameWidth: n.frame_width,
+          frameHeight: n.frame_height
+        }) : t.load.image(i, r), t.load.once(
+          `filecomplete-${n.type === "atlas" ? "atlas" : n.type === "animation" || n.type === "spritesheet" ? "spritesheet" : "image"}-${i}`,
+          () => {
+            n.isLoaded = !0, s();
+          }
+        ), c.options.debug && console.log(
+          `Loading ${n.type === "atlas" ? "atlas" : n.type === "animation" ? "animation spritesheet" : n.type === "spritesheet" ? "spritesheet" : "sprite"}: ${i} from ${r}`
+        );
+      });
     }
   };
 }
-function T(c) {
+function N(c) {
   return {
-    load(t, e, s, n) {
+    load(t, e, a, s) {
       if (!e || !e.layers || e.layers.length === 0) {
         console.warn("No tiles to load or invalid tiles data");
         return;
       }
       e.layers.forEach((i) => {
-        for (let o = 0; o < e.columns; o++)
-          for (let a = 0; a < e.rows; a++) {
-            const r = `${i.name}_tile_${o}_${a}`, l = `${s}/tiles/${e.tile_slice_size}/${r}.jpg`;
-            t.load.image(r, l), t.load.once(`filecomplete-image-${r}`, n), c.options.debug && console.log(`Loading tile: ${r} from ${l}`);
+        for (let n = 0; n < e.columns; n++)
+          for (let r = 0; r < e.rows; r++) {
+            const o = `${i.name}_tile_${n}_${r}`, l = `${a}/tiles/${e.tile_slice_size}/${o}.jpg`;
+            t.load.image(o, l), t.load.once(`filecomplete-image-${o}`, s), c.options.debug && console.log(`Loading tile: ${o} from ${l}`);
           }
       });
     },
     countTiles(t) {
       return !t || !t.layers ? 0 : t.layers.length * t.columns * t.rows;
     },
-    place(t, e, s, n = {}) {
-      const i = c.getData(s);
-      return !i || !i.tiles ? (console.warn(`Tiles data for key '${s}' not found.`), null) : m.place(
+    place(t, e, a, s = {}) {
+      const i = c.getData(a);
+      return !i || !i.tiles ? (console.warn(`Tiles data for key '${a}' not found.`), null) : $.place(
         t,
         i,
         "tiles",
         e,
         this.placeTileLayer.bind(this),
-        { ...n, psdKey: s, tilesData: i.tiles }
+        { ...s, psdKey: a, tilesData: i.tiles }
       );
     },
-    placeTileLayer(t, e, s) {
-      const { tilesData: n } = s, i = t.add.container(0, 0);
+    placeTileLayer(t, e, a) {
+      const { tilesData: s } = a, i = t.add.container(0, 0);
       i.setName(e.name);
-      for (let a = 0; a < n.columns; a++)
-        for (let r = 0; r < n.rows; r++) {
-          const l = `${e.name}_tile_${a}_${r}`, d = a * n.tile_slice_size, u = r * n.tile_slice_size;
+      for (let r = 0; r < s.columns; r++)
+        for (let o = 0; o < s.rows; o++) {
+          const l = `${e.name}_tile_${r}_${o}`, d = r * s.tile_slice_size, h = o * s.tile_slice_size;
           if (t.textures.exists(l)) {
-            const f = t.add.image(d, u, l).setOrigin(0, 0);
-            i.add(f), c.options.debug && console.log(`Placed tile: ${l} at (${d}, ${u})`);
+            const u = t.add.image(d, h, l).setOrigin(0, 0);
+            i.add(u), c.options.debug && console.log(`Placed tile: ${l} at (${d}, ${h})`);
           } else
             console.warn(`Texture for tile ${l} not found`);
         }
-      const o = this.addDebugVisualization(
+      const n = this.addDebugVisualization(
         t,
         e,
-        n,
-        s
+        s,
+        a
       );
-      return o && i.add(o), { layerData: e, tileLayer: i, debugGraphics: o };
+      return n && i.add(n), { layerData: e, tileLayer: i, debugGraphics: n };
     },
-    placeAll(t, e, s = {}) {
-      const n = c.getData(e);
-      return !n || !n.tiles || !n.tiles.layers ? (console.warn(`Tiles data for key '${e}' not found.`), null) : n.tiles.layers.map(
-        (i) => this.place(t, i.name, e, s)
+    placeAll(t, e, a = {}) {
+      const s = c.getData(e);
+      return !s || !s.tiles || !s.tiles.layers ? (console.warn(`Tiles data for key '${e}' not found.`), null) : s.tiles.layers.map(
+        (i) => this.place(t, i.name, e, a)
       );
     },
     get(t, e) {
-      const s = c.getData(t);
-      return !s || !s.placedTiles ? (console.warn(`Placed tile layer data for key '${t}' not found.`), null) : s.placedTiles[e] || null;
+      const a = c.getData(t);
+      return !a || !a.placedTiles ? (console.warn(`Placed tile layer data for key '${t}' not found.`), null) : a.placedTiles[e] || null;
     },
-    addDebugVisualization(t, e, s, n) {
-      if (!n.debug && !c.options.debug)
+    addDebugVisualization(t, e, a, s) {
+      if (!s.debug && !c.options.debug)
         return null;
       const i = t.add.graphics();
       i.lineStyle(2, 16711935, 1);
-      const o = s.columns * s.tile_slice_size, a = s.rows * s.tile_slice_size;
-      return i.strokeRect(0, 0, o, a), i;
+      const n = a.columns * a.tile_slice_size, r = a.rows * a.tile_slice_size;
+      return i.strokeRect(0, 0, n, r), i;
     }
   };
 }
-function k(c) {
+function T(c) {
   return {
-    place(t, e, s, n = {}) {
-      const i = c.getData(s);
-      return !i || !i.zones ? (console.warn(`Zone data for key '${s}' not found.`), null) : m.place(t, i, "zones", e, this.placeZone.bind(this), n);
+    place(t, e, a, s = {}) {
+      const i = c.getData(a);
+      return !i || !i.zones ? (console.warn(`Zone data for key '${a}' not found.`), null) : $.place(t, i, "zones", e, this.placeZone.bind(this), s);
     },
-    placeZone(t, e, s = {}) {
-      const { name: n, bbox: i } = e, { left: o, top: a, right: r, bottom: l } = i, d = r - o, u = l - a, f = t.add.zone(o, a, d, u);
-      f.setName(n);
-      const g = e.createDebugBox(t, "zone", c, s);
-      c.options.debug && console.log(`Placed zone: ${n} at (${o}, ${a}) with dimensions ${d}x${u}`);
-      const y = { layerData: e, zone: f, debugGraphics: g };
-      return e.children && (y.children = e.children.map((h) => this.placeZone(t, h, s))), y;
+    placeZone(t, e, a = {}) {
+      const { name: s, bbox: i } = e, { left: n, top: r, right: o, bottom: l } = i, d = o - n, h = l - r, u = t.add.zone(n, r, d, h);
+      u.setName(s);
+      const m = e.createDebugBox(t, "zone", c, a);
+      c.options.debug && console.log(`Placed zone: ${s} at (${n}, ${r}) with dimensions ${d}x${h}`);
+      const y = { layerData: e, zone: u, debugGraphics: m };
+      return e.children && (y.children = e.children.map((f) => this.placeZone(t, f, a))), y;
     },
-    placeAll(t, e, s = {}) {
-      const n = c.getData(e);
-      return !n || !n.zones ? (console.warn(`Zone data for key '${e}' not found.`), null) : n.zones.map(
-        (i) => m.place(t, n, "zones", i.name, this.placeZone.bind(this), s)
+    placeAll(t, e, a = {}) {
+      const s = c.getData(e);
+      return !s || !s.zones ? (console.warn(`Zone data for key '${e}' not found.`), null) : s.zones.map(
+        (i) => $.place(t, s, "zones", i.name, this.placeZone.bind(this), a)
       );
     },
     get(t, e) {
-      const s = c.getData(t);
-      return !s || !s.placedZones ? (console.warn(`Placed zone data for key '${t}' not found.`), null) : s.placedZones[e] || null;
+      const a = c.getData(t);
+      return !a || !a.placedZones ? (console.warn(`Placed zone data for key '${t}' not found.`), null) : a.placedZones[e] || null;
     },
     countZones(t) {
-      return m.countRecursive(t);
+      return $.countRecursive(t);
     }
   };
 }
@@ -583,10 +643,10 @@ class v extends Phaser.Plugins.BasePlugin {
     this.pluginManager.game.events.once("destroy", this.destroy, this);
   }
   init(t = {}) {
-    this.options = { ...this.options, ...t }, this.data = _(this), this.points = L(this), this.sprites = N(this), this.tiles = T(this), this.zones = k(this), this.options.debug && console.log("PsdToJSONPlugin initialized with options:", this.options);
+    this.options = { ...this.options, ...t }, this.data = O(this), this.points = L(this), this.sprites = k(this), this.tiles = N(this), this.zones = T(this), this.options.debug && console.log("PsdToJSONPlugin initialized with options:", this.options);
   }
-  load(t, e, s) {
-    this.data.load(t, e, s);
+  load(t, e, a) {
+    this.data.load(t, e, a);
   }
   getData(t) {
     return this.psdData[t];

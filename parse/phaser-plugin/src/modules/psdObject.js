@@ -54,50 +54,32 @@ export class PSDObject {
   createDebugBox(scene, type, plugin, options = {}) {
     if (!this.shouldDebug(plugin, options)) return null;
 
-    let debugGraphics;
-    let debugColor = 0xff00ff;
+    const debugGraphics = scene.add.graphics();
+    const debugColor = 0xff00ff;
+    const lineWidth = 2;
+
+    debugGraphics.lineStyle(lineWidth, debugColor);
 
     if (type === "zone") {
       const { left, top, right, bottom } = this.bbox;
       const width = right - left;
       const height = bottom - top;
-      debugGraphics = scene.add.rectangle(
-        left,
-        top,
-        width,
-        height,
-        debugColor,
-        0.5
-      );
-      debugGraphics.setOrigin(0, 0);
+      debugGraphics.strokeRect(left, top, width, height);
     } else if (type === "sprite" || type === "image") {
       if (this.type === "spritesheet") {
-        debugGraphics = scene.add.group();
         this.placement.forEach((place) => {
-          const rect = scene.add.rectangle(
+          debugGraphics.strokeRect(
             this.x + place.x,
             this.y + place.y,
             this.frame_width,
-            this.frame_height,
-            debugColor,
-            0.5
+            this.frame_height
           );
-          rect.setOrigin(0, 0);
-          debugGraphics.add(rect);
         });
       } else {
-        debugGraphics = scene.add.rectangle(
-          this.x,
-          this.y,
-          this.width,
-          this.height,
-          debugColor,
-          0.5
-        );
-        debugGraphics.setOrigin(0, 0);
+        debugGraphics.strokeRect(this.x, this.y, this.width, this.height);
       }
     } else if (type === "point") {
-      debugGraphics = scene.add.circle(this.x, this.y, 5, debugColor, 0.5);
+      debugGraphics.strokeCircle(this.x, this.y, 5);
     }
 
     return debugGraphics;

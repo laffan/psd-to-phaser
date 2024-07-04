@@ -52,7 +52,10 @@ export default function spritesModule(plugin) {
           return { layerData: sprite, sprites: [], debugGraphics: null };
         }
 
-        if (type === "animation") {
+        if (type === "atlas") {
+          const atlasContainer = this.createAtlasSprite(scene, sprite, options);
+          spriteObjects.push(atlasContainer);
+        } else if (type === "animation") {
           const animatedSpriteData = this.createAnimatedSprite(
             scene,
             sprite,
@@ -86,24 +89,26 @@ export default function spritesModule(plugin) {
         }
       }
 
-      const debugGraphics =
-        autoplacement && !lazyLoad
-          ? sprite.createDebugBox(scene, "sprite", plugin, options)
-          : null;
+      const debugGraphics = sprite.createDebugBox(
+        scene,
+        "sprite",
+        plugin,
+        options
+      );
 
-      if (plugin.options.debug && autoplacement && !lazyLoad) {
+      if (plugin.options.debug) {
         console.log(
           `Placed ${
-            type === "spritesheet"
+            type === "atlas"
+              ? "atlas"
+              : type === "spritesheet"
               ? "spritesheet"
               : type === "animation"
               ? "animated sprite"
               : options.useImage
               ? "image"
               : "sprite"
-          }: ${name} at (${x}, ${y}) with dimensions ${frame_width || width}x${
-            frame_height || height
-          }`
+          }: ${name} at (${x}, ${y}) with dimensions ${width}x${height}`
         );
       }
 
@@ -113,13 +118,16 @@ export default function spritesModule(plugin) {
         debugGraphics,
       };
 
-      if (animationData) {
+      if (type === "atlas") {
+        result.getFrameSprite = spriteObjects[0].getFrameSprite;
+      } else if (animationData) {
         result.animation = animationData.animation;
         result.animationKey = animationData.animationKey;
         result.play = animationData.play;
         result.pause = animationData.pause;
         result.resume = animationData.resume;
         result.stop = animationData.stop;
+        result.updateAnimation = animationData.updateAnimation;
       }
 
       if (sprite.children) {
@@ -130,36 +138,92 @@ export default function spritesModule(plugin) {
 
       return result;
     },
-    placeSpritesheet(scene, psdKey, spritesheetPath, x, y, frame = 0) {
-      const psdData = plugin.getData(psdKey);
-      if (!psdData || !psdData.sprites) {
-        console.warn(`Sprite data for key '${psdKey}' not found.`);
-        return null;
-      }
 
-      const spritesheet = this.findSpriteByPath(
-        psdData.sprites,
-        spritesheetPath
-      );
-      if (!spritesheet || spritesheet.type !== "spritesheet") {
-        console.warn(
-          `Spritesheet '${spritesheetPath}' not found or is not a spritesheet.`
+    createAtlasSprite(scene, sprite, options) {
+      const { name, x, y, width, height, atlas_image, atlas_data } = sprite;
+
+      if (!scene.textures.exists(atlas_image)) {
+        // If the texture doesn't exist as an atlas, create it
+        scene.textures.addAtlas(
+          atlas_image,
+          scene.textures.get(sprite.getPath()).getSourceImage(),
+          atlas_data
         );
-        return null;
       }
 
-      const sprite = scene.add.sprite(x, y, spritesheetPath, frame);
-      sprite.setDisplaySize(spritesheet.frame_width, spritesheet.frame_height);
-      sprite.setOrigin(0, 0);
+      // Create a container to hold all frames
+      const container = scene.add.container(x, y);
+      container.setName(name);
 
-      return sprite;
+      // Get all frame names from the atlas
+      const frameNames = Object.keys(atlas_data.frames);
+
+      // Create a sprite for each frame and add it to the container
+      frameNames.forEach((frameName) => {
+        const frameData = atlas_data.frames[frameName];
+        const frameSprite = scene.add.sprite(
+          frameData.relative.x,
+          frameData.relative.y,
+          atlas_image,
+          frameName
+        );
+        frameSprite.setName(`${name}_${frameName}`);
+        frameSprite.setOrigin(0, 0);
+
+        // All frames are visible by default now
+        container.add(frameSprite);
+      });
+
+      // Set the size of the container
+      container.setSize(width, height);
+
+      // Add method to get a specific frame sprite
+      container.getFrameSprite = (frameName) => {
+        return container.list.find(
+          (child) => child.name === `${name}_${frameName}`
+        );
+      };
+
+      if (plugin.options.debug) {
+        console.log(
+          `Created atlas sprite '${name}' with ${frameNames.length} frames`
+        );
+      }
+
+      return container;
     },
+
     createAnimatedSprite(scene, sprite, options = {}) {
-      const { name, x, y, frame_width, frame_height } = sprite;
+      const {
+        name,
+        x,
+        y,
+        frame_width,
+        frame_height,
+        frame_count,
+        columns,
+        rows,
+      } = sprite;
       const spriteObject = scene.add.sprite(x, y, sprite.getPath());
       spriteObject.setName(name);
       spriteObject.setDisplaySize(frame_width, frame_height);
-      spriteObject.setOrigin(0, 0); // Set origin to top-left
+      spriteObject.setOrigin(0, 0);
+
+      // Create the spritesheet if it doesn't exist
+      if (!scene.textures.exists(sprite.getPath())) {
+        scene.textures.addSpriteSheet(
+          sprite.getPath(),
+          scene.textures.get(sprite.getPath()).getSourceImage(),
+          {
+            frameWidth: frame_width,
+            frameHeight: frame_height,
+            startFrame: 0,
+            endFrame: frame_count - 1,
+            margin: 0,
+            spacing: 0,
+          }
+        );
+      }
 
       const validAnimProperties = [
         "frameRate",
@@ -178,11 +242,10 @@ export default function spritesModule(plugin) {
         key: `${sprite.getPath()}_animated`,
         frames: scene.anims.generateFrameNumbers(sprite.getPath(), {
           start: 0,
-          end: sprite.frame_count - 1,
+          end: frame_count - 1,
         }),
         frameRate: 10,
         repeat: -1,
-        play: true,
       };
 
       // Include valid animation properties from the sprite data
@@ -197,13 +260,18 @@ export default function spritesModule(plugin) {
         ...options.animationOptions,
       };
 
-      const animation = scene.anims.create(animOptions);
-
-      if (animOptions.play) {
-        spriteObject.play(animOptions.key);
+      // Create the animation if it doesn't exist
+      if (!scene.anims.exists(animOptions.key)) {
+        const animation = scene.anims.create(animOptions);
       }
 
+      // Play the animation
+      spriteObject.play(animOptions.key);
+
       const updateAnimation = (updateOptions) => {
+        const animation = scene.anims.get(animOptions.key);
+        if (!animation) return;
+
         Object.entries(updateOptions).forEach(([key, value]) => {
           if (validAnimProperties.includes(key)) {
             animation[key] = value;
@@ -223,13 +291,12 @@ export default function spritesModule(plugin) {
             : spriteObject.anims.resume();
         }
 
-        spriteObject.anims.play(animation);
+        spriteObject.play(animOptions.key);
         return animation;
       };
 
       return {
         sprite: spriteObject,
-        animation: animation,
         animationKey: animOptions.key,
         play: () => spriteObject.play(animOptions.key),
         pause: () => spriteObject.anims.pause(),
@@ -268,12 +335,10 @@ export default function spritesModule(plugin) {
       const pathParts = path.split("/");
       const spritePath = pathParts.join("/");
 
-      // First, try to find the placed sprite
       let placedSprite = psdData.placedSprites
         ? psdData.placedSprites[spritePath]
         : null;
 
-      // If not found in placed sprites, search in the original sprite data
       if (!placedSprite) {
         const spriteData = this.findSpriteByPath(psdData.sprites, spritePath);
         if (spriteData) {
@@ -285,7 +350,13 @@ export default function spritesModule(plugin) {
 
       const { layerData } = placedSprite;
 
-      if (layerData.type === "spritesheet") {
+      if (layerData.type === "atlas") {
+        const sprite = placedSprite.sprites[0];
+        return {
+          sprite,
+          setFrame: (frameName) => sprite.setFrame(frameName),
+        };
+      } else if (layerData.type === "spritesheet") {
         return {
           layerData,
           getSprite: (frame = 0) => {
@@ -315,6 +386,7 @@ export default function spritesModule(plugin) {
 
       return placedSprite.sprites[0];
     },
+
     getTexture(psdKey, spritePath) {
       const psdData = plugin.getData(psdKey);
       if (!psdData || !psdData.sprites) {
@@ -328,7 +400,26 @@ export default function spritesModule(plugin) {
         return null;
       }
 
-      // The texture key should be the same as the sprite's path in the PSD structure
+      if (sprite.type === "atlas") {
+        const pathParts = spritePath.split("/");
+        if (pathParts.length > 1) {
+          // Return specific frame texture
+          return {
+            texture: sprite.atlas_image,
+            frame: pathParts[pathParts.length - 1],
+          };
+        } else {
+          // Return all named frames
+          return Object.keys(sprite.atlas_data.frames).map((frameName) => ({
+            texture: sprite.atlas_image,
+            frame: frameName,
+          }));
+        }
+      } else if (sprite.type === "spritesheet") {
+        return sprite.getPath();
+      }
+
+      // For regular sprites
       return spritePath;
     },
 
@@ -346,6 +437,58 @@ export default function spritesModule(plugin) {
 
     countSprites(sprites) {
       return PSDObject.countRecursive(sprites);
+    },
+
+    loadSprites(scene, sprites, basePath, onProgress) {
+      sprites.forEach(({ path, obj }) => {
+        if (obj.lazyLoad) {
+          if (plugin.options.debug) {
+            console.log(`Skipping load for lazy-loaded sprite: ${path}`);
+          }
+          return;
+        }
+
+        const filePath = `${basePath}/sprites/${path}.png`;
+
+        if (obj.type === "atlas") {
+          scene.load.atlas(path, filePath, obj.atlas_data);
+        } else if (obj.type === "animation" || obj.type === "spritesheet") {
+          scene.load.spritesheet(path, filePath, {
+            frameWidth: obj.frame_width,
+            frameHeight: obj.frame_height,
+          });
+        } else {
+          scene.load.image(path, filePath);
+        }
+
+        scene.load.once(
+          `filecomplete-${
+            obj.type === "atlas"
+              ? "atlas"
+              : obj.type === "animation" || obj.type === "spritesheet"
+              ? "spritesheet"
+              : "image"
+          }-${path}`,
+          () => {
+            obj.isLoaded = true;
+            onProgress();
+          }
+        );
+
+        if (plugin.options.debug) {
+          console.log(
+            `Loading ${
+              obj.type === "atlas"
+                ? "atlas"
+                : obj.type === "animation"
+                ? "animation spritesheet"
+                : obj.type === "spritesheet"
+                ? "spritesheet"
+                : "sprite"
+            }: ${path} from ${filePath}`
+          );
+        }
+      });
     },
   };
 }

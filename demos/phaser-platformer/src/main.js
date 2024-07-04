@@ -38,7 +38,7 @@ const gameConfig = {
         plugin: PsdToJSONPlugin,
         start: true,
         mapping: "P2J",
-        data: { debug: true },
+        data: { debug: false },
       },
     ],
   },

@@ -5,6 +5,8 @@ export default function dataModule(plugin) {
   let progress = 0;
   let complete = false;
   let lazyLoadQueue = [];
+  let totalAssets = 0;
+  let loadedAssets = 0;
 
   return {
     load(scene, key, psdFolderPath) {
@@ -36,9 +38,8 @@ export default function dataModule(plugin) {
       const spritesToLoad = this.flattenObjects(data.sprites);
       const tilesToLoad = data.tiles || {};
 
-      let totalAssets =
-        this.countAssets(spritesToLoad) + plugin.tiles.countTiles(tilesToLoad);
-      let loadedAssets = 0;
+      totalAssets = this.countAssets(spritesToLoad) + plugin.tiles.countTiles(tilesToLoad);
+      loadedAssets = 0;
 
       if (plugin.options.debug) {
         console.log(`Total assets to load: ${totalAssets}`);
@@ -86,13 +87,43 @@ export default function dataModule(plugin) {
       }
     },
 
+loadSprites(scene, sprites, basePath, onProgress) {
+  sprites.forEach(({ path, obj }) => {
+    if (obj.lazyLoad) {
+      if (plugin.options.debug) {
+        console.log(`Skipping load for lazy-loaded sprite: ${path}`);
+      }
+      return;
+    }
+
+    const filePath = `${basePath}/sprites/${path}.png`;
+
+    if (obj.type === "animation" || obj.type === "spritesheet") {
+      scene.load.spritesheet(path, filePath, {
+        frameWidth: obj.frame_width,
+        frameHeight: obj.frame_height,
+      });
+    } else {
+      scene.load.image(path, filePath);
+    }
+
+    scene.load.once(`filecomplete-${obj.type === "animation" || obj.type === "spritesheet" ? "spritesheet" : "image"}-${path}`, () => {
+      obj.isLoaded = true;
+      onProgress();
+    });
+
+    if (plugin.options.debug) {
+      console.log(`Loading ${obj.type === "animation" ? "animation" : obj.type === "spritesheet" ? "spritesheet" : "sprite"}: ${path} from ${filePath}`);
+    }
+  });
+},
+
     flattenObjects(objects, prefix = "") {
       return objects.reduce((acc, obj) => {
         const path = prefix ? `${prefix}/${obj.name}` : obj.name;
         if (obj.lazyLoad) {
           lazyLoadQueue.push({ path, obj });
         } else if (!obj.children || obj.children.length === 0) {
-          // Only add leaf nodes (sprites without children) to the list of sprites to load
           acc.push({ path, obj });
         }
         if (obj.children) {
@@ -102,52 +133,6 @@ export default function dataModule(plugin) {
       }, []);
     },
 
-    loadSprites(scene, sprites, basePath, onProgress) {
-      sprites.forEach(({ path, obj }) => {
-        if (obj.lazyLoad) {
-          // Skip loading for lazy-loaded sprites
-          if (plugin.options.debug) {
-            console.log(`Skipping load for lazy-loaded sprite: ${path}`);
-          }
-          return;
-        }
-
-        const filePath = `${basePath}/sprites/${path}.png`;
-
-        if (obj.type === "animation" || obj.type === "spritesheet") {
-          scene.load.spritesheet(path, filePath, {
-            frameWidth: obj.frame_width,
-            frameHeight: obj.frame_height,
-          });
-        } else {
-          scene.load.image(path, filePath);
-        }
-
-        scene.load.once(
-          `filecomplete-${
-            obj.type === "animation" || obj.type === "spritesheet"
-              ? "spritesheet"
-              : "image"
-          }-${path}`,
-          () => {
-            obj.isLoaded = true;
-            onProgress();
-          }
-        );
-
-        if (plugin.options.debug) {
-          console.log(
-            `Loading ${
-              obj.type === "animation"
-                ? "animation spritesheet"
-                : obj.type === "spritesheet"
-                ? "spritesheet"
-                : "sprite"
-            }: ${path} from ${filePath}`
-          );
-        }
-      });
-    },
     countAssets(sprites) {
       return sprites.length;
     },

@@ -1,16 +1,13 @@
-import os
-from PIL import Image
 from src.parsers import parse_attributes
 from src.createAnimation import create_animation
 from src.createSpritesheet import create_spritesheet
-from src.createTextureAtlas import create_texture_atlas
+from src.packTextures import pack_textures
+import os
 
 def extract_sprites(sprites_group, output_dir):
     print(f"Exporting sprites...")
     
-    sprites_dir = os.path.join(output_dir, 'sprites')
-    if not os.path.exists(sprites_dir):
-        os.makedirs(sprites_dir)
+    sprites_data = []
 
     def process_group(group, current_path):
         group_data = []
@@ -30,55 +27,79 @@ def extract_sprites(sprites_group, output_dir):
 
                 group_type = name_type_dict.get("type", "").lower()
 
-                if group_type in ["animation", "atlas", "spritesheet", "merge"]:
-                    # For special types, save files directly in the current path
-                    output_path = os.path.join(sprites_dir, current_path)
-                else:
-                    # For regular groups, create a new subfolder
-                    output_path = os.path.join(sprites_dir, current_path, name_type_dict["name"])
-                
+                # Always start with 'sprites' in the path
+                output_path = os.path.join(output_dir, 'sprites', current_path)
                 os.makedirs(output_path, exist_ok=True)
 
                 if group_type == "animation":
                     try:
-                        # Temporarily make all layers visible
+                        # Store the original visibility states
                         original_visibilities = {}
                         for layer in item.descendants():
                             original_visibilities[layer] = layer.visible
                             layer.visible = True
 
+                        # Create the animation with all layers visible
                         frames, width, height = create_animation(item)
                         spritesheet_path = os.path.join(output_path, f"{name_type_dict['name']}.png")
                         spritesheet_data = create_spritesheet(frames, spritesheet_path, width, height)
                         sprite_data.update(spritesheet_data)
                         sprite_data["width"] = width
                         sprite_data["height"] = height
+                        sprite_data["filename"] = os.path.relpath(spritesheet_path, output_dir)
 
-                        # Restore original visibility
+                        # Restore the original visibility states
                         for layer, visibility in original_visibilities.items():
                             layer.visible = visibility
+
+                        print(f"Created animation for '{name_type_dict['name']}' with {len(frames)} frames")
                     except ValueError as e:
                         print(f"Error processing animation group '{name_type_dict['name']}': {str(e)}")
                         continue
+                      
+
                 elif group_type == "atlas":
                     try:
-                        atlas_image_path, atlas_json = create_texture_atlas(item, output_path)
-                        sprite_data["atlas_image"] = os.path.relpath(atlas_image_path, sprites_dir)
-                        sprite_data["atlas_data"] = atlas_json
-                        print(f"Created texture atlas for '{name_type_dict['name']}'")
+                        atlas_layers = []
+                        for layer in item:
+                            layer_name = layer.name
+                            if layer.is_group():
+                                layer_image = layer.composite()
+                                layer_left = layer.left
+                                layer_top = layer.top
+                            elif layer.kind in ['pixel', 'shape', 'type', 'smartobject']:
+                                layer_image = layer.composite()
+                                layer_left = layer.left
+                                layer_top = layer.top
+                            else:
+                                continue
+
+                            if layer_image:
+                                atlas_layers.append((layer_name, layer_image, layer_left, layer_top))
+
+                        if atlas_layers:
+                            atlas_image, atlas_data = pack_textures(atlas_layers, item.left, item.top)
+                            atlas_image_path = os.path.join(output_path, f"{name_type_dict['name']}.png")
+                            atlas_image.save(atlas_image_path, 'PNG')
+
+                            sprite_data.update({
+                                "name": name_type_dict['name'],
+                                "type": "atlas",
+                                "x": item.left,
+                                "y": item.top,
+                                "width": atlas_data["meta"]["size"]["w"],
+                                "height": atlas_data["meta"]["size"]["h"],
+                                "atlas_image": os.path.relpath(atlas_image_path, output_dir),
+                                "atlas_data": atlas_data
+                            })
+                        else:
+                            print(f"Warning: No valid layers found in atlas group '{name_type_dict['name']}'")
                     except Exception as e:
                         print(f"Error processing atlas group '{name_type_dict['name']}': {str(e)}")
                         continue
-
+                      
                 elif group_type == "spritesheet":
                     try:
-                        # Temporarily make all layers visible
-                        original_visibilities = {}
-                        for layer in item.descendants():
-                            original_visibilities[layer] = layer.visible
-                            layer.visible = True
-
-                        # Process frames
                         frames = []
                         max_width = max_height = 0
                         placement = []
@@ -91,68 +112,41 @@ def extract_sprites(sprites_group, output_dir):
                             max_width = max(max_width, frame.width)
                             max_height = max(max_height, frame.height)
                             
-                            # Calculate the placement
                             placement.append({
                                 "frame": index,
-                                "x": sub_item.left - item.left,  # Relative to spritesheet group
-                                "y": sub_item.top - item.top     # Relative to spritesheet group
+                                "x": sub_item.left - item.left,
+                                "y": sub_item.top - item.top
                             })
 
-                        # Create centered frames
-                        centered_frames = []
-                        for frame in frames:
-                            new_frame = Image.new('RGBA', (max_width, max_height), (0, 0, 0, 0))
-                            x = (max_width - frame.width) // 2
-                            y = (max_height - frame.height) // 2
-                            new_frame.paste(frame, (x, y), frame)
-                            centered_frames.append(new_frame)
-
                         spritesheet_path = os.path.join(output_path, f"{name_type_dict['name']}.png")
-                        spritesheet_data = create_spritesheet(centered_frames, spritesheet_path, max_width, max_height)
+                        spritesheet_data = create_spritesheet(frames, spritesheet_path, max_width, max_height)
                         sprite_data.update(spritesheet_data)
                         sprite_data["frame_width"] = max_width
                         sprite_data["frame_height"] = max_height
-                        sprite_data["placement"] = placement  # Add the placement data
-
-                        # Restore original visibility
-                        for layer, visibility in original_visibilities.items():
-                            layer.visible = visibility
+                        sprite_data["placement"] = placement
+                        sprite_data["filename"] = os.path.relpath(spritesheet_path, output_dir)
 
                         print(f"Created spritesheet for '{name_type_dict['name']}'")
                     except Exception as e:
                         print(f"Error processing spritesheet group '{name_type_dict['name']}': {str(e)}")
                         continue
-                      
 
                 elif group_type == "merge":
                     try:
-                        # Temporarily make all layers visible
-                        original_visibilities = {}
-                        for layer in item.descendants():
-                            original_visibilities[layer] = layer.visible
-                            layer.visible = True
-
-                        # Merge all layers into a single image
                         merged_image = item.composite()
-                        
-                        # Save the merged image
                         merged_path = os.path.join(output_path, f"{name_type_dict['name']}.png")
                         merged_image.save(merged_path, 'PNG')
                         
-                        sprite_data["image"] = os.path.relpath(merged_path, sprites_dir)
+                        sprite_data["filename"] = os.path.relpath(merged_path, output_dir)
                         sprite_data["width"] = merged_image.width
                         sprite_data["height"] = merged_image.height
 
                         print(f"Created merged image for '{name_type_dict['name']}'")
-
-                        # Restore original visibility
-                        for layer, visibility in original_visibilities.items():
-                            layer.visible = visibility
                     except Exception as e:
                         print(f"Error processing merge group '{name_type_dict['name']}': {str(e)}")
                         continue
                 else:
-                    # Recursively process nested groups only for non-special types
+                    # For nested groups, recursively process them
                     children = process_group(item, os.path.join(current_path, name_type_dict["name"]))
                     if children:
                         sprite_data["children"] = children
@@ -164,7 +158,7 @@ def extract_sprites(sprites_group, output_dir):
                 layer_image = item.composite()
                 print(f"   Saving sprite {name_type_dict['name']}...")
                 
-                sprite_path = os.path.join(sprites_dir, current_path, f'{name_type_dict["name"]}.png')
+                sprite_path = os.path.join(output_dir, 'sprites', current_path, f'{name_type_dict["name"]}.png')
                 os.makedirs(os.path.dirname(sprite_path), exist_ok=True)
                 layer_image.save(sprite_path, 'PNG')
                 print(f'Exported layer "{name_type_dict["name"]}" as PNG')
@@ -174,6 +168,7 @@ def extract_sprites(sprites_group, output_dir):
                     "y": item.top,
                     "width": item.width,
                     "height": item.height,
+                    "filename": os.path.relpath(sprite_path, output_dir),
                     **layer_attributes
                 }
                 group_data.append(sprite_data)

@@ -11,15 +11,6 @@
   ],
   "sprites": [
     {
-      "name": "simpleSprite",
-      "x": 297,
-      "y": 278,
-      "width": 67,
-      "height": 57,
-      "demoString": "lunar",
-      "demoInt": 3
-    },
-    {
       "name": "nestedSprites",
       "x": 8,
       "y": 38,
@@ -28,10 +19,11 @@
       "children": [
         {
           "name": "aNestedSprite",
-          "x": 392,
-          "y": 336,
+          "x": 385,
+          "y": 347,
           "width": 67,
           "height": 57,
+          "filename": "sprites/nestedSprites/aNestedSprite.png",
           "message": "hello!"
         },
         {
@@ -48,6 +40,7 @@
               "y": 364,
               "width": 67,
               "height": 57,
+              "filename": "sprites/nestedSprites/moreNested/aNestedSprite.png",
               "message": "deep nest"
             }
           ]
@@ -61,7 +54,7 @@
           "height": 424,
           "frameRate": 5,
           "yoyo": true,
-          "filename": "bounce.png",
+          "filename": "sprites/nestedSprites/bounce.png",
           "frame_width": 86,
           "frame_height": 424,
           "frame_count": 4,
@@ -73,34 +66,118 @@
     {
       "name": "demoSh",
       "type": "spritesheet",
-      "x": 333,
+      "x": 326,
       "y": 35,
-      "width": 239,
-      "height": 115,
-      "autoplacement": false,
-      "filename": "demoSh.png",
-      "frame_width": 31,
-      "frame_height": 31,
+      "width": 246,
+      "height": 133,
+      "filename": "sprites/demoSh.png",
+      "frame_width": 63,
+      "frame_height": 72,
       "frame_count": 3,
       "columns": 2,
       "rows": 2,
       "placement": [
         {
           "frame": 0,
-          "x": 126,
+          "x": 133,
           "y": 0
         },
         {
           "frame": 1,
-          "x": 209,
+          "x": 216,
           "y": 58
         },
         {
           "frame": 2,
           "x": 0,
-          "y": 84
+          "y": 61
         }
       ]
+    },
+    {
+      "name": "head",
+      "type": "atlas",
+      "x": 51,
+      "y": 314,
+      "width": 158,
+      "height": 194,
+      "atlas_image": "sprites/head.png",
+      "atlas_data": {
+        "frames": {
+          "head": {
+            "frame": {
+              "x": 0,
+              "y": 0,
+              "w": 158,
+              "h": 158
+            },
+            "relative": {
+              "x": 0,
+              "y": 0
+            },
+            "absolute": {
+              "x": 51,
+              "y": 314
+            }
+          },
+          "eyeLeft": {
+            "frame": {
+              "x": 0,
+              "y": 158,
+              "w": 36,
+              "h": 36
+            },
+            "relative": {
+              "x": 23,
+              "y": 44
+            },
+            "absolute": {
+              "x": 74,
+              "y": 358
+            }
+          },
+          "eyeRight": {
+            "frame": {
+              "x": 36,
+              "y": 158,
+              "w": 36,
+              "h": 36
+            },
+            "relative": {
+              "x": 96,
+              "y": 33
+            },
+            "absolute": {
+              "x": 147,
+              "y": 347
+            }
+          },
+          "mouth": {
+            "frame": {
+              "x": 72,
+              "y": 158,
+              "w": 77,
+              "h": 34
+            },
+            "relative": {
+              "x": 53,
+              "y": 90
+            },
+            "absolute": {
+              "x": 104,
+              "y": 404
+            }
+          }
+        },
+        "meta": {
+          "image": "51_314.png",
+          "size": {
+            "w": 158,
+            "h": 194
+          },
+          "scale": "1"
+        }
+      }
     }
   ],
   "zones": [
@@ -148,7 +225,7 @@
       }
     ]
   },
-  "generatedTimestamp": "2024-07-03 23:42:23",
+  "generatedTimestamp": "2024-07-04 04:38:53",
   "slice_size": 500,
   "sizes": [
     250
