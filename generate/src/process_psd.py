@@ -13,14 +13,11 @@ from src.parsers import *
 Image.MAX_IMAGE_PIXELS = None  # Disable the DecompressionBombWarning
 
 def process_psd(psd_path, output_dir, slice_size, scaled, psd_name, jpgQuality):
-    # Load the PSD file
     print(f"Processing PSD file: {os.path.basename(psd_path)}")
     psd = PSDImage.open(psd_path)
 
-    # Create the output directory specific to the PSD file
     os.makedirs(output_dir, exist_ok=True)
         
-    # Create the JSON data structure
     json_data = {
         "filename": os.path.splitext(os.path.basename(psd_path))[0],
         "width": psd.width,
@@ -31,6 +28,9 @@ def process_psd(psd_path, output_dir, slice_size, scaled, psd_name, jpgQuality):
         "tiles": {}
     }
     
+    # Initialize a counter for layer order
+    layer_order = 0
+    
     # Process tiles
     tiles_group = None
     for layer in psd:
@@ -39,7 +39,7 @@ def process_psd(psd_path, output_dir, slice_size, scaled, psd_name, jpgQuality):
             break
           
     if tiles_group:
-        json_data["tiles"] = extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality)
+        json_data["tiles"], layer_order = extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality, layer_order)
     else:
         print('Layer group "tiles" not found') 
 
@@ -51,7 +51,7 @@ def process_psd(psd_path, output_dir, slice_size, scaled, psd_name, jpgQuality):
             break
 
     if sprites_group:
-        json_data["sprites"] = extract_sprites(sprites_group, output_dir)
+        json_data["sprites"], layer_order = extract_sprites(sprites_group, output_dir, layer_order)
     else:
         print('Layer group "sprites" not found')
 

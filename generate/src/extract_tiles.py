@@ -5,7 +5,7 @@ from src.parsers import parse_attributes
 
 Image.MAX_IMAGE_PIXELS = None  # Disable the DecompressionBombWarning
 
-def extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality):
+def extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality, initial_layer_order):
     print("Processing tiles layer group...")
 
     # Calculate number of rows and columns based on the PSD size
@@ -20,7 +20,10 @@ def extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality):
         "layers": []
     }
 
+    current_layer_order = initial_layer_order
+
     for layer in tiles_group:
+        current_layer_order += 1
         if layer.is_group():
             print(f"Composing {layer.name} layer group...")
 
@@ -64,8 +67,9 @@ def extract_tiles(tiles_group, output_dir, slice_size, scaled, psd, jpgQuality):
             # Store the tile information
             tile_info = {
                 **name_type_dict,
+                "layerOrder": current_layer_order,
                 **attributes
             }
             tiles_data["layers"].append(tile_info)
 
-    return tiles_data
+    return tiles_data, current_layer_order

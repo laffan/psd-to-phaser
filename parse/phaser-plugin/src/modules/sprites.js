@@ -33,6 +33,7 @@ export default function spritesModule(plugin) {
         placement,
         autoplacement = true,
         lazyLoad,
+        layerOrder,
       } = sprite;
       let spriteObjects = [];
       let animationData = null;
@@ -54,6 +55,7 @@ export default function spritesModule(plugin) {
 
         if (type === "atlas") {
           const atlasContainer = this.createAtlasSprite(scene, sprite, options);
+          atlasContainer.setDepth(layerOrder);
           spriteObjects.push(atlasContainer);
         } else if (type === "animation") {
           const animatedSpriteData = this.createAnimatedSprite(
@@ -61,6 +63,7 @@ export default function spritesModule(plugin) {
             sprite,
             options
           );
+          animatedSpriteData.sprite.setDepth(layerOrder);
           spriteObjects.push(animatedSpriteData.sprite);
           animationData = animatedSpriteData;
         } else if (type === "spritesheet" && autoplacement) {
@@ -74,6 +77,7 @@ export default function spritesModule(plugin) {
             spriteObject.setName(`${name}_${index}`);
             spriteObject.setDisplaySize(frame_width, frame_height);
             spriteObject.setOrigin(0, 0);
+            spriteObject.setDepth(layerOrder);
             spriteObjects.push(spriteObject);
           });
         } else if (type !== "spritesheet" || autoplacement) {
@@ -85,6 +89,7 @@ export default function spritesModule(plugin) {
             spriteObject.setDisplaySize(width, height);
           }
           spriteObject.setOrigin(0, 0);
+          spriteObject.setDepth(layerOrder);
           spriteObjects.push(spriteObject);
         }
       }
@@ -95,6 +100,9 @@ export default function spritesModule(plugin) {
         plugin,
         options
       );
+      if (debugGraphics) {
+        debugGraphics.setDepth(layerOrder + 0.1); // Set debug graphics slightly above the sprite
+      }
 
       if (plugin.options.debug) {
         console.log(
@@ -108,7 +116,7 @@ export default function spritesModule(plugin) {
               : options.useImage
               ? "image"
               : "sprite"
-          }: ${name} at (${x}, ${y}) with dimensions ${width}x${height}`
+          }: ${name} at (${x}, ${y}) with dimensions ${width}x${height} and depth ${layerOrder}`
         );
       }
 
@@ -313,7 +321,12 @@ export default function spritesModule(plugin) {
         return null;
       }
 
-      return psdData.sprites.map((rootSprite) =>
+      // Sort sprites by layerOrder before placing
+      const sortedSprites = [...psdData.sprites].sort(
+        (a, b) => a.layerOrder - b.layerOrder
+      );
+
+      return sortedSprites.map((rootSprite) =>
         PSDObject.place(
           scene,
           psdData,

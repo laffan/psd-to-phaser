@@ -4,15 +4,18 @@ from src.createSpritesheet import create_spritesheet
 from src.packTextures import pack_textures
 import os
 
-def extract_sprites(sprites_group, output_dir):
+def extract_sprites(sprites_group, output_dir, initial_layer_order):
     print(f"Exporting sprites...")
     
     sprites_data = []
+    current_layer_order = initial_layer_order
 
     def process_group(group, current_path):
+        nonlocal current_layer_order
         group_data = []
 
         for item in group:
+            current_layer_order += 1
             if item.is_group():
                 name_type_dict, group_attributes = parse_attributes(item.name)
                 
@@ -22,12 +25,12 @@ def extract_sprites(sprites_group, output_dir):
                     "y": item.top,
                     "width": item.width,
                     "height": item.height,
+                    "layerOrder": current_layer_order,
                     **group_attributes
                 }
 
                 group_type = name_type_dict.get("type", "").lower()
 
-                # Always start with 'sprites' in the path
                 output_path = os.path.join(output_dir, 'sprites', current_path)
                 os.makedirs(output_path, exist_ok=True)
 
@@ -169,6 +172,7 @@ def extract_sprites(sprites_group, output_dir):
                     "width": item.width,
                     "height": item.height,
                     "filename": os.path.relpath(sprite_path, output_dir),
+                    "layerOrder": current_layer_order,
                     **layer_attributes
                 }
                 group_data.append(sprite_data)
@@ -178,4 +182,4 @@ def extract_sprites(sprites_group, output_dir):
     # Start processing from the root sprites group
     sprites_data = process_group(sprites_group, '')
 
-    return sprites_data
+    return sprites_data, current_layer_order
