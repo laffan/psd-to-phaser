@@ -21,8 +21,6 @@ export class LoadScene extends Phaser.Scene {
       this.updateProgress();
     });
 
-    // Load your Phaser assets here
-    this.load.image("logo", "assets/img/demo-image.png");
 
     // Start loading PSD data
     this.P2J.load(this, "simple_psd", "assets/simple");
