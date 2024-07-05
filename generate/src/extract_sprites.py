@@ -52,10 +52,10 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
         os.makedirs(output_path, exist_ok=True)
 
         if group_type == "atlas":
-            atlas_image, atlas_data = process_atlas(group, output_path, name_type_dict['name'], use_instances, current_path)
+            atlas_filePath, atlas_data = process_atlas(group, output_path, name_type_dict['name'], use_instances, current_path)
             sprite_data.update({
                 "type": "atlas",
-                "atlas_image": atlas_image,
+                "filePath": atlas_filePath,
                 "atlas_data": atlas_data
             })
         elif group_type == "animation":
@@ -113,7 +113,7 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
 
         if use_instances and sprite_name in instance_map:
             sprite_data.update({
-                "filename": instance_map[sprite_name]['filename'],
+                "filePath": instance_map[sprite_name]['filePath'],
                 "isInstance": True,
                 "instanceOf": sprite_name
             })
@@ -121,7 +121,7 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
             sprite_path = os.path.join(output_path, f'{sprite_name}.png')
             os.makedirs(os.path.dirname(sprite_path), exist_ok=True)
             layer_image.save(sprite_path, 'PNG')
-            sprite_data["filename"] = os.path.join(current_path, f'{sprite_name}.png')
+            sprite_data["filePath"] = os.path.join(current_path, f'{sprite_name}.png')
 
             if use_instances:
                 instance_map[sprite_name] = sprite_data
@@ -185,7 +185,7 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
         spritesheet_data = create_spritesheet(frames, spritesheet_path, width, height)
         spritesheet_data["width"] = width
         spritesheet_data["height"] = height
-        spritesheet_data["filename"] = os.path.join(current_path, f"{name}.png")
+        spritesheet_data["filePath"] = os.path.join(current_path, f"{name}.png")
 
         if use_instances:
             instance_count = {}
@@ -241,7 +241,7 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
         spritesheet_data["frame_width"] = max_width
         spritesheet_data["frame_height"] = max_height
         spritesheet_data["placement"] = placement
-        spritesheet_data["filename"] = os.path.join(current_path, f"{name}.png")
+        spritesheet_data["filePath"] = os.path.join(current_path, f"{name}.png")
         return spritesheet_data
 
     def process_merge(item, output_path, name, current_path, use_instances):
@@ -250,7 +250,7 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
         merged_image.save(merged_path, 'PNG')
         
         merged_data = {
-            "filename": os.path.join(current_path, f"{name}.png"),
+            "filePath": os.path.join(current_path, f"{name}.png"),
             "width": merged_image.width,
             "height": merged_image.height
         }
