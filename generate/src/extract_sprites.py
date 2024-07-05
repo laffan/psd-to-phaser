@@ -7,7 +7,6 @@ from src.packTextures import pack_textures
 def extract_sprites(sprites_group, output_dir, initial_layer_order):
     print(f"Exporting sprites...")
 
-    sprites_data = []
     current_layer_order = initial_layer_order
     instance_map = {}  # To keep track of instances
     instance_count = {}  # To keep track of instance counts for each sprite name
@@ -33,60 +32,98 @@ def extract_sprites(sprites_group, output_dir, initial_layer_order):
 
         instance_depth = max(0, instance_depth)
 
-        sprite_data = {
-            **name_type_dict,
-            "x": group.left,
-            "y": group.top,
-            "width": group.width,
-            "height": group.height,
-            "layerOrder": current_layer_order,
-            **group_attributes
-        }
-
-        if parent:
-            sprite_data["parent"] = parent
-
-        group_type = name_type_dict.get("type", "").lower()
-
         output_path = os.path.join(output_dir, current_path)
         os.makedirs(output_path, exist_ok=True)
 
-        if group_type == "atlas":
-            atlas_filePath, atlas_data = process_atlas(group, output_path, name_type_dict['name'], use_instances, current_path)
-            sprite_data.update({
-                "type": "atlas",
-                "filePath": atlas_filePath,
-                "atlas_data": atlas_data
-            })
-        elif group_type == "animation":
-            spritesheet_data = process_animation(group, output_path, name_type_dict['name'], current_path, use_instances)
-            sprite_data.update(spritesheet_data)
-        elif group_type == "spritesheet":
-            spritesheet_data = process_spritesheet(group, output_path, name_type_dict['name'], use_instances, current_path)
-            sprite_data.update(spritesheet_data)
-        elif group_type == "merge":
-            merged_data = process_merge(group, output_path, name_type_dict['name'], current_path, use_instances)
-            sprite_data.update(merged_data)
-        else:
-            for item in group:
-                current_layer_order += 1
-                if item.is_group():
-                    children = process_group(item, os.path.join(current_path, name_type_dict["name"]),
-                                             parent=name_type_dict["name"], 
+        for item in group:
+            current_layer_order += 1
+            if item.is_group():
+                item_name_type_dict, item_attributes = parse_attributes(item.name)
+                item_type = item_name_type_dict.get("type", "").lower()
+                
+                if item_type == "atlas":
+                    atlas_file_path, atlas_data = process_atlas(item, output_path, item_name_type_dict['name'], use_instances, current_path)
+                    sprite_data = {
+                        **item_name_type_dict,
+                        "type": "atlas",
+                        "filePath": atlas_file_path,
+                        "atlas_data": atlas_data,
+                        "x": item.left,
+                        "y": item.top,
+                        "width": item.width,
+                        "height": item.height,
+                        "layerOrder": current_layer_order,
+                        **item_attributes
+                    }
+                    if parent:
+                        sprite_data["parent"] = parent
+                    group_data.append(sprite_data)
+                elif item_type == "animation":
+                    spritesheet_data = process_animation(item, output_path, item_name_type_dict['name'], current_path, use_instances)
+                    sprite_data = {
+                        **item_name_type_dict,
+                        **spritesheet_data,
+                        "x": item.left,
+                        "y": item.top,
+                        "layerOrder": current_layer_order,
+                        **item_attributes
+                    }
+                    if parent:
+                        sprite_data["parent"] = parent
+                    group_data.append(sprite_data)
+                elif item_type == "spritesheet":
+                    spritesheet_data = process_spritesheet(item, output_path, item_name_type_dict['name'], use_instances, current_path)
+                    sprite_data = {
+                        **item_name_type_dict,
+                        **spritesheet_data,
+                        "x": item.left,
+                        "y": item.top,
+                        "layerOrder": current_layer_order,
+                        **item_attributes
+                    }
+                    if parent:
+                        sprite_data["parent"] = parent
+                    group_data.append(sprite_data)
+                elif item_type == "merge":
+                    merged_data = process_merge(item, output_path, item_name_type_dict['name'], current_path, use_instances)
+                    sprite_data = {
+                        **item_name_type_dict,
+                        **merged_data,
+                        "x": item.left,
+                        "y": item.top,
+                        "layerOrder": current_layer_order,
+                        **item_attributes
+                    }
+                    if parent:
+                        sprite_data["parent"] = parent
+                    group_data.append(sprite_data)
+                else:
+                    children = process_group(item, os.path.join(current_path, item_name_type_dict["name"]),
+                                             parent=item_name_type_dict["name"], 
                                              parent_use_instances=use_instances, 
                                              parent_instance_depth=instance_depth)
                     if children:
                         group_data.extend(children)
-                elif item.kind in ['pixel', 'shape', 'type', 'smartobject']:
-                    item_name_type_dict, item_attributes = parse_attributes(item.name)
-                    item_data = process_layer(item, output_path, item_name_type_dict, item_attributes, 
-                                              use_instances, current_path, parent=name_type_dict["name"])
-                    group_data.append(item_data)
+                    
+                    # Add the group itself to the output
+                    sprite_data = {
+                        **item_name_type_dict,
+                        "x": item.left,
+                        "y": item.top,
+                        "width": item.width,
+                        "height": item.height,
+                        "layerOrder": current_layer_order,
+                        **item_attributes
+                    }
+                    if parent:
+                        sprite_data["parent"] = parent
+                    group_data.append(sprite_data)
 
-        if group_type in ["atlas", "animation", "spritesheet", "merge"]:
-            group_data.append(sprite_data)
-        elif not group_type:  # For regular group layers
-            group_data.append(sprite_data)
+            elif item.kind in ['pixel', 'shape', 'type', 'smartobject']:
+                item_name_type_dict, item_attributes = parse_attributes(item.name)
+                item_data = process_layer(item, output_path, item_name_type_dict, item_attributes, 
+                                          use_instances, current_path, parent=parent)
+                group_data.append(item_data)
 
         return group_data
 
