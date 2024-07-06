@@ -1,8 +1,7 @@
 {
-  "input_dir": "../demos/psds",
-  "output_dir": "../demos/phaser-platformer/public/assets",
-  "psds": [
-    "simple.psd"
+  "output_dir": "../demos/phaser-platformer/public/assets/",
+  "psd_files": [
+    "../demos/psds/simple.psd"
   ],
   "tile_slice_size": 500,
   "tile_scaled_versions": [250],
@@ -11,5 +10,9 @@
     "forceAllTiles": true
   },
   "generateOnSave": true,
+  "pngQualityRange": {
+    "low": 25,
+    "high": 35
+  },
   "jpgQuality": 80
 }
