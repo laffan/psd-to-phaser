@@ -3,7 +3,8 @@ import Phaser from "phaser";
 import isMobile from "./helpers/isMobile";
 import { LoadScene } from "./scenes/Load";
 import { PlayScene } from "./scenes/Play";
-import PsdToJSONPlugin from "psd-to-json-plugin";
+import { TestScene } from "./scenes/Test";
+import PsdToPhaserPlugin from 'psd-to-phaser-plugin';
 
 const gameParentID = "game";
 
@@ -34,16 +35,16 @@ const gameConfig = {
   plugins: {
     global: [
       {
-        key: "PsdToJSONPlugin",
-        plugin: PsdToJSONPlugin,
+        key: 'PsdToPhaserPlugin',
+        plugin: PsdToPhaserPlugin,
         start: true,
-        mapping: "P2J",
+        mapping: "P2P",
         data: { debug: false },
       },
     ],
   },
-  // scene: [PSD ],
-  scene: [LoadScene, PlayScene],
+  scene: [TestScene ],
+  // scene: [LoadScene, PlayScene],
 };
 
 new Phaser.Game(gameConfig);
