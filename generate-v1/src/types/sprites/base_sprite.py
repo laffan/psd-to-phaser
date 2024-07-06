@@ -12,7 +12,9 @@ Returns:
 """
 
 import os
+from PIL import Image
 from src.helpers.parsers import parse_attributes
+from src.helpers.optimize_pngs import optimize_pngs
 
 class BaseSprite:
     def __init__(self, layer, output_dir, config, parent_path=''):
@@ -32,6 +34,8 @@ class BaseSprite:
             children = self._process_children()
             if children:
                 sprite_data['children'] = children
+        else:
+            self._export_image()
         return sprite_data
 
     def _generate_output_path(self):
@@ -62,14 +66,37 @@ class BaseSprite:
             children.append(child_sprite.process())
         return children
 
+    def _export_image(self):
+        # Ensure the output directory exists
+        os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
+        
+        # Export the layer as an image
+        image = self.layer.composite()
+        image.save(self.output_path, 'PNG')
+        
+        # Optimize the PNG
+        optimize_pngs(self.output_path, self.config.get('optimizePNGs', {}))
+        
     @staticmethod
     def create_sprite(layer, output_dir, config, parent_path=''):
         name_type_dict, _ = parse_attributes(layer.name)
         sprite_type = name_type_dict.get('type', 'simple')
 
-        # Here we would handle different sprite types (animation, atlas, spritesheet)
-        # For now, we'll use BaseSprite for all types
-        return BaseSprite(layer, output_dir, config, parent_path)
+        if sprite_type == 'merged':
+            from src.types.sprites.merged import MergedSprite
+            return MergedSprite(layer, output_dir, config, parent_path)
+        # elif sprite_type == 'animation':
+        #     from src.types.sprites.animation import AnimationSprite
+        #     return AnimationSprite(layer, output_dir, config, parent_path)
+        # elif sprite_type == 'atlas':
+        #     from src.types.sprites.atlas import AtlasSprite
+        #     return AtlasSprite(layer, output_dir, config, parent_path)
+        # elif sprite_type == 'spritesheet':
+        #     from src.types.sprites.spritesheet import SpritesheetSprite
+        #     return SpritesheetSprite(layer, output_dir, config, parent_path)
+        else:
+            return BaseSprite(layer, output_dir, config, parent_path)
+
 
 def process_sprites(sprites_group, output_dir, config):
     sprites_data = []

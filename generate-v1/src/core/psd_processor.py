@@ -15,11 +15,10 @@ Returns:
 import os
 import logging
 from psd_tools import PSDImage
-from src.helpers.parsers import parse_attributes
+from src.types.sprites.base_sprite import process_sprites
+from src.types.tiles.tile_extractor import extract_tiles
 from src.types.points import process_points
 from src.types.zones import process_zones
-from src.types.tiles.tile_extractor import extract_tiles
-from src.types.sprites.base_sprite import process_sprites
 
 import os
 from psd_tools import PSDImage
@@ -48,8 +47,15 @@ class PSDProcessor:
         }
 
         for layer in psd:
-            if layer.name.lower() == 'sprites':
+            layer_name_lower = layer.name.lower()
+            if layer_name_lower == 'sprites':
                 psd_data['sprites'] = process_sprites(layer, psd_output_dir, self.config)
+            elif layer_name_lower == 'tiles':
+                psd_data['tiles'] = extract_tiles(layer, psd_output_dir, self.config)
+            elif layer_name_lower == 'points':
+                psd_data['points'] = process_points(layer, self.config)
+            elif layer_name_lower == 'zones':
+                psd_data['zones'] = process_zones(layer, self.config)
 
         return psd_data
     

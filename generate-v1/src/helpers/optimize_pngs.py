@@ -1,41 +1,59 @@
-""" src/helpers/optimize_pngs.py
-Optimizes PNG files to reduce file size.
+"""
+Optimizes PNG files to reduce file size and cleans up temporary files.
 
-This module provides functionality to compress PNG files using pngquant,
-improving file size while maintaining acceptable image quality.
+This function can handle both individual PNG files and directories containing PNGs.
 
 Parameters:
-  directory (str) = Path to the directory containing PNG files to optimize
-  optimize_config (dict) = Configuration options for PNG optimization
+  path (str): Path to the PNG file or directory containing PNG files to optimize
+  config (dict): Configuration options including PNG optimization settings
 
 Returns:
-  None. Optimized PNGs replace the original files in the specified directory.
+  None. Optimized PNGs replace the original files in the specified path.
 """
 
 import os
 import subprocess
 
-def optimize_pngs(directory, optimize_config):
-    print(f"Optimizing PNGs in directory: {directory}")
-    print(f"Optimization config: {optimize_config}")
+def optimize_pngs(path, config):
+    print(f"Optimizing PNGs in: {path}")
 
-    quality_range = optimize_config.get('pngQualityRange', {'low': 45, 'high': 65})
+    quality_range = config.get('pngQualityRange', {'low': 45, 'high': 65})
 
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if file.lower().endswith('.png'):
-                filepath = os.path.join(root, file)
-                temp_filepath = os.path.join(root, f"temp-{file}")
-                
-                # Copy original image to temporary image
-                subprocess.run(f"cp {filepath} {temp_filepath}", shell=True)
+    def optimize_file(filepath):
+        try:
+            # Optimize the PNG directly, without creating a separate temp file
+            subprocess.run([
+                'pngquant',
+                '--quality', f"{quality_range['low']}-{quality_range['high']}",
+                '--speed', '1',
+                '--force',
+                '--ext', '.png',
+                '--verbose',
+                filepath
+            ], check=True, capture_output=True, text=True)
+            print(f"Optimized: {filepath}")
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to optimize {filepath}: {e.stdout}")
+        except Exception as e:
+            print(f"Error processing {filepath}: {str(e)}")
 
-                # Optimize the PNG
-                subprocess.run(f"pngquant --quality={quality_range['low']}-{quality_range['high']} --speed=1 --ext .png --force {temp_filepath}", shell=True)
+    if os.path.isfile(path) and path.lower().endswith('.png'):
+        optimize_file(path)
+    elif os.path.isdir(path):
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.lower().endswith('.png'):
+                    filepath = os.path.join(root, file)
+                    optimize_file(filepath)
 
-                # Move optimized temporary image back to original filepath
-                subprocess.run(f"mv {temp_filepath} {filepath}", shell=True)
+    # Clean up any remaining .temp files
+    if os.path.isdir(path):
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith('.temp'):
+                    try:
+                        os.remove(os.path.join(root, file))
+                    except Exception as e:
+                        print(f"Failed to remove temporary file {file}: {str(e)}")
 
-                print(f"Optimized: {filepath}")
-
-    print("Optimization process completed.")
+    print("Optimization process completed and temporary files cleaned up.")

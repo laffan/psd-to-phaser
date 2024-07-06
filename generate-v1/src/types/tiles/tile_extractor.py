@@ -19,12 +19,17 @@ from src.types.tiles.tile_processor import create_tiles
 
 Image.MAX_IMAGE_PIXELS = None  # Disable the DecompressionBombWarning
 
-def extract_tiles(tiles_group, psd_output_dir, tile_slice_size, tile_scaled_versions, psd, jpgQuality, optimize_config):
+def extract_tiles(tiles_group, psd_output_dir, config):
     print("Processing tiles layer group...")
 
+    tile_slice_size = config.get('tile_slice_size', 512)
+    tile_scaled_versions = config.get('tile_scaled_versions', [])
+    jpgQuality = config.get('jpgQuality', 85)
+    optimize_config = config.get('optimizePNGs', {})
+
     # Calculate number of rows and columns based on the PSD size
-    columns = (psd.width + tile_slice_size - 1) // tile_slice_size
-    rows = (psd.height + tile_slice_size - 1) // tile_slice_size
+    columns = (tiles_group.width + tile_slice_size - 1) // tile_slice_size
+    rows = (tiles_group.height + tile_slice_size - 1) // tile_slice_size
 
     tiles_data = {
         "tile_slice_size": tile_slice_size,
@@ -49,19 +54,19 @@ def extract_tiles(tiles_group, psd_output_dir, tile_slice_size, tile_scaled_vers
 
             # Crop the tile image to the size of the PSD canvas
             print(f"Cropping {name_type_dict['name']} layer group...")
-            tile_image = tile_image.crop((0 - layer.left, 0 - layer.top, psd.width - layer.left, psd.height - layer.top))
+            tile_image = tile_image.crop((0 - layer.left, 0 - layer.top, tiles_group.width - layer.left, tiles_group.height - layer.top))
 
             # Determine if the layer should be exported as transparent based on the type
             is_transparent = name_type_dict.get("type") == "transparent"
 
             # Generate tiles for the exported image
-            create_tiles(tile_image, 
-                         tiles_output_dir, 
-                         name_type_dict["name"], 
-                         tile_slice_size, 
-                         tile_scaled_versions, 
-                         is_transparent, 
-                         jpgQuality, 
+            create_tiles(tile_image,
+                         tiles_output_dir,
+                         name_type_dict["name"],
+                         tile_slice_size,
+                         tile_scaled_versions,
+                         is_transparent,
+                         jpgQuality,
                          optimize_config)
 
             # Store the tile information
