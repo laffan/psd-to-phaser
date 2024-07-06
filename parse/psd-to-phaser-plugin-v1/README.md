@@ -186,6 +186,28 @@ this.bounce.updateAnimation({
 ```
 
 
+### Debugging
+
+Setting `debug:true` when placing objects shows visual, textual and console feedback. If that's too much, you can pass in an object that switches off certain modes:
+
+```js
+// Turn off the text labels
+this.P2P.tiles.place(this, "simple_psd", "backgroundTiles", {
+    debug: {
+        label: false
+    }
+});
+
+// The equivelant of not using debug at all.
+this.P2P.points.place(this, "simple_psd", "pickups/deepNestPoints", {
+  debug: {
+    shape: false,
+    label: false,
+    console: false,
+  },
+});
+```
+
 ## Development
 
 When developing, run : `npm run watch` to build plugin on save.

@@ -1,28 +1,178 @@
-/**
- * Tiles Module
- * Handles tile-related functionality for the PSD to Phaser plugin.
- * 
- * @module
- * 
- * @method place
- * @param {Phaser.Scene} scene - The Phaser scene to place the tile layer in.
- * @param {string} layerName - The name of the tile layer to place.
- * @param {string} psdKey - The key of the PSD data.
- * @param {Object} options - Additional options for placing the tile layer.
- * @return {Object | null} - The placed tile layer object or null if not found.
- * 
- * @method placeAll
- * @param {Phaser.Scene} scene - The Phaser scene to place all tile layers in.
- * @param {string} psdKey - The key of the PSD data.
- * @param {Object} options - Additional options for placing the tile layers.
- * @return {Object[]} - Array of placed tile layer objects.
- * 
- * @method get
- * @param {string} psdKey - The key of the PSD data.
- * @param {string} layerName - The name of the tile layer to retrieve.
- * @return {Object | null} - The retrieved tile layer object or null if not found.
- * 
- * @method countTiles
- * @param {Object} tilesData - The tiles data object.
- * @return {number} - The total count of tiles across all layers.
- */
+import PsdToPhaserPlugin, { DebugOptions } from "../../../PsdToPhaserPlugin";
+import { createDebugShape } from "../../utils/debugVisualizer";
+import { getDebugOptions } from "../../utils/sharedUtils";
+
+export default function tilesModule(plugin: PsdToPhaserPlugin) {
+  return {
+    load(
+      scene: Phaser.Scene,
+      tiles: any,
+      basePath: string,
+      onProgress: () => void
+    ) {
+      if (!tiles || !tiles.layers || tiles.layers.length === 0) {
+        console.warn("No tiles to load or invalid tiles data");
+        return;
+      }
+
+      tiles.layers.forEach((layer: any) => {
+        for (let col = 0; col < tiles.columns; col++) {
+          for (let row = 0; row < tiles.rows; row++) {
+            const tileKey = `${layer.name}_tile_${col}_${row}`;
+            const tilePath = `${basePath}/tiles/${tiles.tile_slice_size}/${tileKey}.jpg`;
+            scene.load.image(tileKey, tilePath);
+            scene.load.once(`filecomplete-image-${tileKey}`, onProgress);
+            if (plugin.options.debug) {
+              console.log(`Loading tile: ${tileKey} from ${tilePath}`);
+            }
+          }
+        }
+      });
+    },
+
+    countTiles(tilesData: any): number {
+      if (!tilesData || !tilesData.layers) return 0;
+      return tilesData.layers.length * tilesData.columns * tilesData.rows;
+    },
+
+    place(
+      scene: Phaser.Scene,
+      psdKey: string,
+      layerName: string,
+      options: any = {}
+    ): any[] {
+      const psdData = plugin.getData(psdKey);
+      if (!psdData || !psdData.tiles) {
+        console.warn(`Tiles data for key '${psdKey}' not found.`);
+        return [];
+      }
+
+      const layers = psdData.tiles.layers.filter((l: any) =>
+        l.name.startsWith(layerName)
+      );
+      if (layers.length === 0) {
+        console.warn(`Tile layer '${layerName}' not found.`);
+        return [];
+      }
+
+      return layers.map((layer) =>
+        this.placeTileLayer(scene, psdData.tiles, layer, options)
+      );
+    },
+
+    placeTileLayer(
+      scene: Phaser.Scene,
+      tilesData: any,
+      layerName: string,
+      options: any = {}
+    ): any {
+      const layer = tilesData.layers.find((l: any) => l.name === layerName);
+      if (!layer) {
+        console.warn(`Tile layer '${layerName}' not found.`);
+        return null;
+      }
+
+      const container = scene.add.container(0, 0);
+      container.setName(layerName);
+
+      for (let col = 0; col < tilesData.columns; col++) {
+        for (let row = 0; row < tilesData.rows; row++) {
+          const tileKey = `${layerName}_tile_${col}_${row}`;
+          const x = col * tilesData.tile_slice_size;
+          const y = row * tilesData.tile_slice_size;
+
+          if (scene.textures.exists(tileKey)) {
+            const tile = scene.add.image(x, y, tileKey).setOrigin(0, 0);
+            container.add(tile);
+
+            if (plugin.options.debug) {
+              console.log(`Placed tile: ${tileKey} at (${x}, ${y})`);
+            }
+          } else {
+            console.warn(`Texture for tile ${tileKey} not found`);
+          }
+        }
+      }
+
+      const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
+      if (debugOptions.shape) {
+        this.addDebugVisualization(
+          scene,
+          layer,
+          tilesData,
+          container,
+          debugOptions
+        );
+      }
+      return { layerData: layer, tileLayer: container };
+    },
+
+    placeAll(scene: Phaser.Scene, psdKey: string, options: any = {}): any[] {
+      const psdData = plugin.getData(psdKey);
+      if (!psdData || !psdData.tiles || !psdData.tiles.layers) {
+        console.warn(`Tiles data for key '${psdKey}' not found.`);
+        return [];
+      }
+
+      return psdData.tiles.layers.map((layer: any) =>
+        this.placeTileLayer(scene, psdData.tiles, layer.name, options)
+      );
+    },
+
+    get(psdKey: string, layerName: string): any {
+      const psdData = plugin.getData(psdKey);
+      if (!psdData || !psdData.placedTiles) {
+        console.warn(`Placed tile layer data for key '${psdKey}' not found.`);
+        return null;
+      }
+
+      return psdData.placedTiles[layerName] || null;
+    },
+
+    addDebugVisualization(
+      scene: Phaser.Scene,
+      layer: any,
+      tilesData: any,
+      container: Phaser.GameObjects.Container,
+      debugOptions: DebugOptions
+    ): void {
+      const graphics = createDebugShape(scene, "tile", 0, 0, {
+        width: tilesData.columns * tilesData.tile_slice_size,
+        height: tilesData.rows * tilesData.tile_slice_size,
+        color: 0xff00ff,
+        debugOptions,
+      });
+
+      if (graphics) {
+        container.add(graphics);
+      }
+    },
+
+    getDebugOptions(
+      localDebug: boolean | DebugOptions | undefined,
+      globalDebug: boolean | DebugOptions
+    ): DebugOptions {
+      const defaultOptions: DebugOptions = {
+        console: false,
+        shape: false,
+        label: false,
+      };
+
+      if (typeof globalDebug === "boolean") {
+        defaultOptions.shape = globalDebug;
+      } else if (typeof globalDebug === "object") {
+        Object.assign(defaultOptions, globalDebug);
+      }
+
+      if (typeof localDebug === "boolean") {
+        return localDebug
+          ? { console: true, shape: true, label: true }
+          : defaultOptions;
+      } else if (typeof localDebug === "object") {
+        return { ...defaultOptions, ...localDebug };
+      }
+
+      return defaultOptions;
+    },
+  };
+}
