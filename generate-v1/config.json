@@ -1,0 +1,18 @@
+{
+  "output_dir": "v1-output",
+  "psd_files": [
+    "../demos/psds/simple.psd"
+  ],
+  "tile_slice_size": 500,
+  "tile_scaled_versions": [250],
+  "optimizePNGs": {
+    "forceAllSprites": true,
+    "forceAllTiles": true
+  },
+  "generateOnSave": true,
+  "pngQualityRange": {
+    "low": 25,
+    "high": 35
+  },
+  "jpgQuality": 80
+}
