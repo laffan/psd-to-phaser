@@ -14,36 +14,35 @@ import { flattenObjects } from './flattenObjects';
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 
 export default function loadModule(plugin: PsdToPhaserPlugin) {
-    let progress = 0;
-    let complete = false;
-    let lazyLoadQueue: any[] = [];
-    let totalAssets = 0;
-    let loadedAssets = 0;
-
     return {
         load(scene: Phaser.Scene, key: string, psdFolderPath: string): void {
             const jsonPath = `${psdFolderPath}/data.json`;
+            console.log(`Attempting to load JSON from: ${jsonPath}`);
+
             scene.load.json(key, jsonPath);
-            scene.load.once('complete', () => {
-                const data = scene.cache.json.get(key);
-                processJSON(scene, key, data, psdFolderPath, plugin);
+
+            scene.load.once('filecomplete-json-' + key, (key: string, type: string, data: any) => {
+                console.log(`JSON loaded successfully: ${key}`);
+                if (data) {
+                    processJSON(scene, key, data, psdFolderPath, plugin);
+                } else {
+                    console.error(`Loaded JSON is empty or invalid for key: ${key}`);
+                }
             });
+
+            scene.load.once('loaderror', (file: any) => {
+                if (file.key === key) {
+                    console.error(`Failed to load JSON file: ${jsonPath}`);
+                }
+            });
+
+            if (!scene.load.isLoading()) {
+                scene.load.start();
+            }
         },
 
         processJSON,
         loadAssetsFromJSON,
         flattenObjects,
-
-        getLazyLoadQueue(): any[] {
-            return lazyLoadQueue;
-        },
-
-        get progress(): number {
-            return progress;
-        },
-
-        get complete(): boolean {
-            return complete;
-        },
     };
 }
