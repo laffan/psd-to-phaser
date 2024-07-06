@@ -12,27 +12,6 @@ Returns:
                        layer type, name, and custom attributes
 """
 
-def parse_value(value):
-    value = value.strip()
-    if value.startswith('"'):
-        return parse_string(value)
-    elif value.startswith('['):
-        return parse_array(value)
-    elif value.startswith('{'):
-        return parse_object(value)
-    elif value.lower() == 'true':
-        return True
-    elif value.lower() == 'false':
-        return False
-    else:
-        try:
-            return int(value)
-        except ValueError:
-            try:
-                return float(value)
-            except ValueError:
-                return value
-
 def parse_string(value):
     if value.startswith('"') and value.endswith('"'):
         return value[1:-1].replace('\\"', '"')
@@ -93,6 +72,27 @@ def parse_object(value):
         raise ValueError(f"Invalid object format: {value}")
 
       
+def parse_value(value):
+    value = value.strip()
+    if value.startswith('"'):
+        return parse_string(value)
+    elif value.startswith('['):
+        return parse_array(value)
+    elif value.startswith('{'):
+        return parse_object(value)
+    elif value.lower() == 'true':
+        return True
+    elif value.lower() == 'false':
+        return False
+    else:
+        try:
+            return int(value)
+        except ValueError:
+            try:
+                return float(value)
+            except ValueError:
+                return value
+
 def parse_attributes(name):
     parts = name.split('|')
     if len(parts) > 2:
@@ -113,7 +113,7 @@ def parse_attributes(name):
     quote_open = False
     bracket_count = 0
     brace_count = 0
-    
+
     for i, char in enumerate(attributes):
         if char == ':' and not quote_open and bracket_count == 0 and brace_count == 0:
             key_mode = False
@@ -148,7 +148,7 @@ def parse_attributes(name):
                 current_key += char
             else:
                 current_value += char
-    
+
     # Handle the last attribute
     if current_key:
         if key_mode:
@@ -156,9 +156,9 @@ def parse_attributes(name):
             attributes_dict[current_key.strip()] = True
         else:
             attributes_dict[current_key.strip()] = parse_value(current_value.strip())
-    
+
     name_type_dict = {"name": name}
     if type_info:
         name_type_dict["type"] = type_info
-    
+
     return name_type_dict, attributes_dict

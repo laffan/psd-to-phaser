@@ -91,9 +91,9 @@ class BaseSprite:
         # elif sprite_type == 'atlas':
         #     from src.types.sprites.atlas import AtlasSprite
         #     return AtlasSprite(layer, output_dir, config, parent_path)
-        # elif sprite_type == 'spritesheet':
-        #     from src.types.sprites.spritesheet import SpritesheetSprite
-        #     return SpritesheetSprite(layer, output_dir, config, parent_path)
+        elif sprite_type == 'spritesheet':
+            from src.types.sprites.spritesheet import SpritesheetSprite
+            return SpritesheetSprite(layer, output_dir, config, parent_path)
         else:
             return BaseSprite(layer, output_dir, config, parent_path)
 
