@@ -88,9 +88,9 @@ class BaseSprite:
         elif sprite_type == 'animation':
             from src.types.sprites.animation import AnimationSprite
             return AnimationSprite(layer, output_dir, config, parent_path)
-        # elif sprite_type == 'atlas':
-        #     from src.types.sprites.atlas import AtlasSprite
-        #     return AtlasSprite(layer, output_dir, config, parent_path)
+        elif sprite_type == 'atlas':
+            from src.types.sprites.atlas import AtlasSprite
+            return AtlasSprite(layer, output_dir, config, parent_path)
         elif sprite_type == 'spritesheet':
             from src.types.sprites.spritesheet import SpritesheetSprite
             return SpritesheetSprite(layer, output_dir, config, parent_path)
