@@ -40,44 +40,34 @@ export default function tilesModule(plugin: PsdToPhaserPlugin) {
       psdKey: string,
       layerName: string,
       options: any = {}
-    ): any[] {
+    ): any {
       const psdData = plugin.getData(psdKey);
       if (!psdData || !psdData.tiles) {
         console.warn(`Tiles data for key '${psdKey}' not found.`);
-        return [];
+        return null;
       }
 
-      const layers = psdData.tiles.layers.filter((l: any) =>
-        l.name.startsWith(layerName)
-      );
-      if (layers.length === 0) {
-        console.warn(`Tile layer '${layerName}' not found.`);
-        return [];
-      }
-
-      return layers.map((layer) =>
-        this.placeTileLayer(scene, psdData.tiles, layer, options)
-      );
-    },
-
-    placeTileLayer(
-      scene: Phaser.Scene,
-      tilesData: any,
-      layerName: string,
-      options: any = {}
-    ): any {
-      const layer = tilesData.layers.find((l: any) => l.name === layerName);
+      const layer = psdData.tiles.layers.find((l: any) => l.name === layerName);
       if (!layer) {
         console.warn(`Tile layer '${layerName}' not found.`);
         return null;
       }
 
+      return this.placeTileLayer(scene, psdData.tiles, layer, options);
+    },
+
+    placeTileLayer(
+      scene: Phaser.Scene,
+      tilesData: any,
+      layer: any,
+      options: any = {}
+    ): any {
       const container = scene.add.container(0, 0);
-      container.setName(layerName);
+      container.setName(layer.name);
 
       for (let col = 0; col < tilesData.columns; col++) {
         for (let row = 0; row < tilesData.rows; row++) {
-          const tileKey = `${layerName}_tile_${col}_${row}`;
+          const tileKey = `${layer.name}_tile_${col}_${row}`;
           const x = col * tilesData.tile_slice_size;
           const y = row * tilesData.tile_slice_size;
 
@@ -104,6 +94,7 @@ export default function tilesModule(plugin: PsdToPhaserPlugin) {
           debugOptions
         );
       }
+
       return { layerData: layer, tileLayer: container };
     },
 
@@ -115,7 +106,7 @@ export default function tilesModule(plugin: PsdToPhaserPlugin) {
       }
 
       return psdData.tiles.layers.map((layer: any) =>
-        this.placeTileLayer(scene, psdData.tiles, layer.name, options)
+        this.placeTileLayer(scene, psdData.tiles, layer, options)
       );
     },
 
@@ -134,18 +125,25 @@ export default function tilesModule(plugin: PsdToPhaserPlugin) {
       layer: any,
       tilesData: any,
       container: Phaser.GameObjects.Container,
-      debugOptions: DebugOptions
+      debugOptions: any
     ): void {
-      const graphics = createDebugShape(scene, "tile", 0, 0, {
-        width: tilesData.columns * tilesData.tile_slice_size,
-        height: tilesData.rows * tilesData.tile_slice_size,
-        color: 0xff00ff,
-        debugOptions,
-      });
+      const graphics = scene.add.graphics();
+      graphics.lineStyle(2, 0xff00ff, 1);
 
-      if (graphics) {
-        container.add(graphics);
+      const width = tilesData.columns * tilesData.tile_slice_size;
+      const height = tilesData.rows * tilesData.tile_slice_size;
+
+      graphics.strokeRect(0, 0, width, height);
+
+      if (debugOptions.label) {
+        const text = scene.add.text(0, -20, layer.name, {
+          fontSize: "16px",
+          color: "#ff00ff",
+        });
+        container.add(text);
       }
+
+      container.add(graphics);
     },
 
     getDebugOptions(
