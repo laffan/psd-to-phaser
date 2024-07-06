@@ -16,16 +16,16 @@ from src.helpers.parsers import parse_attributes
 
 def process_zones(zones_group, config):
     logging.debug(f"Processing zones group: {zones_group.name}")
-    
+
     zones_data = []
-    
+
     def process_layer(layer, is_child=False):
         name_type_dict, attributes = parse_attributes(layer.name)
         zone_data = {
             "name": name_type_dict.get('name', layer.name),
             **attributes
         }
-        
+
         if layer.has_vector_mask():
             vector_mask = layer.vector_mask
             if vector_mask and vector_mask.paths:
@@ -37,7 +37,7 @@ def process_zones(zones_group, config):
                         y = int(knot.anchor[0] * zones_group.height)
                         subpath_points.append((x, y))
                     points.append(subpath_points)
-                
+
                 zone_data.update({
                     "subpaths": points,
                     "bbox": {
@@ -57,7 +57,7 @@ def process_zones(zones_group, config):
                 "left": layer.left,
                 "top": layer.top
             })
-        
+
         if layer.is_group():
             children = []
             for child_layer in layer:
@@ -66,7 +66,7 @@ def process_zones(zones_group, config):
                     children.append(child_data)
             if children:
                 zone_data['children'] = children
-        
+
         logging.debug(f"Processed zone: {zone_data}")
         return zone_data
 
