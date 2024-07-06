@@ -1,12 +1,9 @@
-export class LoadScene extends Phaser.Scene {
+export class TestScene extends Phaser.Scene {
   constructor() {
-    super("LoadScene");
-    this.progressText = null;
-    this.phaserProgress = 0;
-    this.p2jProgress = 0;
+    super("TestScene");
   }
 
-  preload() {
+preload() {
     console.log("Preload function called");
 
     // Start loading PSD data
@@ -14,27 +11,25 @@ export class LoadScene extends Phaser.Scene {
 
     // Listen for PSD asset loading progress
     this.events.on("psdAssetsLoadProgress", (value) => {
-      console.log("Loading progress:", value);
+        console.log("Loading progress:", value);
     });
 
     // Listen for PSD asset loading completion
-    this.events.once(
-      "psdAssetsLoadComplete",
-      () => {
+    this.events.once("psdAssetsLoadComplete", () => {
         console.log("PSD assets loading complete");
-
-        this.scene.start("PlayScene");
-
+        
         // Log the loaded JSON data
         const loadedData = this.P2P.getData("simple_psd");
         console.log("Loaded PSD data:", loadedData);
-      },
-      this
-    );
+    }, this);
 
     // Add error listener
-    this.load.on("loaderror", (fileObj) => {
-      console.error("Error loading file:", fileObj.key);
+    this.load.on('loaderror', (fileObj) => {
+        console.error('Error loading file:', fileObj.key);
     });
+}
+
+  update() {
   }
+
 }

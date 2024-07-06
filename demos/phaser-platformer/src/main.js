@@ -43,8 +43,8 @@ const gameConfig = {
       },
     ],
   },
-  scene: [TestScene ],
-  // scene: [LoadScene, PlayScene],
+  // scene: [TestScene ],
+  scene: [LoadScene, PlayScene],
 };
 
 new Phaser.Game(gameConfig);
