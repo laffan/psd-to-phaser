@@ -24,3 +24,14 @@ export interface SpriteData {
     }>;
     [key: string]: any;
 }
+
+export interface AnimationConfig {
+    key: string;
+    frames: Phaser.Types.Animations.GenerateFrameNumbers;
+    frameRate: number;
+    repeat?: number;
+    repeatDelay?: number;
+    yoyo?: boolean;
+    duration?: number;
+    [key: string]: any;
+}
