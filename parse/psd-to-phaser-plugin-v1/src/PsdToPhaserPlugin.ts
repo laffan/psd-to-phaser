@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import loadModule from './modules/load/index';
-import pointsModule from './modules/types/points/index';
-import zonesModule from './modules/types/zones/index';
-import tilesModule from './modules/types/tiles/index';
-import spritesModule from './modules/types/sprites/index';
+import pointsModule from './modules/layerTypes/points/index';
+import zonesModule from './modules/layerTypes/zones/index';
+import tilesModule from './modules/layerTypes/tiles/index';
+import spritesModule from './modules/layerTypes/sprites/index';
 import { StorageManager } from './modules/core/StorageManager';
 
 export interface DebugOptions {

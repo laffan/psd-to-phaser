@@ -1,10 +1,11 @@
 import PsdToPhaserPlugin from "../../../PsdToPhaserPlugin";
+import { WrappedObject } from '../../typeDefinitions';
 
 export function getSprite(
   plugin: PsdToPhaserPlugin,
   psdKey: string,
   spritePath: string
-): Phaser.GameObjects.GameObject | null {
+): WrappedObject | null {
   return plugin.storageManager.get(psdKey, spritePath);
 }
 
@@ -12,7 +13,7 @@ export function getAllSprites(
   plugin: PsdToPhaserPlugin,
   psdKey: string,
   options: { depth?: number } = {}
-): Phaser.GameObjects.GameObject[] {
+): WrappedObject[] {
   return plugin.storageManager.getAll(psdKey, options);
 }
 
@@ -21,5 +22,6 @@ export function getTexture(
   psdKey: string,
   spritePath: string
 ): any {
-  return plugin.storageManager.getTexture(psdKey, spritePath);
+  const wrappedSprite = plugin.storageManager.get(psdKey, spritePath);
+  return wrappedSprite ? wrappedSprite.placed.texture : null;
 }

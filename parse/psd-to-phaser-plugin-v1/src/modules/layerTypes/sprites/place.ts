@@ -1,5 +1,5 @@
 import { StoredObject } from "../../core/StoredObject";
-import { SpriteData } from "../../types";
+import { SpriteData } from "../../typeDefinitions";
 import { placeSprite as placeSimpleSprite } from "./defaultSprite";
 // import { placeAnimation } from "./animation";
 import { placeSpritesheetOrAnimation } from "./spritesheet";

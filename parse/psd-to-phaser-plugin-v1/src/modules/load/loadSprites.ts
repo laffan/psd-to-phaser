@@ -1,4 +1,4 @@
-import { SpriteData } from '../../types';
+import { SpriteData } from '../typeDefinitions';
 
 export function loadSprites(scene: Phaser.Scene, sprites: SpriteData[], basePath: string, onProgress: () => void, debug: boolean): void {
     const spritesToLoad = collectSpriteData(sprites, basePath);

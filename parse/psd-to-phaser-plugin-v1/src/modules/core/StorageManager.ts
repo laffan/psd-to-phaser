@@ -1,16 +1,18 @@
 // src/modules/core/StorageManager.ts
 
-export class StorageManager {
-  private storage: Record<string, Record<string, any>> = {};
+import { WrappedObject } from '../typeDefinitions';
 
-  store(psdKey: string, path: string, object: any): void {
+export class StorageManager {
+  private storage: Record<string, Record<string, WrappedObject>> = {};
+
+  store(psdKey: string, path: string, object: WrappedObject): void {
     if (!this.storage[psdKey]) {
       this.storage[psdKey] = {};
     }
     this.storage[psdKey][path] = object;
   }
 
-  get(psdKey: string, path?: string): any {
+  get(psdKey: string, path?: string): WrappedObject | null {
     if (!this.storage[psdKey]) {
       return null;
     }
@@ -25,41 +27,33 @@ export class StorageManager {
     return this.findNestedObject(this.storage[psdKey][""], path);
   }
 
-  getAll(psdKey: string, options: { depth?: number } = {}): any[] {
+  getAll(psdKey: string, options: { depth?: number } = {}): WrappedObject[] {
     if (!this.storage[psdKey]) {
       return [];
     }
-    const rootContainer = this.storage[psdKey][""];
-    if (!rootContainer) {
+    const rootObject = this.storage[psdKey][""];
+    if (!rootObject) {
       return [];
     }
-    return this.getAllNestedObjects(rootContainer, options.depth);
+    return this.getAllNestedObjects(rootObject, options.depth);
   }
 
-  getTexture(psdKey: string, spritePath: string): any {
-    const sprite = this.get(psdKey, spritePath);
-    return sprite ? sprite.texture : null;
-  }
-
-  private findNestedObject(container: Phaser.GameObjects.Container, path: string): any {
+  private findNestedObject(wrappedObject: WrappedObject, path: string): WrappedObject | null {
     const parts = path.split('/');
-    let current: any = container;
+    let current: WrappedObject | null = wrappedObject;
     for (const part of parts) {
-      if (!current) return null;
-      current = current.getByName(part);
+      if (!current || !current.children) return null;
+      current = current.children.find(child => child.name === part) || null;
     }
     return current;
   }
 
-  private getAllNestedObjects(container: Phaser.GameObjects.Container, depth: number = Infinity, currentDepth: number = 0): any[] {
-    let objects: any[] = [];
-    if (currentDepth >= depth) return objects;
+  private getAllNestedObjects(wrappedObject: WrappedObject, depth: number = Infinity, currentDepth: number = 0): WrappedObject[] {
+    let objects: WrappedObject[] = [wrappedObject];
+    if (currentDepth >= depth || !wrappedObject.children) return objects;
 
-    container.iterate((child: any) => {
-      objects.push(child);
-      if (child instanceof Phaser.GameObjects.Container) {
-        objects = objects.concat(this.getAllNestedObjects(child, depth, currentDepth + 1));
-      }
+    wrappedObject.children.forEach(child => {
+      objects = objects.concat(this.getAllNestedObjects(child, depth, currentDepth + 1));
     });
 
     return objects;
