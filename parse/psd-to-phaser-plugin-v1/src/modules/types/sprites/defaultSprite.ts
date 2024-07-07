@@ -6,9 +6,5 @@ export function placeSprite(scene: Phaser.Scene, sprite: SpriteData, options: an
     gameObject.setDepth(sprite.layerOrder);
     gameObject.setOrigin(0, 0);
 
-    if (options.debug) {
-        console.log(`Placed sprite: ${sprite.name} at (${sprite.x}, ${sprite.y}), depth: ${sprite.layerOrder}`);
-    }
-
     return gameObject;
 }

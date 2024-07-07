@@ -11,17 +11,9 @@ export function placeSpritesheet(scene: Phaser.Scene, spritesheetData: SpriteDat
         sprite.setOrigin(0, 0);
         container.add(sprite);
         sprite.setDepth(layerOrder);
-
-        if (options.debug) {
-            console.log(`Placed spritesheet piece: ${instanceName} at (${x}, ${y}), frame: ${frame}, depth: ${layerOrder}`);
-        }
     });
 
     container.setDepth(spritesheetData.layerOrder);
-
-    if (options.debug) {
-        console.log(`Placed spritesheet: ${spritesheetData.name} with ${spritesheetData.placement.length} pieces`);
-    }
 
     return container;
 }

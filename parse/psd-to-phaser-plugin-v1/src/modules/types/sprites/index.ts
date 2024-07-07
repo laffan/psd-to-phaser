@@ -1,10 +1,13 @@
+import PsdToPhaserPlugin, { DebugOptions } from "../../../PsdToPhaserPlugin";
 import { SpriteData, AnimationConfig } from "../../types";
 import { placeSprite } from "./defaultSprite";
 import { placeAnimation, updateAnimation } from "./animation";
 import { placeSpritesheet } from "./spritesheet";
 import { placeAtlas } from "./atlas";
+import { createDebugShape } from "../../utils/debugVisualizer";
+import { getDebugOptions } from '../../utils/sharedUtils';
 
-export default function spritesModule(plugin: any) {
+export default function spritesModule(plugin: PsdToPhaserPlugin) {
   return {
     place(
       scene: Phaser.Scene,
@@ -54,6 +57,7 @@ export default function spritesModule(plugin: any) {
         psdKey
       );
     },
+
     placeSpritesRecursively(
       scene: Phaser.Scene,
       sprites: SpriteData[],
@@ -95,6 +99,9 @@ export default function spritesModule(plugin: any) {
             // Set the position directly on the sprite object
             spriteObject.setPosition(sprite.x, sprite.y);
             container.add(spriteObject);
+
+            // Add debug visualization
+            this.addDebugVisualization(scene, sprite, spriteObject, options);
           }
         }
 
@@ -114,6 +121,27 @@ export default function spritesModule(plugin: any) {
 
       return container;
     },
+
+    addDebugVisualization(
+      scene: Phaser.Scene,
+      spriteData: SpriteData,
+      spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Container,
+      options: any
+    ) {
+      const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
+      if (debugOptions.shape || debugOptions.label) {
+        const bounds = spriteObject.getBounds();
+        createDebugShape(scene, "sprite", bounds.centerX, bounds.centerY, {
+          name: spriteData.name,
+          width: bounds.width,
+          height: bounds.height,
+          color: 0x00ff00,
+          debugOptions,
+          globalDebug: plugin.options.debug
+        });
+      }
+    },
+
     updateAnimation,
 
     getSpriteByPath(sprites: SpriteData[], path: string): SpriteData | null {

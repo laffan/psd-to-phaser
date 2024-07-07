@@ -22,10 +22,6 @@ export function placeAnimation(scene: Phaser.Scene, animationData: SpriteData, o
     scene.anims.create(animConfig);
     sprite.play(animationData.name);
 
-    if (options.debug) {
-        console.log(`Placed animation: ${animationData.name} at (${animationData.x}, ${animationData.y}), depth: ${animationData.layerOrder}`);
-    }
-
     return sprite;
 }
 

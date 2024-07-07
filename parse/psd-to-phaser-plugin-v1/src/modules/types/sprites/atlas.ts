@@ -11,17 +11,9 @@ export function placeAtlas(scene: Phaser.Scene, atlasData: SpriteData, options: 
         sprite.setOrigin(0, 0);
         container.add(sprite);
         sprite.setDepth(layerOrder);
-
-        if (options.debug) {
-            console.log(`Placed atlas piece: ${instanceName} at (${x}, ${y}), frame: ${frame}, depth: ${layerOrder}`);
-        }
     });
 
     container.setDepth(atlasData.layerOrder);
-
-    if (options.debug) {
-        console.log(`Placed atlas: ${atlasData.name} with ${atlasData.placement.length} pieces`);
-    }
 
     return container;
 }
