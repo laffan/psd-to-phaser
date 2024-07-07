@@ -1,13 +1,3 @@
-/**
- * Load Module
- * Handles asset loading functionality for the PSD to Phaser plugin.
- * 
- * @module
- * @exports loadAssets
- * @exports loadSprites
- * @exports loadTiles
- */
-
 import { processJSON } from './processJSON';
 import { loadAssetsFromJSON } from './loadAssetsFromJSON';
 import { flattenObjects } from './flattenObjects';

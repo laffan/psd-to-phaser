@@ -1,5 +1,4 @@
 import PsdToPhaserPlugin, { DebugOptions } from "../../../PsdToPhaserPlugin";
-import { createDebugShape } from "../../utils/debugVisualizer";
 import { getDebugOptions } from "../../utils/sharedUtils";
 
 export default function tilesModule(plugin: PsdToPhaserPlugin) {
