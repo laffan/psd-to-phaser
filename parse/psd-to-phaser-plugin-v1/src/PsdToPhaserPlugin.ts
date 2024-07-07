@@ -3,11 +3,12 @@ import loadModule from './modules/load/index';
 import pointsModule from './modules/types/points/index';
 import zonesModule from './modules/types/zones/index';
 import tilesModule from './modules/types/tiles/index';
+import spritesModule from './modules/types/sprites/index';
 
 export interface DebugOptions {
-  console?: boolean;
-  shape?: boolean;
-  label?: boolean;
+    console?: boolean;
+    shape?: boolean;
+    label?: boolean;
 }
 
 export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
@@ -17,6 +18,7 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
     public points: ReturnType<typeof pointsModule>;
     public zones: ReturnType<typeof zonesModule>;
     public tiles: ReturnType<typeof tilesModule>;
+    public sprites: ReturnType<typeof spritesModule>;
 
     constructor(pluginManager: Phaser.Plugins.PluginManager) {
         super(pluginManager);
@@ -24,6 +26,7 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
         this.points = pointsModule(this);
         this.zones = zonesModule(this);
         this.tiles = tilesModule(this);
+        this.sprites = spritesModule(this);
     }
 
     init(options: { debug?: boolean | DebugOptions } = {}): void {

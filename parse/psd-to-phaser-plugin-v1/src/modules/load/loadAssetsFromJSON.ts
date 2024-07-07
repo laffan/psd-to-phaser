@@ -1,11 +1,10 @@
 import { loadSprites } from './loadSprites';
 import { loadTiles } from './loadTiles';
-import { flattenObjects } from './flattenObjects';
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 
 export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, plugin: PsdToPhaserPlugin): void {
     const basePath = data.basePath;
-    const spritesToLoad = getSpritesToLoad(data.sprites);
+    const spritesToLoad = data.sprites || [];
     const tilesToLoad = getTilesToLoad(data.tiles, basePath);
 
     const totalAssets = spritesToLoad.length + tilesToLoad.length;
@@ -20,7 +19,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
     const updateProgress = () => {
         loadedAssets++;
         const progress = loadedAssets / totalAssets;
-        scene.events.emit('psdAssetsLoadProgress', progress);
+        scene.events.emit('psdLoadProgress', progress);
 
         if (plugin.options.debug) {
             console.log(`Loaded asset ${loadedAssets} of ${totalAssets}`);
@@ -28,7 +27,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
         }
 
         if (loadedAssets === totalAssets) {
-            scene.events.emit('psdAssetsLoadComplete');
+            scene.events.emit('psdLoadComplete');
             if (plugin.options.debug) {
                 console.log('All PSD assets loaded');
             }
@@ -44,7 +43,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
     }
 
     if (totalAssets === 0) {
-        scene.events.emit('psdAssetsLoadComplete');
+        scene.events.emit('psdLoadComplete');
         if (plugin.options.debug) {
             console.log('No assets to load');
         }
@@ -53,10 +52,6 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
     if (!scene.load.isLoading()) {
         scene.load.start();
     }
-}
-
-function getSpritesToLoad(sprites: any[]): any[] {
-    return flattenObjects(sprites).filter(sprite => !isLazyLoaded(sprite.obj));
 }
 
 function getTilesToLoad(tiles: any, basePath: string): any[] {

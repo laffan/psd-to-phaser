@@ -1,71 +1,96 @@
-export function loadSprites(scene: Phaser.Scene, sprites: any[], basePath: string, onProgress: () => void, debug: boolean): void {
-    sprites.forEach(({ path, obj }) => {
-        const filePath = `${basePath}/sprites/${path}.png`;
+import { SpriteData } from '../../types';
 
-        if (obj.type === 'atlas') {
-          let transformedAtlasData
-            try {
-                transformedAtlasData = transformAtlasData(obj.atlas_data);
-                scene.load.atlas(path, filePath, transformedAtlasData);
-            } catch (error) {
-                console.error(`Error loading atlas ${path}:`, error);
-                if (debug) {
-                    console.log('Original atlas data:', obj.atlas_data);
-                    console.log('Transformed atlas data:', transformedAtlasData);
-                }
-                onProgress(); // Still call onProgress to avoid hanging the load process
-                return; // Skip to the next sprite
-            }
-        } else if (obj.type === 'animation' || obj.type === 'spritesheet') {
-            scene.load.spritesheet(path, filePath, {
-                frameWidth: obj.frame_width,
-                frameHeight: obj.frame_height,
-            });
-        } else {
-            scene.load.image(path, filePath);
-        }
+export function loadSprites(scene: Phaser.Scene, sprites: SpriteData[], basePath: string, onProgress: () => void, debug: boolean): void {
+    const spritesToLoad = collectSpriteData(sprites, basePath);
+    const totalSprites = spritesToLoad.length;
+    let loadedSprites = 0;
 
-        scene.load.once(`filecomplete-${obj.type === 'atlas' ? 'atlas' : obj.type === 'animation' || obj.type === 'spritesheet' ? 'spritesheet' : 'image'}-${path}`, () => {
-            obj.isLoaded = true;
-            onProgress();
-        });
+    if (debug) {
+        console.log('Sprites to load:', spritesToLoad);
+    }
 
-        scene.load.once(`loaderror`, (file: any) => {
-            if (file.key === path) {
-                console.error(`Error loading file: ${path}`);
-                if (debug) {
-                    console.log('File details:', file);
-                }
-                onProgress(); // Still call onProgress to avoid hanging the load process
-            }
-        });
-
+    spritesToLoad.forEach(({ name, type, filePath, data }) => {
         if (debug) {
-            console.log(`Loading ${obj.type}: ${path} from ${filePath}`);
+            console.log(`Attempting to load sprite: ${name} (${type})`);
+            console.log(`File path: ${filePath}`);
+            console.log('Data:', data);
         }
+
+        switch (type) {
+            case 'atlas':
+                scene.load.atlas(name, filePath, data);
+                break;
+            case 'spritesheet':
+                scene.load.spritesheet(name, filePath, {
+                    frameWidth: data.frameWidth,
+                    frameHeight: data.frameHeight,
+                });
+                break;
+            default:
+                scene.load.image(name, filePath);
+        }
+
+        // Listen for the specific file complete event
+        scene.load.on(`filecomplete-${type}-${name}`, () => {
+            loadedSprites++;
+            const progress = loadedSprites / totalSprites;
+            scene.events.emit('psdLoadProgress', progress);
+            onProgress();
+
+            if (debug) {
+                console.log(`Loaded sprite: ${name} (${type}), Progress: ${(progress * 100).toFixed(2)}%`);
+            }
+
+            if (loadedSprites === totalSprites) {
+                scene.events.emit('psdLoadComplete');
+                if (debug) {
+                    console.log('All sprites loaded');
+                }
+            }
+        });
+    });
+
+    scene.load.on('loaderror', (file: any) => {
+        console.error(`Error loading file: ${file.key}`);
+        if (debug) {
+            console.log('File details:', file);
+        }
+    });
+
+    if (debug) {
+        console.log(`Total sprites to load: ${totalSprites}`);
+    }
+}
+
+function collectSpriteData(sprites: SpriteData[], basePath: string): Array<{ name: string, type: string, filePath: string, data: any }> {
+    const flattenedSprites = flattenSprites(sprites);
+    return flattenedSprites.map(sprite => {
+        const filePath = `${basePath}/sprites/${sprite.name}.png`;
+        let type = 'image';
+        let data = null;
+
+        if (sprite.type === 'atlas') {
+            type = 'atlas';
+            data = sprite.atlas;
+        } else if (sprite.type === 'spritesheet' || sprite.type === 'animation') {
+            type = 'spritesheet';
+            data = {
+                frameWidth: sprite.frame_width,
+                frameHeight: sprite.frame_height,
+            };
+        }
+
+        return { name: sprite.name, type, filePath, data };
     });
 }
 
-function transformAtlasData(atlasData: any): any {
-    const frames: { [key: string]: any } = {};
-    
-    atlasData.frames.forEach((frame: any) => {
-        frames[frame.name] = {
-            frame: { x: frame.x, y: frame.y, w: frame.w, h: frame.h },
-            rotated: false,
-            trimmed: false,
-            spriteSourceSize: { x: 0, y: 0, w: frame.w, h: frame.h },
-            sourceSize: { w: frame.w, h: frame.h }
-        };
-    });
 
-    return {
-        frames,
-        meta: {
-            scale: "1",
-            format: "RGBA8888",
-            size: { w: atlasData.meta.width, h: atlasData.meta.height },
-            image: atlasData.meta.image
+function flattenSprites(sprites: SpriteData[], prefix = ''): SpriteData[] {
+    return sprites.reduce((acc: SpriteData[], sprite) => {
+        const name = prefix ? `${prefix}/${sprite.name}` : sprite.name;
+        if (sprite.children) {
+            return [...acc, ...flattenSprites(sprite.children, name)];
         }
-    };
+        return [...acc, { ...sprite, name }];
+    }, []);
 }
