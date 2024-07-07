@@ -34,6 +34,9 @@ class BaseSprite:
             children = self._process_children()
             if children:
                 sprite_data['children'] = children
+            # Remove filePath for layer groups
+            if 'filePath' in sprite_data:
+                del sprite_data['filePath']
         else:
             self._export_image()
         return sprite_data
@@ -46,10 +49,9 @@ class BaseSprite:
         return os.path.relpath(self.output_path, self.output_dir)
 
     def _generate_base_sprite_data(self):
-        return {
+        base_data = {
             "name": self.name_type_dict.get('name', self.layer.name),
             "type": self.sprite_type,
-            "filePath": self._get_relative_path(),
             "x": self.layer.left,
             "y": self.layer.top,
             "width": self.layer.width,
@@ -57,11 +59,15 @@ class BaseSprite:
             "layerOrder": self.layer_order,
             **self.attributes
         }
+        # Only add filePath if it's not a group
+        if not self.layer.is_group():
+            base_data["filePath"] = self._get_relative_path()
+        return base_data
 
     def _process_children(self):
         children = []
         for child_layer in self.layer:
-            child_sprite = BaseSprite.create_sprite(child_layer, self.output_dir, self.config, 
+            child_sprite = BaseSprite.create_sprite(child_layer, self.output_dir, self.config,
                                                     os.path.join(self.parent_path, self.name_type_dict.get('name', self.layer.name)))
             children.append(child_sprite.process())
         return children
@@ -69,14 +75,14 @@ class BaseSprite:
     def _export_image(self):
         # Ensure the output directory exists
         os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
-        
+
         # Export the layer as an image
         image = self.layer.composite()
         image.save(self.output_path, 'PNG')
-        
+
         # Optimize the PNG
         optimize_pngs(self.output_path, self.config.get('optimizePNGs', {}))
-        
+
     @staticmethod
     def create_sprite(layer, output_dir, config, parent_path=''):
         name_type_dict, _ = parse_attributes(layer.name)
