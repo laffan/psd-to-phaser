@@ -31,7 +31,7 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
 
     init(options: { debug?: boolean | DebugOptions } = {}): void {
         if (typeof options.debug === 'boolean') {
-            this.options.debug = options.debug ? { shape: true } : false;
+            this.options.debug = options.debug ? { console: true, shape: true, label: true } : false;
         } else {
             this.options.debug = options.debug || false;
         }

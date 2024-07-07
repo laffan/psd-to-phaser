@@ -1,6 +1,6 @@
 import PsdToPhaserPlugin, { DebugOptions } from "../../../PsdToPhaserPlugin";
 import { createDebugShape } from "../../utils/debugVisualizer";
-import { getDebugOptions } from '../../utils/sharedUtils';
+import { getDebugOptions } from "../../utils/sharedUtils";
 
 export default function pointsModule(plugin: PsdToPhaserPlugin) {
   return {
@@ -113,20 +113,19 @@ export default function pointsModule(plugin: PsdToPhaserPlugin) {
         return null; // Don't visualize if it's a layer group
       }
 
-           const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
-            if (debugOptions.shape) {
-                return createDebugShape(scene, 'point', point.x, point.y, {
-                    name: point.name,
-                    color: 0xff0000,
-                    radius: 5,
-                    debugOptions
-                });
-            }
+      const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
+      if (debugOptions.shape) {
+        return createDebugShape(scene, "point", point.x, point.y, {
+          name: point.name,
+          color: 0xff0000,
+          radius: 5,
+          debugOptions,
+        });
+      }
 
       // If debug shape is not enabled, don't create any visual representation
       return null;
     },
-
     placePointRecursively(
       scene: Phaser.Scene,
       point: any,
@@ -223,4 +222,3 @@ export default function pointsModule(plugin: PsdToPhaserPlugin) {
     },
   };
 }
-

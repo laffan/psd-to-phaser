@@ -69,60 +69,57 @@ export default function zonesModule(plugin: PsdToPhaserPlugin) {
       }
     },
 
-    placeZone(
-      scene: Phaser.Scene,
-      zone: any,
-      options: any = {}
-    ): Phaser.GameObjects.Zone | null {
-      if (!zone || zone.children) {
-        return null; // Don't place groups
-      }
+            placeZone(
+            scene: Phaser.Scene,
+            zone: any,
+            options: any = {}
+        ): Phaser.GameObjects.Zone | null {
+            if (!zone || zone.children) {
+                return null; // Don't place groups
+            }
 
-      try {
-        const shape = this.createZoneShape(zone);
-        let zoneObject: Phaser.GameObjects.Zone;
+            try {
+                const shape = this.createZoneShape(zone);
+                let zoneObject: Phaser.GameObjects.Zone;
 
-        if (shape instanceof Phaser.Geom.Polygon) {
-          const bounds = Phaser.Geom.Polygon.GetAABB(shape);
-          zoneObject = scene.add.zone(
-            bounds.x,
-            bounds.y,
-            bounds.width,
-            bounds.height
-          );
-        } else {
-          zoneObject = scene.add.zone(
-            shape.x,
-            shape.y,
-            shape.width,
-            shape.height
-          );
-        }
+                if (shape instanceof Phaser.Geom.Polygon) {
+                    const bounds = Phaser.Geom.Polygon.GetAABB(shape);
+                    zoneObject = scene.add.zone(
+                        bounds.x,
+                        bounds.y,
+                        bounds.width,
+                        bounds.height
+                    );
+                } else {
+                    zoneObject = scene.add.zone(
+                        shape.x,
+                        shape.y,
+                        shape.width,
+                        shape.height
+                    );
+                }
 
-        zoneObject.setName(zone.name || "unnamed_zone");
+                zoneObject.setName(zone.name || "unnamed_zone");
 
-        // Set custom properties
-        Object.keys(zone).forEach((key) => {
-          if (!["name", "subpaths", "bbox", "children"].includes(key)) {
-            zoneObject.setData(key, zone[key]);
-          }
-        });
+                // Set custom properties
+                Object.keys(zone).forEach((key) => {
+                    if (!["name", "subpaths", "bbox", "children"].includes(key)) {
+                        zoneObject.setData(key, zone[key]);
+                    }
+                });
 
-        const debugOptions = getDebugOptions(
-          options.debug,
-          plugin.options.debug
-        );
-        if (debugOptions.shape || debugOptions.label) {
-          this.createDebugVisualization(scene, shape, zone, debugOptions);
-        }
+                const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
+                if (debugOptions.shape || debugOptions.label) {
+                    this.createDebugVisualization(scene, shape, zone, debugOptions);
+                }
 
-        return zoneObject;
-      } catch (error) {
-        console.error("Error placing zone:", error);
-        console.error("Problematic zone data:", JSON.stringify(zone, null, 2));
-        return null;
-      }
-    },
+                return zoneObject;
+            } catch (error) {
+                console.error("Error placing zone:", error);
+                console.error("Problematic zone data:", JSON.stringify(zone, null, 2));
+                return null;
+            }
+        },
     placeZoneRecursively(
       scene: Phaser.Scene,
       zoneOrGroup: any,
@@ -266,20 +263,21 @@ export default function zonesModule(plugin: PsdToPhaserPlugin) {
       }
       return customAttributes;
     },
-    createDebugVisualization(
-      scene: Phaser.Scene,
-      shape: Phaser.Geom.Polygon | Phaser.Geom.Rectangle,
-      zone: any,
-      debugOptions: DebugOptions
-    ): void {
-      const center = getShapeCenter(shape);
-      createDebugShape(scene, "zone", center.x, center.y, {
-        name: zone.name,
-        color: 0x00ff00,
-        shape: shape,
-        debugOptions,
-      });
-    },
+            createDebugVisualization(
+            scene: Phaser.Scene,
+            shape: Phaser.Geom.Polygon | Phaser.Geom.Rectangle,
+            zone: any,
+            debugOptions: DebugOptions
+        ): void {
+            const center = getShapeCenter(shape);
+            createDebugShape(scene, "zone", center.x, center.y, {
+                name: zone.name,
+                color: 0x00ff00,
+                shape: shape,
+                debugOptions,
+                globalDebug: plugin.options.debug
+            });
+        },
 
     getDebugOptions(
       localDebug: boolean | DebugOptions | undefined,
