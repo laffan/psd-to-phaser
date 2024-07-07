@@ -9,7 +9,6 @@ from src.helpers.parsers import parse_attributes
 # https://phaser.io/sandbox/?src=src/loader\texture%20atlas%20json\get%20atlas%20meta%20data.js
 
 
-
 class AtlasSprite(BaseSprite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -115,15 +114,16 @@ class AtlasSprite(BaseSprite):
 
     def _generate_placement(self, atlas_data):
         placement = []
-        for frame_data in atlas_data['placement']:
-            placement.append({
-                "frame": frame_data['frame'],
-                "layerOrder": self.frame_dict[frame_data['frame']]['instances'][0]['layerOrder'],
-                "instanceName": self.frame_dict[frame_data['frame']]['instances'][0]['instanceName'],
-                "x": frame_data['relative']['x'],
-                "y": frame_data['relative']['y'],
-                **self.frame_dict[frame_data['frame']]['instances'][0]['attributes']
-            })
+        for frame_name, frame_info in self.frame_dict.items():
+            for instance in frame_info['instances']:
+                placement.append({
+                    "frame": frame_name,
+                    "layerOrder": instance['layerOrder'],
+                    "instanceName": instance['instanceName'],
+                    "x": instance['left'] - self.layer.left,
+                    "y": instance['top'] - self.layer.top,
+                    **instance['attributes']
+                })
         return placement
 
     def _save_image(self, image):
