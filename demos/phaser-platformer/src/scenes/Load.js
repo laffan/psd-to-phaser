@@ -13,13 +13,13 @@ export class LoadScene extends Phaser.Scene {
     this.P2P.load.load(this, "simple_psd", "assets/simple");
 
     // Listen for PSD asset loading progress
-    this.events.on("psdAssetsLoadProgress", (value) => {
+    this.events.on("psdLoadProgress", (value) => {
       console.log("Loading progress:", value);
     });
 
     // Listen for PSD asset loading completion
     this.events.once(
-      "psdAssetsLoadComplete",
+      "psdLoadComplete",
       () => {
         console.log("PSD assets loading complete");
 

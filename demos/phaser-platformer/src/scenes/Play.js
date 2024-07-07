@@ -8,24 +8,27 @@ export class PlayScene extends Scene {
   create() {
     console.log("PlayScene");
 
-    // this.P2P.points.placeAll(this, "simple_psd", {
-    //   debugConsole: true,
-    //   debugShape: true,
-    //   debugLabel: false,
-    // });
+    this.P2P.tiles.placeAll(this, "simple_psd");
+    this.P2P.points.placeAll(this, "simple_psd");
+    this.P2P.zones.placeAll(this, "simple_psd");
+    this.P2P.sprites.placeAll(this, "simple_psd");
+
+    this.nested = this.P2P.sprites.get(
+      "simple_psd",
+      "nestedSprites/demoInst"
+    );
+    console.log(this.nested);
+
+    // Returns an array of all sprites placed
+    this.allSprites = this.P2P.sprites.getAll("simple_psd");
+    console.log(this.allSprites);
+
+    // Returns an array of any sprites placed in top level.
+    // (If you have placed sprites but they aren't at that level, will return empty array)
     
-    // this.P2P.zones.placeAll(this, "simple_psd", {
-    //   debugConsole: true,
-    //   debugShape: false,
-    //   debugLabel: true,
-    // });
-    this.P2P.points.placeAll(this, "simple_psd", {
-      debug: true,
-    });
-    
-    this.P2P.zones.placeAll(this, "simple_psd", {
-      debug: true,
-    });
+    this.topLevel = this.P2P.sprites.getAll("simple_psd", { depth: 1 });
+    console.log(this.topLevel);
+
   }
 
   update() {}
