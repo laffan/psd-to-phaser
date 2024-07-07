@@ -17,6 +17,11 @@ export class StorageManager {
     if (!path) {
       return this.storage[psdKey][""];
     }
+    // First, try to get the object directly
+    if (this.storage[psdKey][path]) {
+      return this.storage[psdKey][path];
+    }
+    // If not found, try to find it in the nested structure
     return this.findNestedObject(this.storage[psdKey][""], path);
   }
 
