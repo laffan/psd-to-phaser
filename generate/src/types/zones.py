@@ -10,7 +10,6 @@ Parameters:
 Returns:
   zone_data (dict) = Dictionary containing zone boundaries, paths, and attributes
 """
-
 import logging
 from src.helpers.parsers import parse_attributes
 
@@ -18,6 +17,7 @@ def process_zones(zones_group, config):
     logging.debug(f"Processing zones group: {zones_group.name}")
 
     zones_data = []
+    psd = zones_group.parent  # This should be the PSD root
 
     def process_layer(layer, is_child=False):
         name_type_dict, attributes = parse_attributes(layer.name)
@@ -33,8 +33,9 @@ def process_zones(zones_group, config):
                 for subpath in vector_mask.paths:
                     subpath_points = []
                     for knot in subpath:
-                        x = int(knot.anchor[1] * zones_group.width)
-                        y = int(knot.anchor[0] * zones_group.height)
+                        # Convert normalized coordinates to pixel values relative to the entire PSD
+                        x = int(knot.anchor[1] * psd.width)
+                        y = int(knot.anchor[0] * psd.height)
                         subpath_points.append((x, y))
                     points.append(subpath_points)
 
