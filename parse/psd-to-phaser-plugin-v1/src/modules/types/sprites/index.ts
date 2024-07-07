@@ -5,10 +5,18 @@ import { placeAnimation, updateAnimation } from "./animation";
 import { placeSpritesheet } from "./spritesheet";
 import { placeAtlas } from "./atlas";
 import { createDebugShape } from "../../utils/debugVisualizer";
-import { getDebugOptions } from '../../utils/sharedUtils';
+import { getDebugOptions } from "../../utils/sharedUtils";
+import { getSprite, getAllSprites, getTexture } from "./get";
 
 export default function spritesModule(plugin: PsdToPhaserPlugin) {
   return {
+    get: (psdKey: string, spritePath: string) =>
+      getSprite(plugin, psdKey, spritePath),
+    getAll: (psdKey: string, options?: { depth?: number }) =>
+      getAllSprites(plugin, psdKey, options),
+    getTexture: (psdKey: string, spritePath: string) =>
+      getTexture(plugin, psdKey, spritePath),
+
     place(
       scene: Phaser.Scene,
       psdKey: string,
@@ -21,6 +29,7 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
         return null;
       }
 
+
       const sprite = this.getSpriteByPath(psdData.sprites, spritePath);
       if (!sprite) {
         console.error(`Sprite '${spritePath}' not found in PSD data.`);
@@ -28,13 +37,18 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
       }
 
       const depth = options.depth !== undefined ? options.depth : Infinity;
-      return this.placeSpritesRecursively(
+      const placedSprite = this.placeSpritesRecursively(
         scene,
         [sprite],
         options,
         depth,
         psdKey
       );
+
+      // Store the placed sprite
+      plugin.storageManager.store(psdKey, spritePath, placedSprite);
+
+      return placedSprite;
     },
 
     placeAll(
@@ -49,13 +63,18 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
       }
 
       const depth = options.depth !== undefined ? options.depth : Infinity;
-      return this.placeSpritesRecursively(
+      const container = this.placeSpritesRecursively(
         scene,
         psdData.sprites,
         options,
         depth,
         psdKey
       );
+
+      // Store the entire container
+      plugin.storageManager.store(psdKey, "", container);
+
+      return container;
     },
 
     placeSpritesRecursively(
@@ -102,6 +121,7 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
 
             // Add debug visualization
             this.addDebugVisualization(scene, sprite, spriteObject, options);
+            plugin.storageManager.store(psdKey, fullPath, spriteObject);
           }
         }
 
@@ -114,6 +134,9 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
             psdKey,
             fullPath
           );
+
+          plugin.storageManager.store(psdKey, fullPath, childContainer);
+
           // Don't set position on the child container, as child sprites will have their own absolute positions
           container.add(childContainer);
         }
@@ -137,7 +160,7 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
           height: bounds.height,
           color: 0x00ff00,
           debugOptions,
-          globalDebug: plugin.options.debug
+          globalDebug: plugin.options.debug,
         });
       }
     },

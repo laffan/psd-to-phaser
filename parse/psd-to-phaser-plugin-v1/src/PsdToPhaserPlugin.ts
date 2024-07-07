@@ -4,6 +4,7 @@ import pointsModule from './modules/types/points/index';
 import zonesModule from './modules/types/zones/index';
 import tilesModule from './modules/types/tiles/index';
 import spritesModule from './modules/types/sprites/index';
+import { StorageManager } from './modules/core/StorageManager';
 
 export interface DebugOptions {
     console?: boolean;
@@ -13,6 +14,7 @@ export interface DebugOptions {
 
 export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
     private psdData: Record<string, any> = {};
+    private storageManager: StorageManager;
     public options: { debug: boolean | DebugOptions } = { debug: false };
     public load: ReturnType<typeof loadModule>;
     public points: ReturnType<typeof pointsModule>;
@@ -22,12 +24,14 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
 
     constructor(pluginManager: Phaser.Plugins.PluginManager) {
         super(pluginManager);
+        this.storageManager = new StorageManager();
         this.load = loadModule(this);
         this.points = pointsModule(this);
         this.zones = zonesModule(this);
         this.tiles = tilesModule(this);
         this.sprites = spritesModule(this);
     }
+    
 
     init(options: { debug?: boolean | DebugOptions } = {}): void {
         if (typeof options.debug === 'boolean') {
