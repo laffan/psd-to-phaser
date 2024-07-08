@@ -8,8 +8,11 @@ import { placeAtlas } from "./atlas";
 import { createDebugShape } from "../../utils/debugVisualizer";
 import { getDebugOptions } from "../../utils/sharedUtils";
 import { getSprite, getAllSprites, getTexture } from "./get";
+import { createRemoveFunction } from "../../core/RemoveFunction";
 
 export default function spritesModule(plugin: PsdToPhaserPlugin) {
+    const storageManager = plugin.storageManager;
+
   return {
     get: (psdKey: string, spritePath: string) =>
       getSprite(plugin, psdKey, spritePath),
@@ -70,14 +73,16 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
         psdData.sprites,
         options,
         depth,
-        psdKey
+        psdKey,
+        "",
+        storageManager
       );
 
       // Add the main container to the scene
       scene.add.existing(wrappedObject.placed);
 
       // Store the wrapped object
-      plugin.storageManager.store(psdKey, "", wrappedObject);
+      storageManager.store(psdKey, "", wrappedObject);
 
       return wrappedObject.placed as Phaser.GameObjects.Container;
     },
@@ -88,7 +93,8 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
       options: any = {},
       depth: number,
       psdKey: string,
-      parentPath: string = ""
+      parentPath: string = "",
+      storageManager: StorageManager
     ): WrappedObject {
       const container = scene.add.container(0, 0);
       const children: WrappedObject[] = [];
@@ -97,39 +103,28 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
         const fullPath = parentPath
           ? `${parentPath}/${sprite.name}`
           : sprite.name;
-        let spriteObject:
-          | Phaser.GameObjects.Sprite
-          | Phaser.GameObjects.Container
-          | null = null;
+        let spriteObject: WrappedObject | null = null;
 
         if (!sprite.children) {
           spriteObject = this.placeSingleSprite(
             scene,
             sprite,
             options,
-            fullPath
+            fullPath,
+            psdKey,
+            storageManager
           );
 
           if (spriteObject) {
-            container.add(spriteObject);
-            this.addDebugVisualization(scene, sprite, spriteObject, options);
-
-            const wrappedSprite: WrappedObject = {
-              name: sprite.name,
-              type: sprite.type,
-              placed: spriteObject,
-              updateAnimation:
-                sprite.type === "animation"
-                  ? (config: any) => updateAnimation(scene, sprite.name, config)
-                  : undefined,
-              setPosition: (x: number, y: number) =>
-                spriteObject.setPosition(x, y),
-              setAlpha: (alpha: number) => spriteObject.setAlpha(alpha),
-              ...this.getCustomAttributes(sprite), // Spread custom attributes here
-            };
-
-            children.push(wrappedSprite);
-            plugin.storageManager.store(psdKey, fullPath, wrappedSprite);
+            container.add(spriteObject.placed);
+            this.addDebugVisualization(
+              scene,
+              sprite,
+              spriteObject.placed,
+              options
+            );
+            children.push(spriteObject);
+            storageManager.store(psdKey, fullPath, spriteObject);
           }
         }
 
@@ -140,7 +135,8 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
             options,
             depth - 1,
             psdKey,
-            fullPath
+            fullPath,
+            storageManager
           );
           container.add(childWrappedObject.placed);
           children.push(childWrappedObject);
@@ -152,12 +148,13 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
         type: "Container",
         placed: container,
         children: children,
+        remove: createRemoveFunction(storageManager, psdKey, parentPath),
         setPosition: (x: number, y: number) => container.setPosition(x, y),
         setAlpha: (alpha: number) => container.setAlpha(alpha),
-        ...this.getCustomAttributes(sprites[0]), // Spread custom attributes here
+        ...this.getCustomAttributes(sprites[0]),
       };
 
-      plugin.storageManager.store(psdKey, parentPath, wrappedContainer);
+      storageManager.store(psdKey, parentPath, wrappedContainer);
       return wrappedContainer;
     },
 
@@ -165,8 +162,10 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
       scene: Phaser.Scene,
       sprite: SpriteData,
       options: any,
-      fullPath: string
-    ): Phaser.GameObjects.Sprite | Phaser.GameObjects.Container | null {
+      fullPath: string,
+      psdKey: string,
+      storageManager: StorageManager
+    ): WrappedObject | null {
       let spriteObject:
         | Phaser.GameObjects.Sprite
         | Phaser.GameObjects.Container
@@ -196,12 +195,30 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
           if (sprite.scale !== undefined) spriteObject.setScale(sprite.scale);
           if (sprite.visible !== undefined)
             spriteObject.setVisible(sprite.visible);
+
+          const wrappedSprite: WrappedObject = {
+            name: sprite.name,
+            type: sprite.type,
+            placed: spriteObject,
+            remove: createRemoveFunction(storageManager, psdKey, fullPath),
+            updateAnimation:
+              sprite.type === "animation"
+                ? (config: any) => updateAnimation(scene, sprite.name, config)
+                : undefined,
+            setPosition: (x: number, y: number) =>
+              spriteObject!.setPosition(x, y),
+            setAlpha: (alpha: number) => spriteObject!.setAlpha(alpha),
+            ...this.getCustomAttributes(sprite),
+          };
+
+          storageManager.store(psdKey, fullPath, wrappedSprite);
+          return wrappedSprite;
         }
       } catch (error) {
         console.error(`Error placing sprite ${fullPath}:`, error);
       }
 
-      return spriteObject;
+      return null;
     },
 
     addDebugVisualization(

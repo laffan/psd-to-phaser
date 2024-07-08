@@ -12,6 +12,12 @@ export class StorageManager {
     this.storage[psdKey][path] = object;
   }
 
+  remove(psdKey: string, path: string): void {
+    if (this.storage[psdKey]) {
+        delete this.storage[psdKey][path];
+    }
+}
+
   get(psdKey: string, path?: string): WrappedObject | null {
     if (!this.storage[psdKey]) {
       return null;

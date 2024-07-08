@@ -5,7 +5,8 @@ export interface WrappedObject {
     type: string;
     placed: Phaser.GameObjects.GameObject;
     children?: WrappedObject[];
-    [key: string]: any; // This allows for custom attributes and methods
+    remove: (options?: { depth?: number }) => void;
+    [key: string]: any; 
 }
 
 
