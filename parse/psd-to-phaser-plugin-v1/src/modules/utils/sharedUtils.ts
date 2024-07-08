@@ -16,13 +16,12 @@ export function getDebugOptions(localDebug: boolean | DebugOptions | undefined, 
     if (typeof localDebug === 'boolean') {
         return localDebug ? { console: true, shape: true, label: true } : defaultOptions;
     } else if (typeof localDebug === 'object') {
-        // If a debug object is provided, default all options to true unless specifically set to false
-        const localOptions: DebugOptions = {
-            console: localDebug.console !== false,
-            shape: localDebug.shape !== false,
-            label: localDebug.label !== false
+        // Only override the options that are explicitly set in localDebug
+        return {
+            console: localDebug.console !== undefined ? localDebug.console : defaultOptions.console,
+            shape: localDebug.shape !== undefined ? localDebug.shape : defaultOptions.shape,
+            label: localDebug.label !== undefined ? localDebug.label : defaultOptions.label
         };
-        return { ...defaultOptions, ...localOptions };
     }
 
     return defaultOptions;
