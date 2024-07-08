@@ -19,6 +19,7 @@ export default function loadModule(plugin: PsdToPhaserPlugin) {
                     console.error(`Loaded JSON is empty or invalid for key: ${key}`);
                 }
             });
+            
 
             scene.load.once('loaderror', (file: any) => {
                 if (file.key === key) {

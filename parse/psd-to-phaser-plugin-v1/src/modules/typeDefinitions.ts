@@ -36,3 +36,33 @@ export interface SpriteData {
     }>;
     [key: string]: any;
 }
+
+export interface CameraConfig {
+  lazyLoading?: LazyLoadingOptions;
+  draggable?: DraggableOptions;
+  debug?: DebugOptions;
+}
+
+export interface LazyLoadingOptions {
+  preloadRange?: number;
+  transitionStyle?: 'fade' | 'instant';
+}
+
+export interface DraggableOptions {
+  setBounds?: { x: number; y: number; width: number; height: number };
+  useBounds?: boolean;
+  easeDragging?: boolean;
+  easeAmount?: number;
+}
+
+export interface DebugOptions {
+  label?: boolean;
+  shape?: boolean;
+  console?: boolean;
+}
+
+export interface PanOptions {
+  pointPlacement?: 'center' | 'topLeft' | [number, number];
+  speed?: number;
+  easing?: boolean;
+}
