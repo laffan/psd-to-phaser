@@ -6,21 +6,31 @@ export class DraggableCamera {
   private isDragging: boolean = false;
   private lastPointer: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
   private velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
+  private scene: Phaser.Scene;
+  private dragStart: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
 
-  constructor(camera: Phaser.Cameras.Scene2D.Camera, config: DraggableOptions = {}) {
+  constructor(
+    camera: Phaser.Cameras.Scene2D.Camera,
+    config: DraggableOptions = {}
+  ) {
     this.camera = camera;
-    this.config = config;
+    this.scene = camera.scene;
+    this.config = {
+      easeDragging: false,
+      friction: 0.95,
+      minSpeed: 0.1,
+      ...config,
+    };
 
     this.setupDragEvents();
     this.setupBounds();
   }
 
   private setupDragEvents() {
-    const scene = this.camera.scene;
-    scene.input.on('pointerdown', this.onDragStart, this);
-    scene.input.on('pointermove', this.onDragMove, this);
-    scene.input.on('pointerup', this.onDragEnd, this);
-    scene.events.on('update', this.update, this);
+    this.scene.input.on("pointerdown", this.onDragStart, this);
+    this.scene.input.on("pointermove", this.onDragMove, this);
+    this.scene.input.on("pointerup", this.onDragEnd, this);
+    this.scene.events.on("update", this.update, this);
   }
 
   private setupBounds() {
@@ -32,19 +42,20 @@ export class DraggableCamera {
         this.config.setBounds.height
       );
     } else if (this.config.useBounds) {
-      const { width, height } = this.camera.scene.sys.game.scale.gameSize;
+      const { width, height } = this.scene.sys.game.scale.gameSize;
       this.camera.setBounds(0, 0, width, height);
     }
   }
 
-  private onDragStart(pointer: Phaser.Input.Pointer) {
+  private onDragStart = (pointer: Phaser.Input.Pointer) => {
     this.isDragging = true;
+    this.dragStart.set(pointer.x, pointer.y);
     this.lastPointer.set(pointer.x, pointer.y);
     this.velocity.reset();
-    this.camera.emit('dragStart', this.camera);
-  }
+    this.scene.events.emit("dragOnStart", this.camera);
+  };
 
-  private onDragMove(pointer: Phaser.Input.Pointer) {
+  private onDragMove = (pointer: Phaser.Input.Pointer) => {
     if (!this.isDragging) return;
 
     const dx = pointer.x - this.lastPointer.x;
@@ -52,29 +63,49 @@ export class DraggableCamera {
 
     this.camera.scrollX -= dx / this.camera.zoom;
     this.camera.scrollY -= dy / this.camera.zoom;
-
-    this.velocity.set(dx, dy);
+    this.velocity.set(-dx, -dy);
     this.lastPointer.set(pointer.x, pointer.y);
 
-    this.camera.emit('dragging', this.camera);
-  }
+    this.scene.events.emit("isDragging", this.camera);
+  };
 
-  private onDragEnd() {
+  private onDragEnd = () => {
     this.isDragging = false;
-    this.camera.emit('dragEnd', this.camera);
-  }
+    if (!this.config.easeDragging) {
+      this.velocity.reset();
+    }
+    this.scene.events.emit("dragOnComplete", this.camera);
+  };
 
-  public update() {
+  public update = () => {
     if (!this.isDragging && this.config.easeDragging) {
-      const easeAmount = this.config.easeAmount || 0.05;
-      this.camera.scrollX += this.velocity.x * easeAmount;
-      this.camera.scrollY += this.velocity.y * easeAmount;
-      this.velocity.scale(0.95);
+      this.easeDragging();
+    }
+  };
+
+  private easeDragging() {
+    if (this.velocity.length() > this.config.minSpeed!) {
+      this.camera.scrollX += this.velocity.x / this.camera.zoom;
+      this.camera.scrollY += this.velocity.y / this.camera.zoom;
+
+      this.velocity.scale(this.config.friction!);
+      this.scene.events.emit("isDragging", this.camera);
+    } else {
+      this.velocity.reset();
     }
   }
+
+  public update = () => {
+    if (!this.isDragging && this.config.easeDragging) {
+      this.easeDragging();
+    }
+  };
 
   public updateConfig(config: Partial<DraggableOptions>) {
     Object.assign(this.config, config);
     this.setupBounds();
+    if (!this.config.easeDragging) {
+      this.velocity.reset(); // Reset velocity when turning off easing
+    }
   }
 }

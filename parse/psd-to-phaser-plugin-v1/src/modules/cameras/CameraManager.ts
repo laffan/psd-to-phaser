@@ -27,25 +27,25 @@ export class CameraManager {
     this.camera = camera;
     this.psdKey = psdKey;
 
-    if (features.includes("lazyLoading")) {
-      this.lazyLoading = new LazyLoadCamera(
-        plugin,
-        camera,
-        psdKey,
-        config.lazyLoading as LazyLoadingOptions
-      );
-    }
-
-    if (features.includes("draggable")) {
-      this.draggable = new DraggableCamera(
-        camera,
-        config.draggable as DraggableOptions
-      );
-    }
+    features.forEach((feature) => {
+      switch (feature) {
+        case "lazyLoading":
+          this.lazyLoading = new LazyLoadCamera(
+            plugin,
+            camera,
+            psdKey,
+            config.lazyLoadOptions
+          );
+          break;
+        case "draggable":
+          this.draggable = new DraggableCamera(camera, config.draggableOptions);
+          break;
+        // Add other features here as they are implemented
+      }
+    });
 
     this.setupDebug(config.debug);
   }
-
   private setupDebug(debugOptions?: DebugOptions) {
     if (debugOptions) {
       const scene = this.camera.scene;
@@ -84,15 +84,22 @@ export class CameraManager {
   }
 
   public update(config: Partial<CameraConfig>) {
-    if (config.lazyLoading && this.lazyLoader) {
-      this.lazyLoader.updateConfig(config.lazyLoading as LazyLoadingOptions);
+    if (config.lazyLoadingOptions && this.lazyLoading) {
+      this.lazyLoading.updateConfig(config.lazyLoadingOptions);
     }
-
-    if (config.draggable && this.cameraController) {
-      this.cameraController.updateConfig(config.draggable as DraggableOptions);
+    if (config.draggableOptions && this.draggable) {
+      this.draggable.update();
     }
+    // Update other features as they are implemented
   }
 
+  public updateConfig(config: Partial<CameraConfig>) {
+    if (config.draggableOptions && this.draggable) {
+      this.draggable.updateConfig(config.draggableOptions);
+    }
+    // Update other features as they are implemented
+  }
+  
   public panToPoint(
     psdKey: string,
     pointPath: string,

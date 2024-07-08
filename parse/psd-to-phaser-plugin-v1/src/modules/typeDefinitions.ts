@@ -38,8 +38,8 @@ export interface SpriteData {
 }
 
 export interface CameraConfig {
-  lazyLoading?: LazyLoadingOptions;
-  draggable?: DraggableOptions;
+  lazyLoadingOptions?: LazyLoadingOptions;
+  draggableOptions?: DraggableOptions;
   debug?: DebugOptions;
 }
 
@@ -53,6 +53,8 @@ export interface DraggableOptions {
   useBounds?: boolean;
   easeDragging?: boolean;
   easeAmount?: number;
+  friction?: number;
+  minSpeed?: number;
 }
 
 export interface DebugOptions {
