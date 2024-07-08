@@ -1,13 +1,13 @@
 // src/modules/types/sprites/index.ts
 
-import { SpriteData } from '../../typeDefinitions';
-import { placeSprite as placeSimpleSprite } from './defaultSprite';
-import { placeAnimation, updateAnimation } from './animation';
-import { placeSpritesheet } from './spritesheet';
-import { placeAtlas } from './atlas';
-import { createDebugShape } from '../../utils/debugVisualizer';
-import { getDebugOptions } from '../../utils/sharedUtils';
-import { getSprite, getAllSprites, getTexture } from './get';
+import { SpriteData } from "../../typeDefinitions";
+import { placeSprite as placeSimpleSprite } from "./defaultSprite";
+import { placeAnimation, updateAnimation } from "./animation";
+import { placeSpritesheet } from "./spritesheet";
+import { placeAtlas } from "./atlas";
+import { createDebugShape } from "../../utils/debugVisualizer";
+import { getDebugOptions } from "../../utils/sharedUtils";
+import { getSprite, getAllSprites, getTexture } from "./get";
 
 export default function spritesModule(plugin: PsdToPhaserPlugin) {
   return {
@@ -37,12 +37,14 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
       }
 
       const depth = options.depth !== undefined ? options.depth : Infinity;
+      const parentPath = spritePath.split("/").slice(0, -1).join("/");
       const placedSprite = this.placeSpritesRecursively(
         scene,
         [sprite],
         options,
         depth,
-        psdKey
+        psdKey,
+        parentPath // Pass the parent path here
       );
 
       // Store the placed sprite
@@ -81,74 +83,83 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
     },
 
     placeSpritesRecursively(
-  scene: Phaser.Scene,
-  sprites: SpriteData[],
-  options: any = {},
-  depth: number,
-  psdKey: string,
-  parentPath: string = ""
-): WrappedObject {
-  const container = scene.add.container(0, 0);
-  const children: WrappedObject[] = [];
+      scene: Phaser.Scene,
+      sprites: SpriteData[],
+      options: any = {},
+      depth: number,
+      psdKey: string,
+      parentPath: string = ""
+    ): WrappedObject {
+      const container = scene.add.container(0, 0);
+      const children: WrappedObject[] = [];
 
-  sprites.forEach((sprite) => {
-    const fullPath = parentPath
-      ? `${parentPath}/${sprite.name}`
-      : sprite.name;
-    let spriteObject:
-      | Phaser.GameObjects.Sprite
-      | Phaser.GameObjects.Container
-      | null = null;
+      sprites.forEach((sprite) => {
+        const fullPath = parentPath
+          ? `${parentPath}/${sprite.name}`
+          : sprite.name;
+        let spriteObject:
+          | Phaser.GameObjects.Sprite
+          | Phaser.GameObjects.Container
+          | null = null;
 
-    if (!sprite.children) {
-      spriteObject = this.placeSingleSprite(scene, sprite, options, fullPath);
+        if (!sprite.children) {
+          spriteObject = this.placeSingleSprite(
+            scene,
+            sprite,
+            options,
+            fullPath
+          );
 
-      if (spriteObject) {
-        container.add(spriteObject);
-        this.addDebugVisualization(scene, sprite, spriteObject, options);
-        
-        const wrappedSprite: WrappedObject = {
-          name: sprite.name,
-          type: sprite.type,
-          placed: spriteObject,
-          updateAnimation: sprite.type === 'animation' ? (config: any) => updateAnimation(scene, sprite.name, config) : undefined,
-          setPosition: (x: number, y: number) => spriteObject.setPosition(x, y),
-          setAlpha: (alpha: number) => spriteObject.setAlpha(alpha),
-          ...this.getCustomAttributes(sprite) // Spread custom attributes here
-        };
-        
-        children.push(wrappedSprite);
-        plugin.storageManager.store(psdKey, fullPath, wrappedSprite);
-      }
-    }
+          if (spriteObject) {
+            container.add(spriteObject);
+            this.addDebugVisualization(scene, sprite, spriteObject, options);
 
-    if (sprite.children && depth > 0) {
-      const childWrappedObject = this.placeSpritesRecursively(
-        scene,
-        sprite.children,
-        options,
-        depth - 1,
-        psdKey,
-        fullPath
-      );
-      container.add(childWrappedObject.placed);
-      children.push(childWrappedObject);
-    }
-  });
+            const wrappedSprite: WrappedObject = {
+              name: sprite.name,
+              type: sprite.type,
+              placed: spriteObject,
+              updateAnimation:
+                sprite.type === "animation"
+                  ? (config: any) => updateAnimation(scene, sprite.name, config)
+                  : undefined,
+              setPosition: (x: number, y: number) =>
+                spriteObject.setPosition(x, y),
+              setAlpha: (alpha: number) => spriteObject.setAlpha(alpha),
+              ...this.getCustomAttributes(sprite), // Spread custom attributes here
+            };
 
-  const wrappedContainer: WrappedObject = {
-    name: parentPath.split('/').pop() || '',
-    type: 'Container',
-    placed: container,
-    children: children,
-    setPosition: (x: number, y: number) => container.setPosition(x, y),
-    setAlpha: (alpha: number) => container.setAlpha(alpha),
-    ...this.getCustomAttributes(sprites[0]) // Spread custom attributes here
-  };
+            children.push(wrappedSprite);
+            plugin.storageManager.store(psdKey, fullPath, wrappedSprite);
+          }
+        }
 
-  plugin.storageManager.store(psdKey, parentPath, wrappedContainer);
-  return wrappedContainer;
-},
+        if (sprite.children && depth > 0) {
+          const childWrappedObject = this.placeSpritesRecursively(
+            scene,
+            sprite.children,
+            options,
+            depth - 1,
+            psdKey,
+            fullPath
+          );
+          container.add(childWrappedObject.placed);
+          children.push(childWrappedObject);
+        }
+      });
+
+      const wrappedContainer: WrappedObject = {
+        name: parentPath.split("/").pop() || "",
+        type: "Container",
+        placed: container,
+        children: children,
+        setPosition: (x: number, y: number) => container.setPosition(x, y),
+        setAlpha: (alpha: number) => container.setAlpha(alpha),
+        ...this.getCustomAttributes(sprites[0]), // Spread custom attributes here
+      };
+
+      plugin.storageManager.store(psdKey, parentPath, wrappedContainer);
+      return wrappedContainer;
+    },
 
     placeSingleSprite(
       scene: Phaser.Scene,
@@ -156,7 +167,10 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
       options: any,
       fullPath: string
     ): Phaser.GameObjects.Sprite | Phaser.GameObjects.Container | null {
-      let spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Container | null = null;
+      let spriteObject:
+        | Phaser.GameObjects.Sprite
+        | Phaser.GameObjects.Container
+        | null = null;
 
       try {
         switch (sprite.type) {
@@ -180,9 +194,9 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
           spriteObject.setPosition(sprite.x, sprite.y);
           if (sprite.alpha !== undefined) spriteObject.setAlpha(sprite.alpha);
           if (sprite.scale !== undefined) spriteObject.setScale(sprite.scale);
-          if (sprite.visible !== undefined) spriteObject.setVisible(sprite.visible);
+          if (sprite.visible !== undefined)
+            spriteObject.setVisible(sprite.visible);
         }
-
       } catch (error) {
         console.error(`Error placing sprite ${fullPath}:`, error);
       }
@@ -236,7 +250,11 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
     getCustomAttributes(sprite: SpriteData): Record<string, any> {
       const customAttributes: Record<string, any> = {};
       for (const key in sprite) {
-        if (!['name', 'type', 'x', 'y', 'width', 'height', 'children'].includes(key)) {
+        if (
+          !["name", "type", "x", "y", "width", "height", "children"].includes(
+            key
+          )
+        ) {
           customAttributes[key] = sprite[key];
         }
       }
