@@ -10,10 +10,13 @@ class MergedSprite(BaseSprite):
         
         # Save the merged image
         self._save_image(merged_image)
+
         
         # Generate and return sprite data
         sprite_data = self._generate_base_sprite_data()
         
+        sprite_data['filePath'] = self._get_relative_path()
+
         # Remove the 'children' key if it exists
         sprite_data.pop('children', None)
         

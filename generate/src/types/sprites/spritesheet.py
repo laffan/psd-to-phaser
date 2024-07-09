@@ -54,6 +54,8 @@ class SpritesheetSprite(BaseSprite):
         for child in self.layer:
             child_name, child_attributes = parse_attributes(child.name)
             child_image = child.composite()
+            child_opacity = self._get_layer_opacity(child)
+
             
             # Update max dimensions
             self.max_width = max(self.max_width, child_image.width)
@@ -75,13 +77,20 @@ class SpritesheetSprite(BaseSprite):
                     'instances': []
                 }
 
-            self.frame_dict[child_name['name']]['instances'].append({
+
+            instance_data = {
                 'attributes': child_attributes,
                 'left': child.left,
                 'top': child.top,
                 'layerOrder': self.layer_order_counter,
                 'instanceName': instance_name
-            })
+            }
+
+            # Add opacity information if it's not 100%
+            if child_opacity != 255:
+                instance_data['alpha'] = round(child_opacity / 255, 2)
+
+            self.frame_dict[child_name['name']]['instances'].append(instance_data)
 
             self.layer_order_counter += 1
 
@@ -111,7 +120,7 @@ class SpritesheetSprite(BaseSprite):
             frame_index = frame_info['index']
             x = (frame_index % self.columns) * self.max_width
             y = (frame_index // self.columns) * self.max_height
-            
+
             for instance in frame_info['instances']:
                 placement_entry = {
                     "frame": frame_index,
@@ -121,10 +130,15 @@ class SpritesheetSprite(BaseSprite):
                     "instanceName": instance['instanceName'],
                     **instance['attributes']
                 }
+
+                # Include alpha if it exists in the instance data
+                if 'alpha' in instance:
+                    placement_entry['alpha'] = instance['alpha']
+
                 placement.append(placement_entry)
 
         return placement
-
+      
     def _save_image(self, image):
         os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
         image.save(self.output_path, 'PNG')

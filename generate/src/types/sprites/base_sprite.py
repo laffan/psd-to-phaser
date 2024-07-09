@@ -15,6 +15,7 @@ import os
 from PIL import Image
 from src.helpers.parsers import parse_attributes
 from src.helpers.optimize_pngs import optimize_pngs
+from psd_tools.api.layers import Layer, Group
 
 class BaseSprite:
     def __init__(self, layer, output_dir, config, parent_path=''):
@@ -24,6 +25,7 @@ class BaseSprite:
         self.name_type_dict, self.attributes = parse_attributes(layer.name)
         self.sprite_type = self.name_type_dict.get('type', 'simple')
         self.parent_path = parent_path
+        self.opacity = self._get_layer_opacity(layer)
         self.output_path = self._generate_output_path()
         self.layer_order = config.get('current_layer_order', 0)
         config['current_layer_order'] = self.layer_order + 1
@@ -40,6 +42,11 @@ class BaseSprite:
         else:
             self._export_image()
         return sprite_data
+
+    def _get_layer_opacity(self, layer):
+        if isinstance(layer, (Layer, Group)):
+            return layer.opacity
+        return 255  # Default to fully opaque if not a PSD layer or group
 
     def _generate_output_path(self):
         sprite_name = self.name_type_dict.get('name', self.layer.name)
@@ -59,6 +66,10 @@ class BaseSprite:
             "layerOrder": self.layer_order,
             **self.attributes
         }
+        # Capture layer alpha
+        if self.opacity != 255:
+            base_data['alpha'] = round(self.opacity / 255, 2)
+        
         # Only add filePath if it's not a group
         if not self.layer.is_group():
             base_data["filePath"] = self._get_relative_path()
