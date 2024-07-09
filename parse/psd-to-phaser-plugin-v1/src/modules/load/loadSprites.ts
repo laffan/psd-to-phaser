@@ -6,7 +6,7 @@ export function loadSprites(scene: Phaser.Scene, sprites: SpriteData[], basePath
     let loadedSprites = 0;
 
     if (debug) {
-        console.log('Sprites to load:', spritesToLoad);
+        console.log('Immediate sprites to load:', spritesToLoad);
     }
 
     spritesToLoad.forEach(({ name, type, filePath, data }) => {
@@ -30,7 +30,6 @@ export function loadSprites(scene: Phaser.Scene, sprites: SpriteData[], basePath
                 scene.load.image(name, filePath);
         }
 
-        // Listen for the specific file complete event
         scene.load.on(`filecomplete-${type}-${name}`, () => {
             loadedSprites++;
             const progress = loadedSprites / totalSprites;
@@ -64,26 +63,27 @@ export function loadSprites(scene: Phaser.Scene, sprites: SpriteData[], basePath
 
 function collectSpriteData(sprites: SpriteData[], basePath: string): Array<{ name: string, type: string, filePath: string, data: any }> {
     const flattenedSprites = flattenSprites(sprites);
-    return flattenedSprites.map(sprite => {
-        const filePath = `${basePath}/sprites/${sprite.name}.png`;
-        let type = 'image';
-        let data = null;
+    return flattenedSprites
+        .filter(sprite => !sprite.lazyLoad) // Filter out lazy-loaded sprites
+        .map(sprite => {
+            const filePath = `${basePath}/sprites/${sprite.name}.png`;
+            let type = 'image';
+            let data = null;
 
-        if (sprite.type === 'atlas') {
-            type = 'atlas';
-            data = sprite.atlas;
-        } else if (sprite.type === 'spritesheet' || sprite.type === 'animation') {
-            type = 'spritesheet';
-            data = {
-                frameWidth: sprite.frame_width,
-                frameHeight: sprite.frame_height,
-            };
-        }
+            if (sprite.type === 'atlas') {
+                type = 'atlas';
+                data = sprite.atlas;
+            } else if (sprite.type === 'spritesheet' || sprite.type === 'animation') {
+                type = 'spritesheet';
+                data = {
+                    frameWidth: sprite.frame_width,
+                    frameHeight: sprite.frame_height,
+                };
+            }
 
-        return { name: sprite.name, type, filePath, data };
-    });
+            return { name: sprite.name, type, filePath, data };
+        });
 }
-
 
 function flattenSprites(sprites: SpriteData[], prefix = ''): SpriteData[] {
     return sprites.reduce((acc: SpriteData[], sprite) => {

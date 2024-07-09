@@ -44,8 +44,12 @@ export interface CameraConfig {
 }
 
 export interface LazyLoadingOptions {
-  preloadRange?: number;
+  active?: boolean;
+  extendPreloadBounds?: number;
   transitionStyle?: 'fade' | 'instant';
+  debug?: {
+    shape?: boolean;
+  };
 }
 
 export interface DraggableOptions {

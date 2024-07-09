@@ -260,15 +260,17 @@ much smaller.
 
 ```js
 // Initialize a lazyLoad camera
-this.lazyCamera = this.P2P.createCamera(this.camera, ['lazyLoading']);
-
-// Initialize a lazyLoad camera with options
-this.lazyCamera = this.P2P.createCamera(this.camera, ['lazyLoading'],
-  {lazyLoadingOptions: {
-    preloadRange: 300, // distance from the current bounds of camera to trigger loading
-    transitionStyle: "fade" // method of adding the tile to the scene
-  },
-})
+this.lazyCamera = this.P2P.cameras.createCamera(
+  this.cameras.main,
+  ["lazyLoading"],
+  "simple_psd",
+  {
+    lazyLoadingOptions: {
+      preloadRange: 0,
+      transitionStyle: "fade",
+    },
+  }
+);
 ```
 
 Now P2P is keeping track of where the camera is and whether there is any overlap with
@@ -285,7 +287,11 @@ this.lazyCamera.update({
 LazyLoading triggers events, so you can listen for "lazyLoadStart", "loadProgress", "loadingComplete".
 
 ```js
-this.lazyCamera = this.P2P.createCamera(this.camera, ["lazyLoading"]);
+this.lazyCamera = this.P2P.cameras.createCamera(
+  this.cameras.main,
+  ["lazyLoading"],
+  "simple_psd"
+);
 
 this.events.on("loadProgress", (progress, currentlyLoading) => {
   console.log(`Loading is ${progress} complete.`);

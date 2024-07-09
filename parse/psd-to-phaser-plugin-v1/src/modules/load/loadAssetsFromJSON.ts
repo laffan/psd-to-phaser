@@ -4,7 +4,7 @@ import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 
 export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, plugin: PsdToPhaserPlugin): void {
     const basePath = data.basePath;
-    const spritesToLoad = data.sprites || [];
+    const spritesToLoad = data.sprites || []; // These should now be only immediate sprites
     const tilesToLoad = getTilesToLoad(data.tiles, basePath);
 
     const totalAssets = spritesToLoad.length + tilesToLoad.length;
@@ -12,7 +12,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
 
     if (plugin.options.debug) {
         console.log(`Total assets to load: ${totalAssets}`);
-        console.log(`Sprites to load: ${spritesToLoad.length}`);
+        console.log(`Immediate sprites to load: ${spritesToLoad.length}`);
         console.log(`Tiles to load: ${tilesToLoad.length}`);
     }
 
@@ -61,7 +61,7 @@ function getTilesToLoad(tiles: any, basePath: string): any[] {
         if (isLazyLoaded(layer)) return acc;
 
         const tileSize = tiles.tile_slice_size;
-        const fileExtension = layer.name === 'background' ? 'jpg' : 'png';
+        const fileExtension = layer.type === "transparent" ? 'png' : 'jpg';
 
         for (let col = 0; col < tiles.columns; col++) {
             for (let row = 0; row < tiles.rows; row++) {

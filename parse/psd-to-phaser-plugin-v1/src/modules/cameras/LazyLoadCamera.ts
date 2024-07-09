@@ -9,188 +9,203 @@ export class LazyLoadCamera {
   private lazyObjects: any[] = [];
   private loadingObjects: any[] = [];
   private loadQueue: any[] = [];
+  private lastCameraPosition: Phaser.Math.Vector2;
+  private preloadBounds: Phaser.Geom.Rectangle;
+  private debugGraphics: Phaser.GameObjects.Graphics | null = null;
 
-  constructor(
-    plugin: PsdToPhaserPlugin,
-    camera: Phaser.Cameras.Scene2D.Camera,
-    psdKey: string,
-    config: LazyLoadingOptions = {}
-  ) {
+  constructor(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.Camera, psdKey: string, config: LazyLoadingOptions = {}) {
     this.plugin = plugin;
     this.camera = camera;
     this.psdKey = psdKey;
-    this.basePath = this.plugin.getData(psdKey).basePath;
     this.config = {
       active: true,
-      preloadRange: 300,
+      extendPreloadBounds: 0,
       transitionStyle: "fade",
-      ...config,
+      debug: { shape: false },
+      ...config
     };
+
+    this.lastCameraPosition = new Phaser.Math.Vector2(this.camera.scrollX, this.camera.scrollY);
+    this.preloadBounds = new Phaser.Geom.Rectangle();
 
     this.initializeLazyObjects();
     this.setupEvents();
+    this.setupDebug();
   }
 
   private initializeLazyObjects() {
     const psdData = this.plugin.getData(this.psdKey);
     if (psdData && psdData.lazyLoadObjects) {
-      this.lazyObjects = psdData.lazyLoadObjects.map((obj) => ({
-        ...obj,
-        loaded: false,
-      }));
-      console.log("Lazy objects initialized:", this.lazyObjects);
+      this.lazyObjects = psdData.lazyLoadObjects.map(obj => ({...obj, loaded: false}));
+      console.log('Lazy objects initialized:', this.lazyObjects);
     } else {
       console.warn(`No lazy load objects found for PSD key: ${this.psdKey}`);
     }
   }
 
   private setupEvents() {
-    this.camera.scene.events.on("update", this.update, this);
+    this.camera.scene.events.on('update', this.update, this);
+  }
+
+  private setupDebug() {
+    if (this.config.debug && this.config.debug.shape) {
+      this.debugGraphics = this.camera.scene.add.graphics();
+      this.debugGraphics.setDepth(1000);
+    }
   }
 
   public update = () => {
     if (!this.config.active) return;
 
-    this.checkVisibility();
+    const currentPosition = new Phaser.Math.Vector2(this.camera.scrollX, this.camera.scrollY);
+    if (!currentPosition.equals(this.lastCameraPosition)) {
+      this.lastCameraPosition = currentPosition;
+      this.updatePreloadBounds();
+      this.checkVisibility();
+      this.updateDebugGraphics();
+    }
+
     this.processLoadQueue();
-  };
+  }
+
+  private updatePreloadBounds() {
+    const extend = this.config.extendPreloadBounds || 0;
+    this.preloadBounds.setTo(
+      this.camera.worldView.x - extend,
+      this.camera.worldView.y - extend,
+      this.camera.worldView.width + extend * 2,
+      this.camera.worldView.height + extend * 2
+    );
+  }
 
   private checkVisibility() {
-    const worldView = this.camera.worldView;
-    const preloadRange = this.config.preloadRange || 0;
-    const extendedView = new Phaser.Geom.Rectangle(
-      worldView.x - preloadRange,
-      worldView.y - preloadRange,
-      worldView.width + preloadRange * 2,
-      worldView.height + preloadRange * 2
-    );
-
-    this.lazyObjects.forEach((object) => {
-      if (this.isObjectInView(object, extendedView)) {
-        if (
-          !object.loaded &&
-          !this.loadingObjects.includes(object) &&
-          !this.loadQueue.includes(object)
-        ) {
-          this.loadQueue.push(object);
+    this.lazyObjects.forEach(object => {
+      const objectRect = new Phaser.Geom.Rectangle(object.x, object.y, object.width, object.height);
+      if (Phaser.Geom.Intersects.RectangleToRectangle(objectRect, this.preloadBounds)) {
+        if (!object.loaded && !this.loadingObjects.includes(object) && !this.loadQueue.includes(object)) {
+          this.queueForLoading(object);
         }
-      } else if (object.loaded) {
-        this.unloadObject(object);
       }
     });
   }
 
-  private isObjectInView(object: any, view: Phaser.Geom.Rectangle): boolean {
-    const objectRect = new Phaser.Geom.Rectangle(
-      object.x,
-      object.y - (object.height || 0),
-      object.width || 0,
-      object.height || 0
-    );
-    return Phaser.Geom.Intersects.RectangleToRectangle(objectRect, view);
+  private queueForLoading(object: any) {
+    if (!this.loadQueue.includes(object)) {
+      this.loadQueue.push(object);
+      object.loading = true;
+    }
   }
 
   private processLoadQueue() {
-    if (this.loadQueue.length > 0 && this.loadingObjects.length < 5) {
-      // Limit concurrent loading
+    const maxConcurrentLoads = 2;
+    while (this.loadingObjects.length < maxConcurrentLoads && this.loadQueue.length > 0) {
       const object = this.loadQueue.shift();
-      this.loadObject(object);
+      if (object) {
+        this.loadObject(object);
+      }
     }
   }
 
   private loadObject(object: any) {
     this.loadingObjects.push(object);
-    this.camera.scene.events.emit("lazyLoadStart", object);
+    this.camera.scene.events.emit('lazyLoadStart', object);
+    
+    console.log('Loading object:', object);
 
-    if (object.type === "sprite" || object.type === "simple") {
-      this.loadSprite(object);
-    } else if (object.type === "tile") {
-      this.loadTile(object);
-    } else {
-      console.error("Unknown object type:", object.type);
-      this.loadingObjects = this.loadingObjects.filter((obj) => obj !== object);
-    }
-  }
+    const loadPromise = object.type === 'sprite' ? this.loadSprite(object) : this.loadTile(object);
 
-  private loadSprite(object: any) {
-    new Promise<void>((resolve, reject) => {
-      try {
-        const result = this.plugin.sprites.place(
-          this.camera.scene,
-          this.psdKey,
-          object.path
-        );
-        if (result && typeof result.then === "function") {
-          result.then(resolve).catch(reject);
-        } else {
-          resolve();
-        }
-      } catch (error) {
-        reject(error);
-      }
-    })
+    loadPromise
       .then(() => {
         this.finishLoading(object);
       })
       .catch((error) => {
-        console.error("Error loading sprite:", error);
-        this.loadingObjects = this.loadingObjects.filter(
-          (obj) => obj !== object
-        );
+        console.error(`Error loading ${object.type}:`, error);
+        object.loading = false;
+        this.loadingObjects = this.loadingObjects.filter(obj => obj !== object);
       });
   }
 
-private loadTile(object: any) {
-  return new Promise<void>((resolve, reject) => {
-    const key = object.name;
-    const url = `${this.plugin.getData(this.psdKey).basePath}/${object.path}`;
-
-    this.camera.scene.load.image(key, url);
-    this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
+  private loadSprite(object: any) {
+    return new Promise<void>((resolve, reject) => {
       try {
-        const tile = this.camera.scene.add.image(object.x, object.y, key);
-        tile.setOrigin(0, 0);
-        resolve();
+        const key = `${this.psdKey}_${object.name}`;
+        const url = `${this.plugin.getData(this.psdKey).basePath}/${object.filePath}`;
+
+        this.camera.scene.load.image(key, url);
+        this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
+          const sprite = this.camera.scene.add.image(object.x, object.y, key);
+          sprite.setOrigin(0, 0);
+          resolve();
+        });
+        this.camera.scene.load.start();
       } catch (error) {
         reject(error);
       }
     });
-    this.camera.scene.load.once(`loaderror`, (file) => {
-      if (file.key === key) {
-        reject(new Error(`Failed to load tile: ${key}`));
-      }
+  }
+
+  private loadTile(object: any) {
+    return new Promise<void>((resolve, reject) => {
+      const key = object.name;
+      const url = `${this.plugin.getData(this.psdKey).basePath}/${object.path}`;
+
+      this.camera.scene.load.image(key, url);
+      this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
+        try {
+          const tile = this.camera.scene.add.image(object.x, object.y, key);
+          tile.setOrigin(0, 0);
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
+      this.camera.scene.load.once(`loaderror`, (file) => {
+        if (file.key === key) {
+          reject(new Error(`Failed to load tile: ${key}`));
+        }
+      });
+      this.camera.scene.load.start();
     });
-    this.camera.scene.load.start();
-  });
-}
+  }
 
   private finishLoading(object: any) {
     object.loaded = true;
-    this.loadingObjects = this.loadingObjects.filter((obj) => obj !== object);
-    this.camera.scene.events.emit("objectLoaded", object);
+    object.loading = false;
+    this.loadingObjects = this.loadingObjects.filter(obj => obj !== object);
+    this.camera.scene.events.emit('objectLoaded', object);
+    
+    const progress = this.lazyObjects.filter(obj => obj.loaded).length / this.lazyObjects.length;
+    this.camera.scene.events.emit('loadProgress', progress, this.loadingObjects);
 
-    const progress =
-      this.lazyObjects.filter((obj) => obj.loaded).length /
-      this.lazyObjects.length;
-    this.camera.scene.events.emit(
-      "loadProgress",
-      progress,
-      this.loadingObjects
-    );
-
-    if (progress === 1) {
-      this.camera.scene.events.emit("loadingComplete");
+    if (this.lazyObjects.every(obj => obj.loaded)) {
+      this.camera.scene.events.emit('loadingComplete');
     }
   }
 
-  private unloadObject(object: any) {
-    // For now, just mark it as unloaded without actually removing it
-    object.loaded = false;
-    this.camera.scene.events.emit("objectUnloaded", object);
+  private updateDebugGraphics() {
+    if (this.debugGraphics && this.config.debug && this.config.debug.shape) {
+      this.debugGraphics.clear();
+      
+      // Draw preload bounds
+      this.debugGraphics.lineStyle(2, 0xff0000, 1);
+      this.debugGraphics.strokeRect(
+        this.preloadBounds.x,
+        this.preloadBounds.y,
+        this.preloadBounds.width,
+        this.preloadBounds.height
+      );
+
+      // Draw lazy object bounds
+      this.debugGraphics.lineStyle(2, 0x00ff00, 1);
+      this.lazyObjects.forEach(object => {
+        this.debugGraphics.strokeRect(object.x, object.y, object.width, object.height);
+      });
+    }
   }
 
   public updateConfig(config: Partial<LazyLoadingOptions>) {
     Object.assign(this.config, config);
-    console.log("LazyLoadCamera config updated:", this.config);
+    this.updatePreloadBounds();
+    console.log('LazyLoadCamera config updated:', this.config);
   }
 }

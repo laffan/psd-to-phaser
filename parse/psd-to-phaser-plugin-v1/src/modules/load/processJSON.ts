@@ -21,12 +21,19 @@ export function processJSON(
     return;
   }
 
-  const lazyLoadObjects = findLazyLoadObjects(data);
+  const { immediateSprites, lazySprites } = separateSprites(data.sprites);
+  const lazyLoadObjects = findLazyLoadObjects(data, lazySprites);
+
+  console.log("===============");
+  console.log("SPRITES", data.sprites);
+  console.log("IMMEDIATE", immediateSprites);
+  console.log("LAZY", lazySprites);
+  console.log("===============");
 
   const processedData = {
     ...data,
     basePath: psdFolderPath,
-    sprites: data.sprites.map((spriteData: any) => createPSDObject(spriteData)),
+    sprites: immediateSprites,
     zones: Array.isArray(data.zones)
       ? data.zones.map((zoneData: any) => createPSDObject(zoneData))
       : [],
@@ -45,26 +52,47 @@ export function processJSON(
   loadAssetsFromJSON(scene, key, processedData, plugin);
 }
 
-function findLazyLoadObjects(data: any): any[] {
+function separateSprites(sprites: any[]): { immediateSprites: any[], lazySprites: any[] } {
+  const immediateSprites: any[] = [];
+  const lazySprites: any[] = [];
+
+  function recursiveSeparate(sprite: any, isParentLazy: boolean = false) {
+    const isLazy = isParentLazy || sprite.lazyLoad === true;
+    
+    if (isLazy) {
+      if (!sprite.children) {
+        lazySprites.push(sprite);
+      }
+    } else {
+      immediateSprites.push(sprite);
+    }
+
+    if (sprite.children && Array.isArray(sprite.children)) {
+      sprite.children.forEach((child: any) => recursiveSeparate(child, isLazy));
+    }
+  }
+
+  sprites.forEach(sprite => recursiveSeparate(sprite));
+
+  return { immediateSprites, lazySprites };
+}
+
+function findLazyLoadObjects(data: any, lazySprites: any[]): any[] {
   const lazyObjects: any[] = [];
 
   function recursiveFind(obj: any, path: string = "") {
-    if (obj.lazyLoad === true) {
-      lazyObjects.push({ ...obj, path });
+    if (!obj.children) {
+      lazyObjects.push({ ...obj, path, type: 'sprite' });
     }
     if (obj.children && Array.isArray(obj.children)) {
-      obj.children.forEach((child: any, index: number) => {
+      obj.children.forEach((child: any) => {
         recursiveFind(child, path ? `${path}/${child.name}` : child.name);
       });
     }
   }
 
-  // Search in sprites
-  if (data.sprites && Array.isArray(data.sprites)) {
-    data.sprites.forEach((sprite: any) => recursiveFind(sprite));
-  }
+  lazySprites.forEach(sprite => recursiveFind(sprite));
 
-  // Search in tiles
   if (data.tiles && data.tiles.layers) {
     data.tiles.layers.forEach((layer: any) => {
       if (layer.lazyLoad) {
@@ -81,7 +109,7 @@ function findLazyLoadObjects(data: any): any[] {
               width: data.tiles.tile_slice_size,
               height: data.tiles.tile_slice_size,
               lazyLoad: true,
-              transparent: layer.transparent
+              transparent: layer.type === "transparent"
             });
           }
         }
