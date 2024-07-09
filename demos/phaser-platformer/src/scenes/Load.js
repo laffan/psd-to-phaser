@@ -10,7 +10,7 @@ export class LoadScene extends Phaser.Scene {
     console.log("Preload function called");
 
     // Start loading PSD data
-    this.P2P.load.load(this, "simple_psd", "assets/simple");
+    this.P2P.load.load(this, "psd_key", "assets/sensible");
 
     // Listen for PSD asset loading progress
     this.events.on("psdLoadProgress", (value) => {
@@ -26,7 +26,7 @@ export class LoadScene extends Phaser.Scene {
         this.scene.start("PlayScene");
 
         // Log the loaded JSON data
-        const loadedData = this.P2P.getData("simple_psd");
+        const loadedData = this.P2P.getData("psd_key");
         console.log("Loaded PSD data:", loadedData);
       },
       this

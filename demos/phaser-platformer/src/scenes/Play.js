@@ -8,17 +8,28 @@ export class PlayScene extends Scene {
   create() {
     console.log("PlayScene");
 
-    this.P2P.tiles.placeAll(this, "simple_psd");
-    this.P2P.points.placeAll(this, "simple_psd");
-    this.P2P.zones.placeAll(this, "simple_psd");
-    this.P2P.sprites.placeAll(this, "simple_psd");
+    this.P2P.tiles.placeAll(this, "psd_key");
+    this.P2P.points.placeAll(this, "psd_key");
+    this.P2P.zones.placeAll(this, "psd_key");
+    this.P2P.sprites.placeAll(this, "psd_key");
 
-    this.lazyCamera = this.P2P.createCamera(this.camera, ["lazyLoading"], {
-      lazyLoadingOptions: {
-        preloadRange: 300,
-        transitionStyle: "fade",
-      },
-    });
+    this.lazyCamera = this.P2P.cameras.createCamera(
+      this.cameras.main,
+      ["lazyLoading", "draggable"],
+      "psd_key",
+      {
+        lazyLoadingOptions: {
+          extendPreloadBounds: -30, 
+          transitionStyle: "fade", // method of adding the tile
+          debug: {
+            shape: true
+          }
+        },
+        draggableOptions: {
+          easeDragging: true,
+        },
+      }
+    );
 
     this.events.on("loadProgress", (progress, currentlyLoading) => {
       console.log(`Loading is ${progress} complete.`);

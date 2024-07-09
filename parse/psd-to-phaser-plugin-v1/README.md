@@ -314,10 +314,7 @@ this.dragCam = this.P2P.createCamera(this.camera, ['draggable']);
 // Initialize a draggable camera with options
 this.dragCam = this.P2P.createCamera(this.camera, ['draggable']
   draggableOptions: {
-    useBounds: { x: 0, y: 0 , width:800, height: 800 }, // Limit dragging to specific area.
-    easeDragging: true, // use ease drag
-    easeAmount: .03, // use a particular amount of easing
-   }
+    easeDragging: true // use easing defaults
   })
 ```
 
@@ -339,24 +336,28 @@ this.events.on("dragOnComplete", () => {
 
 ### Combined
 
-And of course you can combine functions to create a supercamera.
+And of course you can combine functions to create a supercamera. 
 
 ```js
 this.myCamera = this.P2P.createCamera(this.camera, ['lazyLoading', 'draggable'], {
   debug: {
     label: true, // Plase camera name in upper left hand corner of view
     shape: false, // draw a boundary around the camera view
-    console: true // output camera info. (equivalent to running console.log(this.myCamera later))
+    console: true // output camera info.
   },
   lazyLoadingOptions: {
-    preloadRange: 300, // distance from the current bounds of camera to trigger loading
-    transitionStyle: "fade" // method of adding the tile
+    active: true // switch on and off
+    extendPreloadBounds: 10, // extend/contract trigger bounds beyond camera
+    transitionStyle: "fade", // method of adding the tile
+    debug: {
+      shape: true // draw a shape around the lazyLoad trigger
+    }
   },
   draggableOptions: {
-    setBounds: { x, y, width, height }, // set boundary of drag
-    useBounds: true, // Prevent camera from going outside game
-    easeDragging: true, // use ease drag
-    easeAmount: .03 // use a particular amount of easing
+    useBounds: { x, y, width, height }, //set boundary of drag
+    easeDragging: true, // use eased dragging
+    friction: 0.95, // friction of ease
+    minSpeed: 0.1 // min   }
    }
 }
 ```
