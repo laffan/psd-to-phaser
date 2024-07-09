@@ -121,7 +121,6 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
         this.addDebugVisualization(scene, sprite, spriteObject.placed, options);
         children.push(spriteObject);
         storageManager.store(psdKey, fullPath, spriteObject);
-        console.log(`Stored sprite at path: ${fullPath}`, spriteObject);
       }
     }
 
@@ -154,7 +153,6 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
   };
 
   storageManager.store(psdKey, parentPath, wrappedContainer);
-  console.log(`Stored wrapped container at path: ${parentPath}`, wrappedContainer);
   return wrappedContainer;
 },
 

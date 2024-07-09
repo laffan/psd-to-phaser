@@ -34,7 +34,7 @@ export class CameraManager {
             plugin,
             camera,
             psdKey,
-            config.lazyLoadOptions
+            config.lazyLoadingOptions
           );
           break;
         case "draggable":
@@ -99,7 +99,7 @@ export class CameraManager {
     }
     // Update other features as they are implemented
   }
-  
+
   public panToPoint(
     psdKey: string,
     pointPath: string,

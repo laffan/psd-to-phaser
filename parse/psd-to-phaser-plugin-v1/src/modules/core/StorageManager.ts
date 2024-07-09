@@ -10,7 +10,6 @@ export class StorageManager {
       this.storage[psdKey] = {};
     }
     this.storage[psdKey][path] = object;
-    console.log(`Stored/Updated object at key: ${psdKey}, path: ${path}`, object);
   }
 
   get(psdKey: string, path?: string): WrappedObject | null {

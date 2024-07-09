@@ -34,17 +34,18 @@ export class DraggableCamera {
   }
 
   private setupBounds() {
-    console.log( typeof this.config.useBounds );
-    if (typeof this.config.useBounds  === "object") {
-      console.log("using custom size")
-      this.camera.setBounds(
-        this.config.useBounds.x,
-        this.config.useBounds.y,
-        this.config.useBounds.width,
-        this.config.useBounds.height
-      );
-    } else  {
-      console.warn("useBounds object must have {x, y, width, height} format")
+    if (this.config.useBounds) {
+      if (typeof this.config.useBounds === "object") {
+        console.log("using custom size");
+        this.camera.setBounds(
+          this.config.useBounds.x,
+          this.config.useBounds.y,
+          this.config.useBounds.width,
+          this.config.useBounds.height
+        );
+      } else {
+        console.warn("useBounds object must have {x, y, width, height} format");
+      }
     }
   }
 

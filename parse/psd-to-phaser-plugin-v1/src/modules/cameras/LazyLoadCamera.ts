@@ -5,35 +5,57 @@ export class LazyLoadCamera {
   private plugin: PsdToPhaserPlugin;
   private camera: Phaser.Cameras.Scene2D.Camera;
   private config: LazyLoadingOptions;
-  private lazyLayers: string[] = [];
+  private psdKey: string;
+  private lazyObjects: any[] = [];
+  private loadingObjects: any[] = [];
+  private loadQueue: any[] = [];
 
-  constructor(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.Camera, config: LazyLoadingOptions = {}) {
+  constructor(
+    plugin: PsdToPhaserPlugin,
+    camera: Phaser.Cameras.Scene2D.Camera,
+    psdKey: string,
+    config: LazyLoadingOptions = {}
+  ) {
     this.plugin = plugin;
     this.camera = camera;
-    this.config = config;
+    this.psdKey = psdKey;
+    this.basePath = this.plugin.getData(psdKey).basePath;
+    this.config = {
+      active: true,
+      preloadRange: 300,
+      transitionStyle: "fade",
+      ...config,
+    };
 
+    this.initializeLazyObjects();
     this.setupEvents();
   }
 
+  private initializeLazyObjects() {
+    const psdData = this.plugin.getData(this.psdKey);
+    if (psdData && psdData.lazyLoadObjects) {
+      this.lazyObjects = psdData.lazyLoadObjects.map((obj) => ({
+        ...obj,
+        loaded: false,
+      }));
+      console.log("Lazy objects initialized:", this.lazyObjects);
+    } else {
+      console.warn(`No lazy load objects found for PSD key: ${this.psdKey}`);
+    }
+  }
+
   private setupEvents() {
-    this.camera.scene.events.on('update', this.checkVisibility, this);
+    this.camera.scene.events.on("update", this.update, this);
   }
 
-  public registerLazyLayers(layers: string[], psdKey: string) {
-    this.lazyLayers = layers;
-    layers.forEach(layer => {
-      const layerData = this.plugin.getData(psdKey).layers.find((l: any) => l.name === layer);
-      if (layerData) {
-        layerData.objects.forEach((object: any) => {
-          if (object.lazyLoad) {
-            this.plugin.storageManager.store(psdKey, `${layer}/${object.name}`, { ...object, loaded: false });
-          }
-        });
-      }
-    });
-  }
+  public update = () => {
+    if (!this.config.active) return;
 
-  public checkVisibility() {
+    this.checkVisibility();
+    this.processLoadQueue();
+  };
+
+  private checkVisibility() {
     const worldView = this.camera.worldView;
     const preloadRange = this.config.preloadRange || 0;
     const extendedView = new Phaser.Geom.Rectangle(
@@ -43,72 +65,132 @@ export class LazyLoadCamera {
       worldView.height + preloadRange * 2
     );
 
-    this.lazyLayers.forEach(layer => {
-      const layerObjects = this.plugin.storageManager.getAll(layer);
-      layerObjects.forEach(object => {
-        if (this.isObjectInView(object, extendedView)) {
-          if (!object.loaded) {
-            this.loadObject(object);
-          }
-        } else if (object.loaded) {
-          this.unloadObject(object);
+    this.lazyObjects.forEach((object) => {
+      if (this.isObjectInView(object, extendedView)) {
+        if (
+          !object.loaded &&
+          !this.loadingObjects.includes(object) &&
+          !this.loadQueue.includes(object)
+        ) {
+          this.loadQueue.push(object);
         }
-      });
+      } else if (object.loaded) {
+        this.unloadObject(object);
+      }
     });
   }
 
   private isObjectInView(object: any, view: Phaser.Geom.Rectangle): boolean {
     const objectRect = new Phaser.Geom.Rectangle(
       object.x,
-      object.y - object.height,
-      object.width,
-      object.height
+      object.y - (object.height || 0),
+      object.width || 0,
+      object.height || 0
     );
     return Phaser.Geom.Intersects.RectangleToRectangle(objectRect, view);
   }
 
+  private processLoadQueue() {
+    if (this.loadQueue.length > 0 && this.loadingObjects.length < 5) {
+      // Limit concurrent loading
+      const object = this.loadQueue.shift();
+      this.loadObject(object);
+    }
+  }
+
   private loadObject(object: any) {
-    // Implement loading logic here
-    // This should handle both sprites and tile layers
-    this.camera.scene.events.emit('objectLoading', object);
-    
-    // Load the object (implement the actual loading logic)
-    // For example:
-    // if (object.type === 'sprite') {
-    //   this.plugin.sprites.place(this.camera.scene, object.psdKey, object.path);
-    // } else if (object.type === 'tile') {
-    //   this.plugin.tiles.place(this.camera.scene, object.psdKey, object.path);
-    // }
+    this.loadingObjects.push(object);
+    this.camera.scene.events.emit("lazyLoadStart", object);
 
+    if (object.type === "sprite" || object.type === "simple") {
+      this.loadSprite(object);
+    } else if (object.type === "tile") {
+      this.loadTile(object);
+    } else {
+      console.error("Unknown object type:", object.type);
+      this.loadingObjects = this.loadingObjects.filter((obj) => obj !== object);
+    }
+  }
+
+  private loadSprite(object: any) {
+    new Promise<void>((resolve, reject) => {
+      try {
+        const result = this.plugin.sprites.place(
+          this.camera.scene,
+          this.psdKey,
+          object.path
+        );
+        if (result && typeof result.then === "function") {
+          result.then(resolve).catch(reject);
+        } else {
+          resolve();
+        }
+      } catch (error) {
+        reject(error);
+      }
+    })
+      .then(() => {
+        this.finishLoading(object);
+      })
+      .catch((error) => {
+        console.error("Error loading sprite:", error);
+        this.loadingObjects = this.loadingObjects.filter(
+          (obj) => obj !== object
+        );
+      });
+  }
+
+private loadTile(object: any) {
+  return new Promise<void>((resolve, reject) => {
+    const key = object.name;
+    const url = `${this.plugin.getData(this.psdKey).basePath}/${object.path}`;
+
+    this.camera.scene.load.image(key, url);
+    this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
+      try {
+        const tile = this.camera.scene.add.image(object.x, object.y, key);
+        tile.setOrigin(0, 0);
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+    this.camera.scene.load.once(`loaderror`, (file) => {
+      if (file.key === key) {
+        reject(new Error(`Failed to load tile: ${key}`));
+      }
+    });
+    this.camera.scene.load.start();
+  });
+}
+
+  private finishLoading(object: any) {
     object.loaded = true;
-    this.camera.scene.events.emit('objectLoaded', object);
+    this.loadingObjects = this.loadingObjects.filter((obj) => obj !== object);
+    this.camera.scene.events.emit("objectLoaded", object);
 
-    // Check if all objects are loaded
-    const allLoaded = this.lazyLayers.every(layer => 
-      this.plugin.storageManager.getAll(layer).every((obj: any) => obj.loaded)
+    const progress =
+      this.lazyObjects.filter((obj) => obj.loaded).length /
+      this.lazyObjects.length;
+    this.camera.scene.events.emit(
+      "loadProgress",
+      progress,
+      this.loadingObjects
     );
-    if (allLoaded) {
-      this.camera.scene.events.emit('allObjectsLoaded');
+
+    if (progress === 1) {
+      this.camera.scene.events.emit("loadingComplete");
     }
   }
 
   private unloadObject(object: any) {
-    // Implement unloading logic here
-    // This should handle both sprites and tile layers
+    // For now, just mark it as unloaded without actually removing it
     object.loaded = false;
-    
-    // Unload the object (implement the actual unloading logic)
-    // For example:
-    // if (object.type === 'sprite') {
-    //   this.plugin.sprites.remove(object.psdKey, object.path);
-    // } else if (object.type === 'tile') {
-    //   this.plugin.tiles.remove(object.psdKey, object.path);
-    // }
-
-    this.camera.scene.events.emit('objectUnloaded', object);
+    this.camera.scene.events.emit("objectUnloaded", object);
   }
 
   public updateConfig(config: Partial<LazyLoadingOptions>) {
     Object.assign(this.config, config);
+    console.log("LazyLoadCamera config updated:", this.config);
   }
 }
