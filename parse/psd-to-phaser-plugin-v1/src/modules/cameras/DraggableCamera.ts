@@ -34,16 +34,17 @@ export class DraggableCamera {
   }
 
   private setupBounds() {
-    if (this.config.setBounds) {
+    console.log( typeof this.config.useBounds );
+    if (typeof this.config.useBounds  === "object") {
+      console.log("using custom size")
       this.camera.setBounds(
-        this.config.setBounds.x,
-        this.config.setBounds.y,
-        this.config.setBounds.width,
-        this.config.setBounds.height
+        this.config.useBounds.x,
+        this.config.useBounds.y,
+        this.config.useBounds.width,
+        this.config.useBounds.height
       );
-    } else if (this.config.useBounds) {
-      const { width, height } = this.scene.sys.game.scale.gameSize;
-      this.camera.setBounds(0, 0, width, height);
+    } else  {
+      console.warn("useBounds object must have {x, y, width, height} format")
     }
   }
 

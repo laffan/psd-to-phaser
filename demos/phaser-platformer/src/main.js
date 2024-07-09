@@ -21,8 +21,8 @@ const gameConfig = {
   parent: gameParentID,
   type: Phaser.AUTO,
   backgroundColor: "#cfcfcf",
-  width: onMobile ? window.innerWidth : 809,
-  height: onMobile ? window.innerHeight : 500,
+  width: onMobile ? window.innerWidth : 300,
+  height: onMobile ? window.innerHeight : 300,
   physics: {
     default: "arcade",
     arcade: {

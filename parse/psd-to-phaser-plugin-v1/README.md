@@ -263,8 +263,8 @@ much smaller.
 this.lazyCamera = this.P2P.createCamera(this.camera, ['lazyLoading']);
 
 // Initialize a lazyLoad camera with options
-this.lazyCamera = this.P2P.createCamera(this.camera, ['lazyLoading']
-  lazyLoadingOptions: {
+this.lazyCamera = this.P2P.createCamera(this.camera, ['lazyLoading'],
+  {lazyLoadingOptions: {
     preloadRange: 300, // distance from the current bounds of camera to trigger loading
     transitionStyle: "fade" // method of adding the tile to the scene
   },
@@ -308,7 +308,7 @@ this.dragCam = this.P2P.createCamera(this.camera, ['draggable']);
 // Initialize a draggable camera with options
 this.dragCam = this.P2P.createCamera(this.camera, ['draggable']
   draggableOptions: {
-    useBounds: true, // Pass in "true" to use boundary of game, pass in { x, y, width, height } to set your own.
+    useBounds: { x: 0, y: 0 , width:800, height: 800 }, // Limit dragging to specific area.
     easeDragging: true, // use ease drag
     easeAmount: .03, // use a particular amount of easing
    }

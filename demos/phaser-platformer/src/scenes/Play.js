@@ -13,24 +13,46 @@ export class PlayScene extends Scene {
     this.P2P.zones.placeAll(this, "simple_psd");
     this.P2P.sprites.placeAll(this, "simple_psd");
 
-    this.nested = this.P2P.sprites.get(
-      "simple_psd",
-      "nestedSprites/demoInst"
-    );
-    console.log(this.nested);
+    this.lazyCamera = this.P2P.createCamera(this.camera, ["lazyLoading"], {
+      lazyLoadingOptions: {
+        preloadRange: 300,
+        transitionStyle: "fade",
+      },
+    });
 
-  this.nested.remove();
+    this.events.on("loadProgress", (progress, currentlyLoading) => {
+      console.log(`Loading is ${progress} complete.`);
+      console.log(currentlyLoading); // Array of items currently loading.
+    });
 
-    // // Returns an array of all sprites placed
-    // this.allSprites = this.P2P.sprites.getAll("simple_psd");
-    // console.log(this.allSprites);
+    this.events.on("loadingComplete", () => {
+      console.log(`Lazy loading is complete.`);
+    });
 
-    // Returns an array of any sprites placed in top level.
-    // (If you have placed sprites but they aren't at that level, will return empty array)
-    
-    // this.topLevel = this.P2P.sprites.getAll("simple_psd", { depth: 1 });
-    // console.log(this.topLevel);
+    // // console.log(this.cameras.main);
+    // this.dragCam = this.P2P.cameras.createCamera(
+    //   this.cameras.main,
+    //   ["draggable"],
+    //   "simple_psd",
+    //   {
+    //     draggableOptions: {
+    //       useBounds: { x: 0, y: 0 , width:500, height: 500 },
+    //       easeDragging: true,
+    //     },
+    //   }
+    // );
 
+    // this.events.on("dragOnStart", () => {
+    //   console.log(`Drag has begun.`);
+    // });
+
+    // this.events.on("isDragging", () => {
+    //   console.log(`Draggin.`);
+    // });
+
+    // this.events.on("dragOnComplete", () => {
+    //   console.log(`Drag has completed.`);
+    // });
   }
 
   update() {}
