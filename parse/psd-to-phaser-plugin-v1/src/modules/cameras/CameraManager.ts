@@ -15,6 +15,7 @@ export class CameraManager {
   private lazyLoading: LazyLoadCamera | null = null;
   private draggable: DraggableCamera | null = null;
   private debugGraphics: Phaser.GameObjects.Graphics | null = null;
+  private psdKey: string;
 
   constructor(
     plugin: PsdToPhaserPlugin,
@@ -45,7 +46,12 @@ export class CameraManager {
     });
 
     this.setupDebug(config.debug);
+
+    // Trigger initial lazy load
+    this.camera.centerOn(this.camera.midPoint.x, this.camera.midPoint.y);
+    this.triggerInitialLazyLoad();
   }
+
   private setupDebug(debugOptions?: DebugOptions) {
     if (debugOptions) {
       const scene = this.camera.scene;
@@ -80,6 +86,13 @@ export class CameraManager {
         this.camera.width,
         this.camera.height
       );
+    }
+  }
+
+  private triggerInitialLazyLoad() {
+    if (this.lazyLoading) {
+      // Force an immediate update
+      this.lazyLoading.forceUpdate();
     }
   }
 

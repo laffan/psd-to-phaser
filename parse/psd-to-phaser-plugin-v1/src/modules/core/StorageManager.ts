@@ -32,7 +32,6 @@ export class StorageManager {
   }
 
   remove(psdKey: string, path: string): void {
-    console.log(`Attempting to remove from storage: ${psdKey}, ${path}`);
     if (this.storage[psdKey]) {
       delete this.storage[psdKey][path];
       console.log(`Removed from storage: ${psdKey}, ${path}`);

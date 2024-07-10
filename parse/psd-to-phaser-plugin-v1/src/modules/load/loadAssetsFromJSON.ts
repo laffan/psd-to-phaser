@@ -4,7 +4,7 @@ import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 
 export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, plugin: PsdToPhaserPlugin): void {
     const basePath = data.basePath;
-    const spritesToLoad = data.sprites || []; // These should now be only immediate sprites
+    const spritesToLoad = data.sprites || []; // These are now only immediate sprites
     const tilesToLoad = getTilesToLoad(data.tiles, basePath);
 
     const totalAssets = spritesToLoad.length + tilesToLoad.length;
@@ -15,6 +15,8 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
         console.log(`Immediate sprites to load: ${spritesToLoad.length}`);
         console.log(`Tiles to load: ${tilesToLoad.length}`);
     }
+
+ 
 
     const updateProgress = () => {
         loadedAssets++;

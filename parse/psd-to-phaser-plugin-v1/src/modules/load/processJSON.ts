@@ -9,7 +9,6 @@ export function processJSON(
   psdFolderPath: string,
   plugin: PsdToPhaserPlugin
 ): void {
-  console.log(`Processing JSON for key: ${key}`);
 
   if (!data) {
     console.error(`Data is null or undefined for key: ${key}`);
@@ -21,14 +20,8 @@ export function processJSON(
     return;
   }
 
-  const { immediateSprites, lazySprites } = separateSprites(data.sprites);
-  const lazyLoadObjects = findLazyLoadObjects(data, lazySprites);
-
-  console.log("===============");
-  console.log("SPRITES", data.sprites);
-  console.log("IMMEDIATE", immediateSprites);
-  console.log("LAZY", lazySprites);
-  console.log("===============");
+  const lazyLoadObjects = findLazyLoadObjects(data, data.sprites);
+  const immediateSprites = removeLayandNestedLazySprites(data.sprites);
 
   const processedData = {
     ...data,
@@ -52,47 +45,41 @@ export function processJSON(
   loadAssetsFromJSON(scene, key, processedData, plugin);
 }
 
-function separateSprites(sprites: any[]): { immediateSprites: any[], lazySprites: any[] } {
-  const immediateSprites: any[] = [];
-  const lazySprites: any[] = [];
-
-  function recursiveSeparate(sprite: any, isParentLazy: boolean = false) {
-    const isLazy = isParentLazy || sprite.lazyLoad === true;
-    
-    if (isLazy) {
-      if (!sprite.children) {
-        lazySprites.push(sprite);
+function removeLayandNestedLazySprites(sprites: any[]): any[] {
+  return sprites.reduce((acc: any[], sprite: any) => {
+    if (!sprite.lazyLoad) {
+      const newSprite = { ...sprite };
+      if (newSprite.children) {
+        newSprite.children = removeLayandNestedLazySprites(newSprite.children);
       }
-    } else {
-      immediateSprites.push(sprite);
+      acc.push(newSprite);
     }
-
-    if (sprite.children && Array.isArray(sprite.children)) {
-      sprite.children.forEach((child: any) => recursiveSeparate(child, isLazy));
-    }
-  }
-
-  sprites.forEach(sprite => recursiveSeparate(sprite));
-
-  return { immediateSprites, lazySprites };
+    return acc;
+  }, []);
 }
+
+
 
 function findLazyLoadObjects(data: any, lazySprites: any[]): any[] {
   const lazyObjects: any[] = [];
 
-  function recursiveFind(obj: any, path: string = "") {
-    if (!obj.children) {
+  function recursiveFind(obj: any, path: string = "", isParentLazy: boolean = false) {
+    const isLazy = isParentLazy || obj.lazyLoad === true;
+
+    if (isLazy) {
       lazyObjects.push({ ...obj, path, type: 'sprite' });
     }
+
     if (obj.children && Array.isArray(obj.children)) {
       obj.children.forEach((child: any) => {
-        recursiveFind(child, path ? `${path}/${child.name}` : child.name);
+        recursiveFind(child, path ? `${path}/${child.name}` : child.name, isLazy);
       });
     }
   }
 
   lazySprites.forEach(sprite => recursiveFind(sprite));
 
+  // Handle lazy load tiles
   if (data.tiles && data.tiles.layers) {
     data.tiles.layers.forEach((layer: any) => {
       if (layer.lazyLoad) {

@@ -7,12 +7,10 @@ export default function loadModule(plugin: PsdToPhaserPlugin) {
     return {
         load(scene: Phaser.Scene, key: string, psdFolderPath: string): void {
             const jsonPath = `${psdFolderPath}/data.json`;
-            console.log(`Attempting to load JSON from: ${jsonPath}`);
 
             scene.load.json(key, jsonPath);
 
             scene.load.once('filecomplete-json-' + key, (key: string, type: string, data: any) => {
-                console.log(`JSON loaded successfully: ${key}`);
                 if (data) {
                     processJSON(scene, key, data, psdFolderPath, plugin);
                 } else {

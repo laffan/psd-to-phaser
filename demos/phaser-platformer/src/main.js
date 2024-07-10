@@ -39,7 +39,7 @@ const gameConfig = {
         plugin: PsdToPhaserPlugin,
         start: true,
         mapping: "P2P",
-        data: { debug: true },
+        data: { debug: false },
       },
     ],
   },

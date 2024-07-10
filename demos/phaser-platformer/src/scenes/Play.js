@@ -19,11 +19,11 @@ export class PlayScene extends Scene {
       "psd_key",
       {
         lazyLoadingOptions: {
-          extendPreloadBounds: -30, 
-          transitionStyle: "fade", // method of adding the tile
+          extendPreloadBounds: -30,
+          transitionStyle: "fade", 
           debug: {
-            shape: true
-          }
+            shape: true,
+          },
         },
         draggableOptions: {
           easeDragging: true,
@@ -31,14 +31,14 @@ export class PlayScene extends Scene {
       }
     );
 
-    this.events.on("loadProgress", (progress, currentlyLoading) => {
-      console.log(`Loading is ${progress} complete.`);
-      console.log(currentlyLoading); // Array of items currently loading.
-    });
+    // this.events.on("loadProgress", (progress, currentlyLoading) => {
+    //   console.log(`Loading is ${progress} complete.`);
+    //   console.log(currentlyLoading); // Array of items currently loading.
+    // });
 
-    this.events.on("loadingComplete", () => {
-      console.log(`Lazy loading is complete.`);
-    });
+    // this.events.on("loadingComplete", () => {
+    //   console.log(`Lazy loading is complete.`);
+    // });
 
     // // console.log(this.cameras.main);
     // this.dragCam = this.P2P.cameras.createCamera(

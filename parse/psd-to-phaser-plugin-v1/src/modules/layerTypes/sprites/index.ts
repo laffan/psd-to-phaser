@@ -137,7 +137,6 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
       container.add(childWrappedObject.placed);
       children.push(childWrappedObject);
       storageManager.store(psdKey, fullPath, childWrappedObject);
-      console.log(`Stored container at path: ${fullPath}`, childWrappedObject);
     }
   });
 
