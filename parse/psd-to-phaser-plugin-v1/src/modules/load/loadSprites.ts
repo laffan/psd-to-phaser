@@ -66,7 +66,8 @@ function collectSpriteData(sprites: SpriteData[], basePath: string): Array<{ nam
     return flattenedSprites
         .filter(sprite => !sprite.lazyLoad) // Filter out lazy-loaded sprites
         .map(sprite => {
-            const filePath = `${basePath}/sprites/${sprite.name}.png`;
+            // Use the provided filePath if it exists, otherwise construct it
+            const filePath = sprite.filePath ? `${basePath}/${sprite.filePath}` : `${basePath}/sprites/${sprite.name}.png`;
             let type = 'image';
             let data = null;
 
