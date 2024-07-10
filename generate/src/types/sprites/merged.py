@@ -8,10 +8,13 @@ class MergedSprite(BaseSprite):
         # Merge all child layers recursively
         merged_image = self._merge_layers(self.layer)
         
+        # Apply group opacity if we're not capturing alpha
+        if not self.capture_props.get('alpha', False):
+            merged_image = self._apply_group_opacity(merged_image, self.layer.opacity)
+        
         # Save the merged image
         self._save_image(merged_image)
 
-        
         # Generate and return sprite data
         sprite_data = self._generate_base_sprite_data()
         
@@ -37,8 +40,21 @@ class MergedSprite(BaseSprite):
             
             return merged
         else:
-            # If it's not a group, just return the layer's image
-            return layer.composite()
+            # If it's not a group, use _get_composite_image to handle alpha correctly
+            return self._get_composite_image(layer)
+
+    def _apply_group_opacity(self, image, opacity):
+        if opacity == 255:
+            return image
+        
+        # Create a new image with an alpha channel
+        result = Image.new('RGBA', image.size, (0, 0, 0, 0))
+        
+        # Paste the original image onto the new image, applying the opacity
+        mask = Image.new('L', image.size, int(opacity))
+        result.paste(image, (0, 0), mask)
+        
+        return result
 
     def _save_image(self, image):
         # Ensure the output directory exists
@@ -53,3 +69,15 @@ class MergedSprite(BaseSprite):
     def _process_children(self):
         # Override this method to do nothing for merged sprites
         return None
+
+    def _get_composite_image(self, layer):
+        if self.capture_props.get('alpha', False):
+            # If we're capturing alpha, export at 100% opacity
+            original_opacity = layer.opacity
+            layer.opacity = 255
+            image = layer.composite()
+            layer.opacity = original_opacity
+        else:
+            # If we're not capturing alpha, export with original opacity
+            image = layer.composite()
+        return image

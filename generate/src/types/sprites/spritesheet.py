@@ -1,16 +1,3 @@
-""" src/types/sprites/spritesheet.py
-Generates spritesheets from groups of sprite layers.
-
-This module processes a group of sprite layers, arranging them into a
-grid-based spritesheet and generating the necessary metadata.
-
-Parameters:
-  layer_group (PSDLayerGroup) = Group of PSD layers to be arranged into a spritesheet
-
-Returns:
-  spritesheet_data (dict) = Dictionary containing the spritesheet image and frame metadata
-"""
-
 import os
 import math
 from PIL import Image
@@ -30,14 +17,10 @@ class SpritesheetSprite(BaseSprite):
     def process(self):
         sprite_data = self._generate_base_sprite_data()
         self._collect_frames()
-        
-        # Create spritesheet
+
         spritesheet = self._create_spritesheet()
-        
-        # Save spritesheet
         self._save_image(spritesheet)
-        
-        # Update sprite data
+
         sprite_data.update({
             "filename": self._get_relative_path(),
             "frame_width": self.max_width,
@@ -47,21 +30,18 @@ class SpritesheetSprite(BaseSprite):
             "rows": self.rows,
             "placement": self._generate_placement()
         })
-        
+
         return sprite_data
 
     def _collect_frames(self):
         for child in self.layer:
             child_name, child_attributes = parse_attributes(child.name)
-            child_image = child.composite()
-            child_opacity = self._get_layer_opacity(child)
+            child_props = self._get_layer_properties(child)  # Capture properties first
+            child_image = self._get_composite_image(child)  # Then get the composite image
 
-            
-            # Update max dimensions
             self.max_width = max(self.max_width, child_image.width)
             self.max_height = max(self.max_height, child_image.height)
-            
-            # Handle instances
+
             if child_name['name'] in self.frame_dict:
                 instance_index = len(self.frame_dict[child_name['name']]['instances'])
                 instance_name = f"{child_name['name']}_{instance_index}"
@@ -77,40 +57,34 @@ class SpritesheetSprite(BaseSprite):
                     'instances': []
                 }
 
-
             instance_data = {
                 'attributes': child_attributes,
                 'left': child.left,
                 'top': child.top,
                 'layerOrder': self.layer_order_counter,
-                'instanceName': instance_name
+                'instanceName': instance_name,
+                **child_props  # Include child properties
             }
 
-            # Add opacity information if it's not 100%
-            if child_opacity != 255:
-                instance_data['alpha'] = round(child_opacity / 255, 2)
-
             self.frame_dict[child_name['name']]['instances'].append(instance_data)
-
             self.layer_order_counter += 1
 
     def _create_spritesheet(self):
         frame_count = len(self.frames)
         self.columns = math.ceil(math.sqrt(frame_count))
         self.rows = math.ceil(frame_count / self.columns)
-        
+
         spritesheet = Image.new('RGBA', (self.columns * self.max_width, self.rows * self.max_height), (0, 0, 0, 0))
-        
+
         for index, (_, frame) in enumerate(self.frames):
             x = (index % self.columns) * self.max_width
             y = (index // self.columns) * self.max_height
-            
-            # Center the frame within its cell
+
             offset_x = (self.max_width - frame.width) // 2
             offset_y = (self.max_height - frame.height) // 2
-            
+
             spritesheet.paste(frame, (x + offset_x, y + offset_y), frame)
-        
+
         return spritesheet
 
     def _generate_placement(self):
@@ -130,15 +104,16 @@ class SpritesheetSprite(BaseSprite):
                     "instanceName": instance['instanceName'],
                     **instance['attributes']
                 }
-
-                # Include alpha if it exists in the instance data
-                if 'alpha' in instance:
-                    placement_entry['alpha'] = instance['alpha']
+                
+                # Include captured properties in placement
+                for prop in self.capture_props:
+                    if prop in instance:
+                        placement_entry[prop] = instance[prop]
 
                 placement.append(placement_entry)
 
         return placement
-      
+
     def _save_image(self, image):
         os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
         image.save(self.output_path, 'PNG')

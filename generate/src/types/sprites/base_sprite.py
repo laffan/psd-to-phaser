@@ -1,21 +1,9 @@
-""" src/types/sprites/base_sprite.py
-Defines the base class for all sprite types.
-
-This module provides common functionality and attributes for
-different types of sprites (single sprites, animations, atlases, spritesheets).
-
-Parameters:
-  layer (PSDLayer) = PSD layer object representing the sprite
-
-Returns:
-  BaseSprite object
-"""
-
 import os
 from PIL import Image
+from psd_tools.api.layers import Layer, Group
+from psd_tools.constants import BlendMode
 from src.helpers.parsers import parse_attributes
 from src.helpers.optimize_pngs import optimize_pngs
-from psd_tools.api.layers import Layer, Group
 
 class BaseSprite:
     def __init__(self, layer, output_dir, config, parent_path=''):
@@ -25,28 +13,11 @@ class BaseSprite:
         self.name_type_dict, self.attributes = parse_attributes(layer.name)
         self.sprite_type = self.name_type_dict.get('type', 'simple')
         self.parent_path = parent_path
-        self.opacity = self._get_layer_opacity(layer)
         self.output_path = self._generate_output_path()
         self.layer_order = config.get('current_layer_order', 0)
         config['current_layer_order'] = self.layer_order + 1
-
-    def process(self):
-        sprite_data = self._generate_base_sprite_data()
-        if self.layer.is_group():
-            children = self._process_children()
-            if children:
-                sprite_data['children'] = children
-            # Remove filePath for layer groups
-            if 'filePath' in sprite_data:
-                del sprite_data['filePath']
-        else:
-            self._export_image()
-        return sprite_data
-
-    def _get_layer_opacity(self, layer):
-        if isinstance(layer, (Layer, Group)):
-            return layer.opacity
-        return 255  # Default to fully opaque if not a PSD layer or group
+        self.capture_props = config.get('captureLayerProps', {})
+        self.layer_props = self._get_layer_properties(layer)
 
     def _generate_output_path(self):
         sprite_name = self.name_type_dict.get('name', self.layer.name)
@@ -54,6 +25,24 @@ class BaseSprite:
 
     def _get_relative_path(self):
         return os.path.relpath(self.output_path, self.output_dir)
+
+    def _get_layer_properties(self, layer):
+        props = {}
+        if isinstance(layer, (Layer, Group)):
+            if self.capture_props.get('alpha', False):
+                alpha = round(layer.opacity / 255, 2)
+                if alpha != 1.0:  # Only include alpha if it's not 100%
+                    props['alpha'] = alpha
+            if self.capture_props.get('blend_mode', False):
+                blend_mode = self._blend_mode_to_string(layer.blend_mode)
+                if blend_mode not in ["NORMAL", "PASS_THROUGH"]:  # Ignore both NORMAL and PASS_THROUGH
+                    props['blend_mode'] = blend_mode
+        return props
+
+    def _blend_mode_to_string(self, blend_mode):
+        if isinstance(blend_mode, BlendMode):
+            return blend_mode.name
+        return str(blend_mode)
 
     def _generate_base_sprite_data(self):
         base_data = {
@@ -64,16 +53,34 @@ class BaseSprite:
             "width": self.layer.width,
             "height": self.layer.height,
             "layerOrder": self.layer_order,
-            **self.attributes
+            **self.attributes,
+            **self.layer_props
         }
-        # Capture layer alpha
-        if self.opacity != 255:
-            base_data['alpha'] = round(self.opacity / 255, 2)
-        
-        # Only add filePath if it's not a group
         if not self.layer.is_group():
             base_data["filePath"] = self._get_relative_path()
         return base_data
+
+    def _get_composite_image(self, layer):
+        if self.capture_props.get('alpha', False):
+            # If we're capturing alpha, export at 100% opacity
+            original_opacity = layer.opacity
+            layer.opacity = 255
+            image = layer.composite()
+            layer.opacity = original_opacity
+        else:
+            # If we're not capturing alpha, export with original opacity
+            image = layer.composite()
+        return image
+
+    def process(self):
+        sprite_data = self._generate_base_sprite_data()
+        if self.layer.is_group():
+            children = self._process_children()
+            if children:
+                sprite_data['children'] = children
+        else:
+            self._export_image()
+        return sprite_data
 
     def _process_children(self):
         children = []
@@ -84,14 +91,9 @@ class BaseSprite:
         return children
 
     def _export_image(self):
-        # Ensure the output directory exists
         os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
-
-        # Export the layer as an image
-        image = self.layer.composite()
+        image = self._get_composite_image(self.layer)
         image.save(self.output_path, 'PNG')
-
-        # Optimize the PNG
         optimize_pngs(self.output_path, self.config.get('optimizePNGs', {}))
 
     @staticmethod
@@ -113,7 +115,6 @@ class BaseSprite:
             return SpritesheetSprite(layer, output_dir, config, parent_path)
         else:
             return BaseSprite(layer, output_dir, config, parent_path)
-
 
 def process_sprites(sprites_group, output_dir, config):
     sprites_data = []

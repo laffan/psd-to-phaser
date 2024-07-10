@@ -1,13 +1,10 @@
 import os
 from PIL import Image
+from psd_tools.api.layers import Layer, Group
 from src.types.sprites.base_sprite import BaseSprite
 from src.helpers.pack_textures import pack_textures
 from src.helpers.optimize_pngs import optimize_pngs
 from src.helpers.parsers import parse_attributes
-
-# Atlas formatting based off of
-# https://phaser.io/sandbox/?src=src/loader\texture%20atlas%20json\get%20atlas%20meta%20data.js
-
 
 class AtlasSprite(BaseSprite):
     def __init__(self, *args, **kwargs):
@@ -20,13 +17,9 @@ class AtlasSprite(BaseSprite):
         sprite_data = self._generate_base_sprite_data()
         self._collect_frames()
 
-        # Create atlas
         atlas_image, atlas_data = self._create_atlas()
-
-        # Save atlas image
         self._save_image(atlas_image)
 
-        # Update sprite data with new structure
         sprite_data.update({
             "type": "atlas",
             "layerOrder": self.layer_order_counter,
@@ -44,7 +37,20 @@ class AtlasSprite(BaseSprite):
     def _collect_frames(self):
         for child in self.layer:
             name, attributes = parse_attributes(child.name)
+            child_props = self._get_layer_properties(child)  # Capture properties first
+
+            # Store the original opacity
+            original_opacity = child.opacity
+            
+            # Set opacity to 100% if we're capturing alpha
+            if self.capture_props.get('alpha', False):
+                child.opacity = 255
+
+            # Now composite the image
             frame = child.composite()
+
+            # Restore the original opacity
+            child.opacity = original_opacity
 
             frame_name = name.get('name', child.name)
             if frame_name not in self.frame_dict:
@@ -52,17 +58,21 @@ class AtlasSprite(BaseSprite):
                     'image': frame,
                     'instances': []
                 }
-                self.frames.append((frame_name, frame, child.left, child.top))
+                # Include child_props in the frames list
+                self.frames.append((frame_name, frame, child.left, child.top, child_props))
 
             instance_name = f"{frame_name}_{len(self.frame_dict[frame_name]['instances'])}"
 
-            self.frame_dict[frame_name]['instances'].append({
+            instance_data = {
                 'attributes': attributes,
                 'left': child.left,
                 'top': child.top,
                 'layerOrder': self.layer_order_counter,
-                'instanceName': instance_name
-            })
+                'instanceName': instance_name,
+                **child_props  # Include child properties
+            }
+
+            self.frame_dict[frame_name]['instances'].append(instance_data)
             self.layer_order_counter += 1
 
     def _create_atlas(self):
@@ -71,7 +81,7 @@ class AtlasSprite(BaseSprite):
     def _generate_frames(self, atlas_data):
         frames = []
         for frame in atlas_data['frames']:
-            frames.append({
+            frame_data = {
                 "filename": frame['name'],
                 "frame": {
                     "x": frame['x'],
@@ -95,7 +105,12 @@ class AtlasSprite(BaseSprite):
                     "x": 0,
                     "y": 0
                 }
-            })
+            }
+            # Include captured properties in frame data
+            for prop, value in frame['properties'].items():
+                if prop in self.capture_props:
+                    frame_data[prop] = value
+            frames.append(frame_data)
         return frames
 
     def _generate_meta(self, atlas_image):
@@ -116,14 +131,21 @@ class AtlasSprite(BaseSprite):
         placement = []
         for frame_name, frame_info in self.frame_dict.items():
             for instance in frame_info['instances']:
-                placement.append({
+                placement_entry = {
                     "frame": frame_name,
                     "layerOrder": instance['layerOrder'],
                     "instanceName": instance['instanceName'],
                     "x": instance['left'] - self.layer.left,
                     "y": instance['top'] - self.layer.top,
                     **instance['attributes']
-                })
+                }
+                
+                # Include captured properties in placement
+                for prop in self.capture_props:
+                    if prop in instance:
+                        placement_entry[prop] = instance[prop]
+
+                placement.append(placement_entry)
         return placement
 
     def _save_image(self, image):
@@ -134,3 +156,16 @@ class AtlasSprite(BaseSprite):
     def _process_children(self):
         # Override this method to do nothing for atlas sprites
         return None
+
+    def _get_layer_properties(self, layer):
+        props = {}
+        if isinstance(layer, (Layer, Group)):
+            if self.capture_props.get('alpha', False):
+                alpha = round(layer.opacity / 255, 2)
+                if alpha != 1.0:  # Only include alpha if it's not 100%
+                    props['alpha'] = alpha
+            if self.capture_props.get('blend_mode', False):
+                blend_mode = self._blend_mode_to_string(layer.blend_mode)
+                if blend_mode not in ["NORMAL", "PASS_THROUGH"]:  # Ignore both NORMAL and PASS_THROUGH
+                    props['blend_mode'] = blend_mode
+        return props
