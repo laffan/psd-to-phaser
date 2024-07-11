@@ -124,6 +124,52 @@ this.nested = this.P2P.sprites.get(
 
 This returns the full nested structure of whatever you've asked for.
 
+#### getTexture()
+
+Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet. 
+
+**Note:**  Because the plugin is maintaining layer order with setDepth() it is very likely that new items will be hidden behind something. Just set the depth of your new item to something larger than the number of layers and you'll probably see it. 
+
+```js
+// Get the texture of a spritesheet
+const spritesheetTex = this.P2P.sprites.getTexture('psd_key', 'nested/dotSheet');
+const atlasTex = this.P2P.sprites.getTexture('psd_key', 'nested/dotAtlas');
+
+// Emit spritesheet frames
+this.add.particles(200, 30, spritesheetTex, {
+  frame: { frames: [0, 1, 2, 3], cycle: true },
+  speed: 100,
+  scale: { start: 1, end: 0 },
+});
+
+// Emit atlas frames
+this.add.particles(200, 30, atlasTex, {
+  frame: ['pinkDot', 'greenDot']
+  speed: 100,
+  scale: { start: 1, end: 0 },
+});
+
+// Place the 'pinkDot' of the spritesheet elsewhere in the scene
+const testSprite = this.add.sprite(200, 30, atlasTex, 'pinkDot');
+
+// Make sure it's visible
+testSprite.setDepth(100);
+
+```
+
+Of course you can also grab regular sprite textures as well. This can be very powerful if you'd like to add more instances of a particular sprite to the canvas. 
+
+```js
+// Get the texture
+const spriteTex = this.P2P.sprites.getTexture('psd_key', 'simpleSprite')
+
+// Create the new sprite like you normally would
+const newSprite = this.add.sprite(200, 30, spriteTex);
+
+// Make sure it's visible
+testSprite.setDepth(100);
+```
+
 ## Sprite Types
 
 In the PSD, each layer can be given a type, which tells the tool what kind of image to create and how it should be represented in the JSON.
