@@ -1,16 +1,4 @@
-""" src/types/tiles/tile_extractor.py
-Extracts tile layers from PSD files.
-
-This module handles the identification and extraction of tile layers
-from PSD files, preparing them for further processing.
-
-Parameters:
-  psd (PSDImage) = The PSD file object to extract tiles from
-  config (dict) = Configuration options for tile extraction
-
-Returns:
-  extracted_tiles (list) = List of extracted tile layer objects
-"""
+# src/types/tiles/tile_extractor.py
 
 import os
 from PIL import Image
@@ -25,7 +13,7 @@ def extract_tiles(tiles_group, psd_output_dir, config):
     tile_slice_size = config.get('tile_slice_size', 512)
     tile_scaled_versions = config.get('tile_scaled_versions', [])
     jpgQuality = config.get('jpgQuality', 85)
-    optimize_config = config.get('pngQualityRange', {})
+    optimize_config = config.get('optimizePNGs', {})
 
     # Calculate number of rows and columns based on the PSD size
     columns = (tiles_group.width + tile_slice_size - 1) // tile_slice_size
@@ -52,20 +40,20 @@ def extract_tiles(tiles_group, psd_output_dir, config):
             # Compose the layer group
             tile_image = layer.composite()
 
-            # Create a new image with the size of the entire PSD
-            full_image = Image.new('RGBA', (tiles_group.width, tiles_group.height), (0, 0, 0, 0))
-            
-            # Create a new image with the size of the entire PSD
-            full_image = Image.new('RGBA', (tiles_group.width, tiles_group.height), (0, 0, 0, 0))
-            
-            # Paste the layer's image onto the full-sized image at its correct position
-            full_image.paste(tile_image, (layer.left, layer.top), tile_image)
+            # Crop the tile image to the size of the PSD canvas
+            print(f"Cropping {name_type_dict['name']} layer group...")
+            tile_image = tile_image.crop((0 - layer.left, 0 - layer.top, tiles_group.width - layer.left, tiles_group.height - layer.top))
+
+            # Save the full composed image
+            full_image_path = os.path.join(tiles_output_dir, f"{name_type_dict['name']}_full.png")
+            tile_image.save(full_image_path, 'PNG')
+            print(f"Saved full composed image: {full_image_path}")
 
             # Determine if the layer should be exported as transparent based on the type
             is_transparent = name_type_dict.get("type") == "transparent"
 
             # Generate tiles for the exported image
-            create_tiles(full_image,
+            create_tiles(full_image_path,
                          tiles_output_dir,
                          name_type_dict["name"],
                          tile_slice_size,

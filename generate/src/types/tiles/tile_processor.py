@@ -1,23 +1,16 @@
-""" src/types/tiles/tile_processor.py
-Processes extracted tile layers into usable tile sets.
-
-This module handles the slicing, scaling, and formatting of extracted
-tile layers, creating final tile sets and associated metadata.
-
-Parameters:
-  tile_layers (list) = List of extracted tile layer objects
-  config (dict) = Configuration options for tile processing
-
-Returns:
-  processed_tiles (dict) = Dictionary containing processed tile images and metadata
-"""
+# src/types/tiles/tile_processor.py
 
 import os
 from PIL import Image
 from src.helpers.optimize_pngs import optimize_pngs
 
-def create_tiles(image, output_dir, image_name, slice_size, scaled, transparent, jpgQuality, optimize_config):
+def create_tiles(image_path, output_dir, image_name, slice_size, scaled, transparent, jpgQuality, optimize_config):
+    # Load the image from the path
+    image = Image.open(image_path)
     width, height = image.size
+
+    print(f"Loaded image from {image_path}")
+    print(f"Image mode: {image.mode}, size: {image.size}")
 
     # Calculate the number of tiles in each dimension
     num_tiles_x = (width + slice_size - 1) // slice_size
@@ -80,3 +73,7 @@ def create_tiles(image, output_dir, image_name, slice_size, scaled, transparent,
             optimize_pngs(scaled_dir, optimize_config)
 
     print(f"Finished processing {image_name}")
+
+    # Delete the temporary full image
+    os.remove(image_path)
+    print(f"Deleted temporary full image: {image_path}")
