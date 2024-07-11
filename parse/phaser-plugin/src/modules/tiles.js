@@ -46,10 +46,14 @@ export default function tilesModule(plugin) {
       );
     },
 
-    placeTileLayer(scene, layer, options) {
-      const { tilesData } = options;
-      const container = scene.add.container(0, 0);
-      container.setName(layer.name);
+    placeTileLayer(
+      scene: Phaser.Scene,
+      tilesData: any,
+      layer: any,
+      options: any = {}
+    ): any {
+      const group = scene.add.group();
+      group.name = layer.name;
 
       for (let col = 0; col < tilesData.columns; col++) {
         for (let row = 0; row < tilesData.rows; row++) {
@@ -59,7 +63,7 @@ export default function tilesModule(plugin) {
 
           if (scene.textures.exists(tileKey)) {
             const tile = scene.add.image(x, y, tileKey).setOrigin(0, 0);
-            container.add(tile);
+            group.add(tile);
 
             if (plugin.options.debug) {
               console.log(`Placed tile: ${tileKey} at (${x}, ${y})`);
@@ -70,19 +74,45 @@ export default function tilesModule(plugin) {
         }
       }
 
-      const debugGraphics = this.addDebugVisualization(
-        scene,
-        layer,
-        tilesData,
-        options
-      );
-      if (debugGraphics) {
-        container.add(debugGraphics);
+      const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
+      if (debugOptions.shape) {
+        this.addDebugVisualization(
+          scene,
+          layer,
+          tilesData,
+          group,
+          debugOptions
+        );
       }
 
-      return { layerData: layer, tileLayer: container, debugGraphics };
+      return { layerData: layer, tileLayer: group };
     },
 
+    addDebugVisualization(
+      scene: Phaser.Scene,
+      layer: any,
+      tilesData: any,
+      group: Phaser.GameObjects.Group,
+      debugOptions: any
+    ): void {
+      const graphics = scene.add.graphics();
+      graphics.lineStyle(2, 0xff00ff, 1);
+
+      const width = tilesData.columns * tilesData.tile_slice_size;
+      const height = tilesData.rows * tilesData.tile_slice_size;
+
+      graphics.strokeRect(0, 0, width, height);
+
+      if (debugOptions.label) {
+        const text = scene.add.text(0, -20, layer.name, {
+          fontSize: "16px",
+          color: "#ff00ff",
+        });
+        group.add(text);
+      }
+
+      group.add(graphics);
+    },
     placeAll(scene, psdKey, options = {}) {
       const psdData = plugin.getData(psdKey);
       if (!psdData || !psdData.tiles || !psdData.tiles.layers) {
@@ -103,20 +133,6 @@ export default function tilesModule(plugin) {
       }
 
       return psdData.placedTiles[layerName] || null;
-    },
-
-    addDebugVisualization(scene, layer, tilesData, options) {
-      if (!options.debug && !plugin.options.debug) return null;
-
-      const graphics = scene.add.graphics();
-      graphics.lineStyle(2, 0xff00ff, 1);
-
-      const width = tilesData.columns * tilesData.tile_slice_size;
-      const height = tilesData.rows * tilesData.tile_slice_size;
-
-      graphics.strokeRect(0, 0, width, height);
-
-      return graphics;
     },
   };
 }

@@ -51,7 +51,7 @@ export function placeAllSprites(
   scene: Phaser.Scene,
   psdKey: string,
   options: any = {}
-): Phaser.GameObjects.Container | null {
+): Phaser.GameObjects.Group | null {
   const psdData = plugin.getData(psdKey);
   if (!psdData) {
     console.error(`PSD data for key '${psdKey}' not found.`);
@@ -69,14 +69,20 @@ export function placeAllSprites(
     plugin.storageManager
   );
 
-  // Add the main container to the scene
-  scene.add.existing(wrappedObject.placed);
+  // Add the main group to the scene
+  if (wrappedObject.placed instanceof Phaser.GameObjects.Group) {
+    scene.add.existing(wrappedObject.placed);
+  } else {
+    console.error("Expected a Group, but got a different type of game object.");
+    return null;
+  }
 
   // Store the wrapped object
   plugin.storageManager.store(psdKey, "", wrappedObject);
 
-  return wrappedObject.placed as Phaser.GameObjects.Container;
+  return wrappedObject.placed as Phaser.GameObjects.Group;
 }
+
 
 function placeSpritesRecursively(
   scene: Phaser.Scene,
@@ -162,6 +168,7 @@ function placeSpritesRecursively(
 
   return wrappedGroup;
 }
+
 function placeSingleSprite(
   scene: Phaser.Scene,
   sprite: SpriteData,
@@ -170,10 +177,7 @@ function placeSingleSprite(
   psdKey: string,
   storageManager: StorageManager
 ): WrappedObject | null {
-  let spriteObject:
-    | Phaser.GameObjects.Sprite
-    | Phaser.GameObjects.Container
-    | null = null;
+  let spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group | null = null;
 
   try {
     switch (sprite.type) {
@@ -194,12 +198,19 @@ function placeSingleSprite(
     }
 
     if (spriteObject) {
-      spriteObject.setPosition(sprite.x, sprite.y);
+      if (spriteObject instanceof Phaser.GameObjects.Group) {
+        spriteObject.getChildren().forEach((child: any) => {
+          child.x += sprite.x;
+          child.y += sprite.y;
+        });
+      } else {
+        spriteObject.setPosition(sprite.x, sprite.y);
+      }
       if (sprite.alpha !== undefined) spriteObject.setAlpha(sprite.alpha);
-      if (sprite.scale !== undefined) spriteObject.setScale(sprite.scale);
+      if (sprite.scale !== undefined && !(spriteObject instanceof Phaser.GameObjects.Group)) {
+        spriteObject.setScale(sprite.scale);
+      }
       if (sprite.visible !== undefined) spriteObject.setVisible(sprite.visible);
-
-      // const ignoreLayerOrder = options.ignoreLayerOrder !== false;
 
       console.log(`Set depth of ${fullPath} to ${sprite.layerOrder}`);
       spriteObject.setDepth(sprite.layerOrder);
@@ -213,8 +224,19 @@ function placeSingleSprite(
           sprite.type === "animation"
             ? (config: any) => updateAnimation(scene, sprite.name, config)
             : undefined,
-        setPosition: (x: number, y: number) => spriteObject!.setPosition(x, y),
-        setAlpha: (alpha: number) => spriteObject!.setAlpha(alpha),
+        setPosition: (x: number, y: number) => {
+          if (spriteObject instanceof Phaser.GameObjects.Group) {
+            spriteObject.getChildren().forEach((child: any) => {
+              child.x += x - sprite.x;
+              child.y += y - sprite.y;
+            });
+          } else {
+            spriteObject!.setPosition(x, y);
+          }
+        },
+        setAlpha: (alpha: number) => {
+          spriteObject!.setAlpha(alpha);
+        },
         ...getCustomAttributes(sprite),
       };
 
@@ -230,12 +252,32 @@ function placeSingleSprite(
 function addDebugVisualization(
   scene: Phaser.Scene,
   spriteData: SpriteData,
-  spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Container,
+  spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group,
   options: any
 ) {
   const debugOptions = getDebugOptions(options.debug, options.globalDebug);
   if (debugOptions.shape || debugOptions.label) {
-    const bounds = spriteObject.getBounds();
+    let bounds: Phaser.Geom.Rectangle;
+
+    if (spriteObject instanceof Phaser.GameObjects.Group) {
+      // For groups, calculate the bounds based on all children
+      const children = spriteObject.getChildren();
+      if (children.length === 0) {
+        console.warn("Group is empty, cannot create debug visualization");
+        return;
+      }
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      children.forEach((child: any) => {
+        minX = Math.min(minX, child.x);
+        minY = Math.min(minY, child.y);
+        maxX = Math.max(maxX, child.x + child.width);
+        maxY = Math.max(maxY, child.y + child.height);
+      });
+      bounds = new Phaser.Geom.Rectangle(minX, minY, maxX - minX, maxY - minY);
+    } else {
+      bounds = spriteObject.getBounds();
+    }
+
     createDebugShape(scene, "sprite", bounds.centerX, bounds.centerY, {
       name: spriteData.name,
       width: bounds.width,

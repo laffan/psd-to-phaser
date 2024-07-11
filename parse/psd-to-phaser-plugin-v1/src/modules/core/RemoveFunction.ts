@@ -47,7 +47,7 @@ export function createRemoveFunction(
             );
             obj.children.splice(i, 1);
             storageManager.remove(psdKey, childPath);
-          } else if (!(child.placed instanceof Phaser.GameObjects.Container)) {
+          } else if (!(child.placed instanceof Phaser.GameObjects.Group)) {
             child.placed.destroy();
             obj.children.splice(i, 1);
             storageManager.remove(psdKey, childPath);
@@ -57,7 +57,9 @@ export function createRemoveFunction(
     }
 
     if (currentDepth > 0) {
-      if (obj.placed instanceof Phaser.GameObjects.Container) {
+      if (obj.placed instanceof Phaser.GameObjects.Group) {
+        obj.placed.destroy(true);
+      } else if (obj.placed) {
         obj.placed.destroy();
       }
       storageManager.remove(psdKey, path);

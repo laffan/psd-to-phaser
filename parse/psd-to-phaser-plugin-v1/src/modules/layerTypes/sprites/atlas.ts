@@ -1,14 +1,13 @@
 import { SpriteData } from '../../typeDefinitions';
 
 export function placeAtlas(
-  scene: Phaser.Scene, 
-  sprite: SpriteData, 
-  options: any = {}, 
+  scene: Phaser.Scene,
+  sprite: SpriteData,
+  options: any = {},
   fullPath: string
-): Phaser.GameObjects.Container {
-  const container = scene.add.container(sprite.x, sprite.y);
-  container.setName(sprite.name);
-  container.setDepth(sprite.layerOrder); 
+): Phaser.GameObjects.Group {
+  const group = scene.add.group();
+  group.name = sprite.name;
 
   if (sprite.placement && Array.isArray(sprite.placement)) {
     sprite.placement.forEach((piece) => {
@@ -16,10 +15,12 @@ export function placeAtlas(
       const spriteObject = scene.add.sprite(x, y, fullPath, frame);
       spriteObject.setName(instanceName);
       spriteObject.setOrigin(0, 0);
-      container.add(spriteObject);
+      group.add(spriteObject);
       spriteObject.setDepth(layerOrder);
     });
   }
 
-  return container;
+  group.setDepth(sprite.layerOrder);
+
+  return group;
 }
