@@ -87,7 +87,7 @@ function placeSpritesRecursively(
   parentPath: string = "",
   storageManager: StorageManager
 ): WrappedObject {
-  const container = scene.add.container(0, 0);
+  const group = scene.add.group();
   const children: WrappedObject[] = [];
 
   console.log(
@@ -109,7 +109,7 @@ function placeSpritesRecursively(
       );
 
       if (spriteObject) {
-        container.add(spriteObject.placed);
+        group.add(spriteObject.placed);
         addDebugVisualization(scene, sprite, spriteObject.placed, options);
         children.push(spriteObject);
         storageManager.store(psdKey, fullPath, spriteObject);
@@ -127,7 +127,7 @@ function placeSpritesRecursively(
         fullPath,
         storageManager
       );
-      container.add(childWrappedObject.placed);
+      group.add(childWrappedObject.placed);
       children.push(childWrappedObject);
       storageManager.store(psdKey, fullPath, childWrappedObject);
       console.log(`Stored nested sprites for ${fullPath} in storage manager`);
@@ -136,26 +136,32 @@ function placeSpritesRecursively(
 
   if (sprites[0] && sprites[0].layerOrder !== undefined) {
     console.log(`Set depth of ${parentPath} to ${sprites[0].layerOrder}`);
-    container.setDepth(sprites[0].layerOrder);
+    group.setDepth(sprites[0].layerOrder);
   }
 
-  const wrappedContainer: WrappedObject = {
+  const wrappedGroup: WrappedObject = {
     name: parentPath.split("/").pop() || "",
-    type: "Container",
-    placed: container,
+    type: "Group",
+    placed: group,
     children: children,
     remove: createRemoveFunction(storageManager, psdKey, parentPath),
-    setPosition: (x: number, y: number) => container.setPosition(x, y),
-    setAlpha: (alpha: number) => container.setAlpha(alpha),
+    setPosition: (x: number, y: number) => {
+      group.getChildren().forEach((child: any) => {
+        child.x += x;
+        child.y += y;
+      });
+    },
+    setAlpha: (alpha: number) => {
+      group.setAlpha(alpha);
+    },
     ...getCustomAttributes(sprites[0]),
   };
 
-  storageManager.store(psdKey, parentPath, wrappedContainer);
-  console.log(`Stored container for ${parentPath} in storage manager`);
+  storageManager.store(psdKey, parentPath, wrappedGroup);
+  console.log(`Stored group for ${parentPath} in storage manager`);
 
-  return wrappedContainer;
+  return wrappedGroup;
 }
-
 function placeSingleSprite(
   scene: Phaser.Scene,
   sprite: SpriteData,

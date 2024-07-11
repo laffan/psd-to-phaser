@@ -39,6 +39,7 @@ export class StorageManager {
       console.log(`Nothing to remove at: ${psdKey}, ${path}`);
     }
   }
+
   getAll(psdKey: string, options: { depth?: number } = {}): WrappedObject[] {
     if (!this.storage[psdKey]) {
       return [];
@@ -78,5 +79,16 @@ export class StorageManager {
     });
 
     return objects;
+  }
+
+  addToGroup(psdKey: string, parentPath: string, childObject: WrappedObject): void {
+    const parentGroup = this.get(psdKey, parentPath);
+    if (parentGroup && parentGroup.placed instanceof Phaser.GameObjects.Group) {
+      parentGroup.placed.add(childObject.placed);
+      parentGroup.children.push(childObject);
+      this.store(psdKey, `${parentPath}/${childObject.name}`, childObject);
+    } else {
+      console.error(`Parent group not found or invalid: ${parentPath}`);
+    }
   }
 }

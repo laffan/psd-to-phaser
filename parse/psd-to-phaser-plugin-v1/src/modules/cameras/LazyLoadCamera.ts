@@ -185,7 +185,7 @@ export class LazyLoadCamera {
       });
   }
 
-    private loadSprite(object: any) {
+  private loadSprite(object: any) {
     return new Promise<void>((resolve, reject) => {
       try {
         const key = `${this.psdKey}_${object.name}`;
@@ -195,16 +195,22 @@ export class LazyLoadCamera {
 
         this.camera.scene.load.image(key, url);
         this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
-          const sprite = this.camera.scene.add.image(object.x, object.y, key);
+          const sprite = this.camera.scene.add.sprite(object.x, object.y, key);
+          sprite.setName(object.name);
           sprite.setOrigin(0, 0);
           if (object.layerOrder !== undefined) {
             sprite.setDepth(object.layerOrder);
           }
-          this.plugin.storageManager.store(this.psdKey, object.path, {
+          const wrappedSprite = {
             name: object.name,
-            type: 'sprite',
-            placed: sprite
-          });
+            type: "sprite",
+            placed: sprite,
+          };
+          this.plugin.storageManager.addToGroup(
+            this.psdKey,
+            object.path.split("/").slice(0, -1).join("/"),
+            wrappedSprite
+          );
           this.updateDepths();
           resolve();
         });
@@ -230,8 +236,8 @@ export class LazyLoadCamera {
           }
           this.plugin.storageManager.store(this.psdKey, object.path, {
             name: object.name,
-            type: 'tile',
-            placed: tile
+            type: "tile",
+            placed: tile,
           });
           this.updateDepths();
           resolve();
@@ -251,10 +257,17 @@ export class LazyLoadCamera {
   private updateDepths() {
     const allObjects = this.plugin.storageManager.getAll(this.psdKey);
     const sortedObjects = allObjects
-      .filter(obj => obj.placed && (obj.placed instanceof Phaser.GameObjects.Image || obj.placed instanceof Phaser.GameObjects.Sprite))
+      .filter(
+        (obj) =>
+          obj.placed &&
+          (obj.placed instanceof Phaser.GameObjects.Image ||
+            obj.placed instanceof Phaser.GameObjects.Sprite)
+      )
       .sort((a, b) => {
-        const aDepth = a.layerOrder !== undefined ? a.layerOrder : a.placed.depth;
-        const bDepth = b.layerOrder !== undefined ? b.layerOrder : b.placed.depth;
+        const aDepth =
+          a.layerOrder !== undefined ? a.layerOrder : a.placed.depth;
+        const bDepth =
+          b.layerOrder !== undefined ? b.layerOrder : b.placed.depth;
         return aDepth - bDepth;
       });
 
@@ -263,8 +276,6 @@ export class LazyLoadCamera {
     });
   }
 
-
-  
   private finishLoading(object: any) {
     object.loaded = true;
     object.loading = false;
