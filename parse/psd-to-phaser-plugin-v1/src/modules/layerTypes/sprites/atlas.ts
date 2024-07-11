@@ -8,6 +8,7 @@ export function placeAtlas(
 ): Phaser.GameObjects.Container {
   const container = scene.add.container(sprite.x, sprite.y);
   container.setName(sprite.name);
+  container.setDepth(sprite.layerOrder); 
 
   if (sprite.placement && Array.isArray(sprite.placement)) {
     sprite.placement.forEach((piece) => {

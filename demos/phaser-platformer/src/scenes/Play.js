@@ -20,50 +20,34 @@ export class PlayScene extends Scene {
       {
         lazyLoadingOptions: {
           extendPreloadBounds: -30,
-          transitionStyle: "fade", 
           debug: {
             shape: true,
           },
         },
-        draggableOptions: {
-          easeDragging: true,
-        },
+        // draggableOptions: {
+        //   useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+        //   easeDragging: true,
+        // },
       }
     );
+// const myTexture = this.P2P.sprites.getTexture("simple_psd", "nest1/miniNest");
 
-    // this.events.on("loadProgress", (progress, currentlyLoading) => {
-    //   console.log(`Loading is ${progress} complete.`);
-    //   console.log(currentlyLoading); // Array of items currently loading.
-    // });
+// console.log(myTexture)
 
-    // this.events.on("loadingComplete", () => {
-    //   console.log(`Lazy loading is complete.`);
-    // });
-
-    // // console.log(this.cameras.main);
-    // this.dragCam = this.P2P.cameras.createCamera(
-    //   this.cameras.main,
-    //   ["draggable"],
-    //   "simple_psd",
-    //   {
-    //     draggableOptions: {
-    //       useBounds: { x: 0, y: 0 , width:500, height: 500 },
-    //       easeDragging: true,
-    //     },
-    //   }
-    // );
-
-    // this.events.on("dragOnStart", () => {
-    //   console.log(`Drag has begun.`);
-    // });
-
-    // this.events.on("isDragging", () => {
-    //   console.log(`Draggin.`);
-    // });
-
-    // this.events.on("dragOnComplete", () => {
-    //   console.log(`Drag has completed.`);
-    // });
+// if (myTexture) {
+//   // Use texture in emitter
+//   this.add.particles(100, 100, myTexture, {
+//     lifespan: 2000,
+//     speed: { min: 100, max: 200 },
+//     angle: { min: 0, max: 360 },
+//     scale: { start: 1, end: 0 },
+//     frequency: 100,
+//     emitting: true,
+//   });
+// } else {
+//   console.error("Texture not found for particle emitter");
+// }
+ 
   }
 
   update() {}

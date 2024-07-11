@@ -1,138 +1,274 @@
-import { StoredObject } from "../../core/StoredObject";
-import { SpriteData } from "../../typeDefinitions";
+import PsdToPhaserPlugin from "../../../PsdToPhaserPlugin";
+import { SpriteData, WrappedObject } from "../../typeDefinitions";
 import { placeSprite as placeSimpleSprite } from "./defaultSprite";
-// import { placeAnimation } from "./animation";
-import { placeSpritesheetOrAnimation } from "./spritesheet";
+import { placeAnimation, updateAnimation } from "./animation";
+import { placeSpritesheet } from "./spritesheet";
 import { placeAtlas } from "./atlas";
+import { createDebugShape } from "../../utils/debugVisualizer";
+import { getDebugOptions } from "../../utils/sharedUtils";
+import { createRemoveFunction } from "../../core/RemoveFunction";
+import { StorageManager } from "../../core/StorageManager";
 
 export function placeSprite(
-  plugin: any,
+  plugin: PsdToPhaserPlugin,
   scene: Phaser.Scene,
   psdKey: string,
   spritePath: string,
   options: any = {}
-): Phaser.GameObjects.GameObject | Phaser.GameObjects.Container | null {
+): WrappedObject | null {
   const psdData = plugin.getData(psdKey);
-  if (!psdData || !psdData.sprites) {
-    console.warn(`Sprite data not found for key '${psdKey}'.`);
+  if (!psdData) {
+    console.error(`PSD data for key '${psdKey}' not found.`);
     return null;
   }
 
-  const sprite = findSpriteByPath(psdData.sprites, spritePath);
+  const sprite = getSpriteByPath(psdData.sprites, spritePath);
   if (!sprite) {
-    console.warn(`Sprite '${spritePath}' not found in PSD data.`);
+    console.error(`Sprite '${spritePath}' not found in PSD data.`);
     return null;
   }
 
-  if (sprite.children) {
-    return placeNestedSprites(plugin, scene, psdKey, sprite, options);
-  }
+  const depth = options.depth !== undefined ? options.depth : Infinity;
+  const parentPath = spritePath.split("/").slice(0, -1).join("/");
+  const placedSprite = placeSpritesRecursively(
+    scene,
+    [sprite],
+    options,
+    depth,
+    psdKey,
+    parentPath,
+    plugin.storageManager
+  );
 
-  return placeSingleSprite(plugin, scene, psdKey, sprite, spritePath, options);
-}
-
-export function placeAllSprites(
-  plugin: any,
-  scene: Phaser.Scene,
-  psdKey: string,
-  options: any = {}
-): Phaser.GameObjects.GameObject[] {
-  const psdData = plugin.getData(psdKey);
-  if (!psdData || !psdData.sprites) {
-    console.warn(`Sprite data not found for key '${psdKey}'.`);
-    return [];
-  }
-
-  const placedSprites: Phaser.GameObjects.GameObject[] = [];
-
-  psdData.sprites.forEach((sprite: SpriteData) => {
-    const placedSprite = placeSprite(plugin, scene, psdKey, sprite.name, options);
-    if (placedSprite) {
-      placedSprites.push(placedSprite);
-    }
-  });
-  
-
-  return placedSprites;
-}
-function placeSingleSprite(
-  plugin: any,
-  scene: Phaser.Scene,
-  psdKey: string,
-  sprite: SpriteData,
-  spritePath: string,
-  options: any
-): Phaser.GameObjects.GameObject | null {
-  let placedSprite: Phaser.GameObjects.GameObject | null = null;
-  
-  try {
-    switch (sprite.type) {
-      case "atlas":
-        placedSprite = placeAtlas(scene, sprite, options, psdKey);
-        break;
-      case "spritesheet":
-        placedSprite = placeSpritesheet(scene, sprite, options, sprite.name);
-        break;
-      case "animation":
-        placedSprite = placeAnimation(scene, sprite, options, sprite.name);
-        break;
-      case "merged":
-      case "simple":
-      default:
-        placedSprite = placeSimpleSprite(scene, sprite, options, psdKey);
-        break;
-    }
-
-    if (placedSprite) {
-      storeSprite(plugin, psdKey, spritePath, placedSprite);
-    }
-  } catch (error) {
-    console.error(`Error placing sprite ${spritePath}:`, error);
-  }
+  // Store the placed sprite
+  plugin.storageManager.store(psdKey, spritePath, placedSprite);
 
   return placedSprite;
 }
 
-function placeNestedSprites(
-  plugin: any,
+export function placeAllSprites(
+  plugin: PsdToPhaserPlugin,
   scene: Phaser.Scene,
   psdKey: string,
-  parentSprite: SpriteData,
-  options: any
-): Phaser.GameObjects.Container {
-  const container = scene.add.container(parentSprite.x, parentSprite.y);
-  container.setName(`${psdKey}/${parentSprite.name}`);
+  options: any = {}
+): Phaser.GameObjects.Container | null {
+  const psdData = plugin.getData(psdKey);
+  if (!psdData) {
+    console.error(`PSD data for key '${psdKey}' not found.`);
+    return null;
+  }
 
-  parentSprite.children.forEach((childSprite: SpriteData) => {
-    const childPath = `${parentSprite.name}/${childSprite.name}`;
-    const placedChild = placeSingleSprite(plugin, scene, psdKey, childSprite, childPath, options);
-    if (placedChild) {
-      container.add(placedChild);
+  const depth = options.depth !== undefined ? options.depth : Infinity;
+  const wrappedObject = placeSpritesRecursively(
+    scene,
+    psdData.sprites,
+    options,
+    depth,
+    psdKey,
+    "",
+    plugin.storageManager
+  );
+
+  // Add the main container to the scene
+  scene.add.existing(wrappedObject.placed);
+
+  // Store the wrapped object
+  plugin.storageManager.store(psdKey, "", wrappedObject);
+
+  return wrappedObject.placed as Phaser.GameObjects.Container;
+}
+
+function placeSpritesRecursively(
+  scene: Phaser.Scene,
+  sprites: SpriteData[],
+  options: any = {},
+  depth: number,
+  psdKey: string,
+  parentPath: string = "",
+  storageManager: StorageManager
+): WrappedObject {
+  const container = scene.add.container(0, 0);
+  const children: WrappedObject[] = [];
+
+  sprites.forEach((sprite) => {
+    const fullPath = parentPath
+      ? `${parentPath}/${sprite.name}`
+      : sprite.name;
+    let spriteObject: WrappedObject | null = null;
+
+    if (!sprite.children) {
+      spriteObject = placeSingleSprite(
+        scene,
+        sprite,
+        options,
+        fullPath,
+        psdKey,
+        storageManager
+      );
+
+      if (spriteObject) {
+        container.add(spriteObject.placed);
+        addDebugVisualization(
+          scene,
+          sprite,
+          spriteObject.placed,
+          options
+        );
+        children.push(spriteObject);
+        storageManager.store(psdKey, fullPath, spriteObject);
+      }
+    }
+
+    if (sprite.children && depth > 0) {
+      const childWrappedObject = placeSpritesRecursively(
+        scene,
+        sprite.children,
+        options,
+        depth - 1,
+        psdKey,
+        fullPath,
+        storageManager
+      );
+      container.add(childWrappedObject.placed);
+      children.push(childWrappedObject);
+      storageManager.store(psdKey, fullPath, childWrappedObject);
     }
   });
 
-  storeSprite(plugin, psdKey, parentSprite.name, container);
-  return container;
+  const wrappedContainer: WrappedObject = {
+    name: parentPath.split("/").pop() || "",
+    type: "Container",
+    placed: container,
+    children: children,
+    remove: createRemoveFunction(storageManager, psdKey, parentPath),
+    setPosition: (x: number, y: number) => container.setPosition(x, y),
+    setAlpha: (alpha: number) => container.setAlpha(alpha),
+    ...getCustomAttributes(sprites[0]),
+  };
+
+  storageManager.store(psdKey, parentPath, wrappedContainer);
+  return wrappedContainer;
 }
 
-function findSpriteByPath(sprites: SpriteData[], path: string): SpriteData | null {
-  const parts = path.split("/");
-  let current: SpriteData | undefined = sprites.find((s) => s.name === parts[0]);
+function placeSingleSprite(
+  scene: Phaser.Scene,
+  sprite: SpriteData,
+  options: any,
+  fullPath: string,
+  psdKey: string,
+  storageManager: StorageManager
+): WrappedObject | null {
+  let spriteObject:
+    | Phaser.GameObjects.Sprite
+    | Phaser.GameObjects.Container
+    | null = null;
 
-  for (let i = 1; i < parts.length; i++) {
-    if (!current || !current.children) return null;
-    current = current.children.find((child) => child.name === parts[i]);
+  try {
+    switch (sprite.type) {
+      case "atlas":
+        spriteObject = placeAtlas(scene, sprite, options, fullPath);
+        break;
+      case "spritesheet":
+        spriteObject = placeSpritesheet(scene, sprite, options, fullPath);
+        break;
+      case "animation":
+        spriteObject = placeAnimation(scene, sprite, options, fullPath);
+        break;
+      case "merged":
+      case "simple":
+      default:
+        spriteObject = placeSimpleSprite(scene, sprite, options, fullPath);
+        break;
+    }
+
+    if (spriteObject) {
+      spriteObject.setPosition(sprite.x, sprite.y);
+      if (sprite.alpha !== undefined) spriteObject.setAlpha(sprite.alpha);
+      if (sprite.scale !== undefined) spriteObject.setScale(sprite.scale);
+      if (sprite.visible !== undefined) spriteObject.setVisible(sprite.visible);
+
+      const useLayerOrder = options.useLayerOrder !== false;
+      if (useLayerOrder && sprite.layerOrder !== undefined) {
+        spriteObject.setDepth(sprite.layerOrder);
+      }
+
+      const wrappedSprite: WrappedObject = {
+        name: sprite.name,
+        type: sprite.type,
+        placed: spriteObject,
+        remove: createRemoveFunction(storageManager, psdKey, fullPath),
+        updateAnimation:
+          sprite.type === "animation"
+            ? (config: any) => updateAnimation(scene, sprite.name, config)
+            : undefined,
+        setPosition: (x: number, y: number) =>
+          spriteObject!.setPosition(x, y),
+        setAlpha: (alpha: number) => spriteObject!.setAlpha(alpha),
+        ...getCustomAttributes(sprite),
+      };
+
+      return wrappedSprite;
+    }
+  } catch (error) {
+    console.error(`Error placing sprite ${fullPath}:`, error);
   }
 
-  return current || null;
+  return null;
 }
 
-function storeSprite(plugin: any, psdKey: string, spritePath: string, sprite: Phaser.GameObjects.GameObject): void {
-  if (!plugin.placedSprites) {
-    plugin.placedSprites = {};
+function addDebugVisualization(
+  scene: Phaser.Scene,
+  spriteData: SpriteData,
+  spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Container,
+  options: any
+) {
+  const debugOptions = getDebugOptions(options.debug, options.globalDebug);
+  if (debugOptions.shape || debugOptions.label) {
+    const bounds = spriteObject.getBounds();
+    createDebugShape(scene, "sprite", bounds.centerX, bounds.centerY, {
+      name: spriteData.name,
+      width: bounds.width,
+      height: bounds.height,
+      color: 0x00ff00,
+      debugOptions,
+      globalDebug: options.globalDebug,
+    });
   }
-  if (!plugin.placedSprites[psdKey]) {
-    plugin.placedSprites[psdKey] = {};
-  }
-  plugin.placedSprites[psdKey][spritePath] = sprite;
 }
+
+function getSpriteByPath(sprites: SpriteData[], path: string): SpriteData | null {
+  const pathParts = path.split("/");
+  let current = sprites;
+
+  for (let i = 0; i < pathParts.length; i++) {
+    const part = pathParts[i];
+    const found = current.find((s: SpriteData) => s.name === part);
+    if (!found) return null;
+    if (i === pathParts.length - 1) {
+      return found;
+    }
+    if (found.children) {
+      current = found.children;
+    } else {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+function getCustomAttributes(sprite: SpriteData): Record<string, any> {
+  const customAttributes: Record<string, any> = {};
+  for (const key in sprite) {
+    if (
+      !["name", "type", "x", "y", "width", "height", "children"].includes(
+        key
+      )
+    ) {
+      customAttributes[key] = sprite[key];
+    }
+  }
+  return customAttributes;
+}
+
+export { placeSingleSprite, placeSpritesRecursively };

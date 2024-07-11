@@ -8,6 +8,7 @@ export function placeSpritesheet(
 ): Phaser.GameObjects.Container {
   const container = scene.add.container(sprite.x, sprite.y);
   container.setName(sprite.name);
+  container.setDepth(sprite.layerOrder || 0); // Set depth based on layerOrder
 
   if (sprite.placement && Array.isArray(sprite.placement)) {
     sprite.placement.forEach((piece) => {
@@ -17,6 +18,7 @@ export function placeSpritesheet(
       spriteObject.setOrigin(0, 0);
       container.add(spriteObject);
       spriteObject.setDepth(layerOrder);
+      
     });
   }
 

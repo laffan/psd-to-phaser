@@ -52,15 +52,20 @@ def extract_tiles(tiles_group, psd_output_dir, config):
             # Compose the layer group
             tile_image = layer.composite()
 
-            # Crop the tile image to the size of the PSD canvas
-            print(f"Cropping {name_type_dict['name']} layer group...")
-            tile_image = tile_image.crop((0 - layer.left, 0 - layer.top, tiles_group.width - layer.left, tiles_group.height - layer.top))
+            # Create a new image with the size of the entire PSD
+            full_image = Image.new('RGBA', (tiles_group.width, tiles_group.height), (0, 0, 0, 0))
+            
+            # Create a new image with the size of the entire PSD
+            full_image = Image.new('RGBA', (tiles_group.width, tiles_group.height), (0, 0, 0, 0))
+            
+            # Paste the layer's image onto the full-sized image at its correct position
+            full_image.paste(tile_image, (layer.left, layer.top), tile_image)
 
             # Determine if the layer should be exported as transparent based on the type
             is_transparent = name_type_dict.get("type") == "transparent"
 
             # Generate tiles for the exported image
-            create_tiles(tile_image,
+            create_tiles(full_image,
                          tiles_output_dir,
                          name_type_dict["name"],
                          tile_slice_size,

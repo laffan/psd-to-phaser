@@ -185,7 +185,7 @@ export class LazyLoadCamera {
       });
   }
 
-  private loadSprite(object: any) {
+    private loadSprite(object: any) {
     return new Promise<void>((resolve, reject) => {
       try {
         const key = `${this.psdKey}_${object.name}`;
@@ -197,6 +197,15 @@ export class LazyLoadCamera {
         this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
           const sprite = this.camera.scene.add.image(object.x, object.y, key);
           sprite.setOrigin(0, 0);
+          if (object.layerOrder !== undefined) {
+            sprite.setDepth(object.layerOrder);
+          }
+          this.plugin.storageManager.store(this.psdKey, object.path, {
+            name: object.name,
+            type: 'sprite',
+            placed: sprite
+          });
+          this.updateDepths();
           resolve();
         });
         this.camera.scene.load.start();
@@ -216,6 +225,15 @@ export class LazyLoadCamera {
         try {
           const tile = this.camera.scene.add.image(object.x, object.y, key);
           tile.setOrigin(0, 0);
+          if (object.layerOrder !== undefined) {
+            tile.setDepth(object.layerOrder);
+          }
+          this.plugin.storageManager.store(this.psdKey, object.path, {
+            name: object.name,
+            type: 'tile',
+            placed: tile
+          });
+          this.updateDepths();
           resolve();
         } catch (error) {
           reject(error);
@@ -230,6 +248,23 @@ export class LazyLoadCamera {
     });
   }
 
+  private updateDepths() {
+    const allObjects = this.plugin.storageManager.getAll(this.psdKey);
+    const sortedObjects = allObjects
+      .filter(obj => obj.placed && (obj.placed instanceof Phaser.GameObjects.Image || obj.placed instanceof Phaser.GameObjects.Sprite))
+      .sort((a, b) => {
+        const aDepth = a.layerOrder !== undefined ? a.layerOrder : a.placed.depth;
+        const bDepth = b.layerOrder !== undefined ? b.layerOrder : b.placed.depth;
+        return aDepth - bDepth;
+      });
+
+    sortedObjects.forEach((obj, index) => {
+      obj.placed.setDepth(index);
+    });
+  }
+
+
+  
   private finishLoading(object: any) {
     object.loaded = true;
     object.loading = false;

@@ -11,6 +11,7 @@ export function placeAnimation(
   const gameObject = scene.add.sprite(sprite.x, sprite.y, fullPath, 0);
   gameObject.setName(sprite.name);
   gameObject.setOrigin(0, 0);
+  gameObject.setDepth(sprite.layerOrder); 
 
   if (sprite.frame_width && sprite.frame_height) {
     const animConfig: Phaser.Types.Animations.Animation = {

@@ -2,22 +2,18 @@
   "output_dir": "../demos/phaser-platformer/public/assets/",
   "psd_files": [
     "../demos/psds/sensible.psd",
-    "../demos/psds/simple.psd"
+    "../demos/psds/depthTest.psd"
   ],
-  "tile_slice_size": 500,
-  "tile_scaled_versions": [250],
-    "captureLayerProps": {
+  "tile_slice_size": 300,
+  "tile_scaled_versions": [],
+  "captureLayerProps": {
     "alpha": false,
     "blend_mode": false
   },
-  "optimizePNGs": {
-    "forceAllSprites": true,
-    "forceAllTiles": true
-  },
   "generateOnSave": true,
   "pngQualityRange": {
-    "low": 45,
-    "high": 65
+    "low": 65,
+    "high": 85
   },
   "jpgQuality": 80
 }
