@@ -88,7 +88,10 @@ Inside your PSD, any content you want to be output should be placed in one of th
 - `sprites`
 - `tiles`
 
-**Note: Content outside of these groups will be ignored.**
+**Note:** 
+
+- Content outside of these groups will be ignored.
+- With the exception of animations, **hidden layers will not show up in export.**
 
 
 ### Basic Export Types

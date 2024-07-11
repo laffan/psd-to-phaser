@@ -30,6 +30,8 @@ def extract_tiles(tiles_group, psd_output_dir, config):
     tiles_output_dir = os.path.join(psd_output_dir, 'tiles')
     os.makedirs(tiles_output_dir, exist_ok=True)
 
+    layer_order_counter = 0  
+
     for layer in tiles_group:
         if layer.is_group():
             print(f"Composing {layer.name} layer group...")
@@ -65,8 +67,10 @@ def extract_tiles(tiles_group, psd_output_dir, config):
             # Store the tile information
             tile_info = {
                 **name_type_dict,
-                **attributes
+                **attributes,
+                "layerOrder": layer_order_counter 
             }
             tiles_data["layers"].append(tile_info)
+            layer_order_counter += 1  
 
     return tiles_data
