@@ -90,10 +90,12 @@ function placeSpritesRecursively(
   const container = scene.add.container(0, 0);
   const children: WrappedObject[] = [];
 
+  console.log(
+    `Placing sprites recursively. Parent path: ${parentPath}, Depth: ${depth}`
+  );
+
   sprites.forEach((sprite) => {
-    const fullPath = parentPath
-      ? `${parentPath}/${sprite.name}`
-      : sprite.name;
+    const fullPath = parentPath ? `${parentPath}/${sprite.name}` : sprite.name;
     let spriteObject: WrappedObject | null = null;
 
     if (!sprite.children) {
@@ -108,14 +110,10 @@ function placeSpritesRecursively(
 
       if (spriteObject) {
         container.add(spriteObject.placed);
-        addDebugVisualization(
-          scene,
-          sprite,
-          spriteObject.placed,
-          options
-        );
+        addDebugVisualization(scene, sprite, spriteObject.placed, options);
         children.push(spriteObject);
         storageManager.store(psdKey, fullPath, spriteObject);
+        console.log(`Stored sprite ${fullPath} in storage manager`);
       }
     }
 
@@ -132,8 +130,14 @@ function placeSpritesRecursively(
       container.add(childWrappedObject.placed);
       children.push(childWrappedObject);
       storageManager.store(psdKey, fullPath, childWrappedObject);
+      console.log(`Stored nested sprites for ${fullPath} in storage manager`);
     }
   });
+
+  if (sprites[0] && sprites[0].layerOrder !== undefined) {
+    console.log(`Set depth of ${parentPath} to ${sprites[0].layerOrder}`);
+    container.setDepth(sprites[0].layerOrder);
+  }
 
   const wrappedContainer: WrappedObject = {
     name: parentPath.split("/").pop() || "",
@@ -147,6 +151,8 @@ function placeSpritesRecursively(
   };
 
   storageManager.store(psdKey, parentPath, wrappedContainer);
+  console.log(`Stored container for ${parentPath} in storage manager`);
+
   return wrappedContainer;
 }
 
@@ -187,10 +193,10 @@ function placeSingleSprite(
       if (sprite.scale !== undefined) spriteObject.setScale(sprite.scale);
       if (sprite.visible !== undefined) spriteObject.setVisible(sprite.visible);
 
-      const useLayerOrder = options.useLayerOrder !== false;
-      if (useLayerOrder && sprite.layerOrder !== undefined) {
-        spriteObject.setDepth(sprite.layerOrder);
-      }
+      // const ignoreLayerOrder = options.ignoreLayerOrder !== false;
+
+      console.log(`Set depth of ${fullPath} to ${sprite.layerOrder}`);
+      spriteObject.setDepth(sprite.layerOrder);
 
       const wrappedSprite: WrappedObject = {
         name: sprite.name,
@@ -201,8 +207,7 @@ function placeSingleSprite(
           sprite.type === "animation"
             ? (config: any) => updateAnimation(scene, sprite.name, config)
             : undefined,
-        setPosition: (x: number, y: number) =>
-          spriteObject!.setPosition(x, y),
+        setPosition: (x: number, y: number) => spriteObject!.setPosition(x, y),
         setAlpha: (alpha: number) => spriteObject!.setAlpha(alpha),
         ...getCustomAttributes(sprite),
       };
@@ -236,7 +241,10 @@ function addDebugVisualization(
   }
 }
 
-function getSpriteByPath(sprites: SpriteData[], path: string): SpriteData | null {
+function getSpriteByPath(
+  sprites: SpriteData[],
+  path: string
+): SpriteData | null {
   const pathParts = path.split("/");
   let current = sprites;
 
@@ -261,9 +269,7 @@ function getCustomAttributes(sprite: SpriteData): Record<string, any> {
   const customAttributes: Record<string, any> = {};
   for (const key in sprite) {
     if (
-      !["name", "type", "x", "y", "width", "height", "children"].includes(
-        key
-      )
+      !["name", "type", "x", "y", "width", "height", "children"].includes(key)
     ) {
       customAttributes[key] = sprite[key];
     }
