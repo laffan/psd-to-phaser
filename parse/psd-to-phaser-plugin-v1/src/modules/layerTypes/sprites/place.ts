@@ -105,14 +105,19 @@ function placeSpritesRecursively(
     let spriteObject: WrappedObject | null = null;
 
     if (!sprite.children) {
-      spriteObject = placeSingleSprite(
-        scene,
-        sprite,
-        options,
-        fullPath,
-        psdKey,
-        storageManager
-      );
+      if (sprite.lazyLoad) {
+        // For lazy-loaded sprites, create a placeholder
+        spriteObject = createLazyLoadPlaceholder(scene, sprite, fullPath, psdKey, storageManager);
+      } else {
+        spriteObject = placeSingleSprite(
+          scene,
+          sprite,
+          options,
+          fullPath,
+          psdKey,
+          storageManager
+        );
+      }
 
       if (spriteObject) {
         group.add(spriteObject.placed);
@@ -167,6 +172,30 @@ function placeSpritesRecursively(
   console.log(`Stored group for ${parentPath} in storage manager`);
 
   return wrappedGroup;
+}
+
+function createLazyLoadPlaceholder(
+  scene: Phaser.Scene,
+  sprite: SpriteData,
+  fullPath: string,
+  psdKey: string,
+  storageManager: StorageManager
+): WrappedObject {
+  const placeholder = scene.add.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, 0xcccccc, 0.5);
+  placeholder.setOrigin(0, 0);
+  placeholder.setDepth(sprite.layerOrder);
+
+  const wrappedPlaceholder: WrappedObject = {
+    name: sprite.name,
+    type: "LazyLoadPlaceholder",
+    placed: placeholder,
+    remove: createRemoveFunction(storageManager, psdKey, fullPath),
+    setPosition: (x: number, y: number) => placeholder.setPosition(x, y),
+    setAlpha: (alpha: number) => placeholder.setAlpha(alpha),
+    ...getCustomAttributes(sprite),
+  };
+
+  return wrappedPlaceholder;
 }
 
 function placeSingleSprite(

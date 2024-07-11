@@ -13,6 +13,10 @@ export class PlayScene extends Scene {
     this.P2P.zones.placeAll(this, "psd_key");
     this.P2P.sprites.placeAll(this, "psd_key");
 
+// const getTest = this.P2P.sprites.getTexture("psd_key", "nest1");
+
+
+
     this.lazyCamera = this.P2P.cameras.createCamera(
       this.cameras.main,
       ["lazyLoading", "draggable"],
@@ -30,24 +34,40 @@ export class PlayScene extends Scene {
         // },
       }
     );
-// const myTexture = this.P2P.sprites.getTexture("simple_psd", "nest1/miniNest");
 
-// console.log(myTexture)
+    // if (simpleTexture) {
+    //   const simpleEmitter = this.add.particles(20, 30, simpleTexture, {
+    //     speed: 100,
+    //     scale: { start: 1, end: 0 },
+    //   });
+    // }
+   const texture = this.P2P.sprites.getTexture('psd_key', 'nest1/boxes');
+   console.log(texture)
 
-// if (myTexture) {
-//   // Use texture in emitter
-//   this.add.particles(100, 100, myTexture, {
-//     lifespan: 2000,
-//     speed: { min: 100, max: 200 },
-//     angle: { min: 0, max: 360 },
-//     scale: { start: 1, end: 0 },
-//     frequency: 100,
-//     emitting: true,
-//   });
-// } else {
-//   console.error("Texture not found for particle emitter");
-// }
- 
+     const testEmit = this.add.particles(200, 30, texture, {
+        frame: { frames: [0, 1, 2, 3], cycle: true },
+        speed: 100,
+        scale: { start: 1, end: 0 },
+      });
+
+const testSprite = this.add.sprite(200, 30, texture, '0');
+  const hiddenTextureKey = this.P2P.sprites.getTextureKey('psd_key', 'group/group2/hiddenSpritePath');
+
+  console.log(hiddenTextureKey);
+
+testEmit.setDepth(1000); // Set a high depth value to ensure it's on top
+
+
+    // // Atlas particle
+    // const atlasTexture = this.P2P.sprites.getTexture('particles', 'atlas_particle');
+    // if (atlasTexture) {
+    //   const atlasEmitter = this.add.particles(600, 300, atlasTexture, {
+    //     frame: { frames: ['particle1', 'particle2', 'particle3'], cycle: true },
+    //     speed: 100,
+    //     scale: { start: 1, end: 0 },
+    //     blendMode: 'ADD'
+    //   });
+    
   }
 
   update() {}

@@ -1,5 +1,10 @@
 import PsdToPhaserPlugin from "../../../PsdToPhaserPlugin";
-import { placeSprite, placeAllSprites, placeSingleSprite, placeSpritesRecursively } from "./place";
+import {
+  placeSprite,
+  placeAllSprites,
+  placeSingleSprite,
+  placeSpritesRecursively,
+} from "./place";
 import { getSprite, getAllSprites, getTexture } from "./get";
 import { updateAnimation } from "./animation";
 
@@ -11,12 +16,24 @@ export default function spritesModule(plugin: PsdToPhaserPlugin) {
       getAllSprites(plugin, psdKey, options),
     getTexture: (psdKey: string, spritePath: string) =>
       getTexture(plugin, psdKey, spritePath),
-    place: (scene: Phaser.Scene, psdKey: string, spritePath: string, options: any = {}) =>
-      placeSprite(plugin, scene, psdKey, spritePath, options),
+    place: (
+      scene: Phaser.Scene,
+      psdKey: string,
+      spritePath: string,
+      options: any = {}
+    ) => placeSprite(plugin, scene, psdKey, spritePath, options),
     placeAll: (scene: Phaser.Scene, psdKey: string, options: any = {}) =>
       placeAllSprites(plugin, scene, psdKey, options),
     placeSingleSprite,
     placeSpritesRecursively,
-    updateAnimation
+    updateAnimation,
+    getTextureKey: (psdKey: string, spritePath: string): string | null => {
+      const wrappedSprite = plugin.storageManager.get(psdKey, spritePath);
+      if (wrappedSprite) {
+        // Use the full path to create a unique texture key
+        return `${psdKey}_${spritePath.replace(/\//g, "_")}`;
+      }
+      return null;
+    },
   };
 }

@@ -23,6 +23,8 @@ export function getAllSprites(
   return plugin.storageManager.getAll(psdKey, options);
 }
 
+// src/modules/layerTypes/sprites/get.ts
+
 export function getTexture(
   plugin: PsdToPhaserPlugin,
   psdKey: string,
@@ -30,12 +32,17 @@ export function getTexture(
 ): Phaser.Textures.Texture | null {
   const wrappedSprite = plugin.storageManager.get(psdKey, spritePath);
   if (wrappedSprite && wrappedSprite.placed) {
-    const texture = wrappedSprite.placed.texture;
-    if (texture) {
-      return texture;
+    const gameObject = wrappedSprite.placed;
+    
+    if (gameObject instanceof Phaser.GameObjects.Sprite || gameObject instanceof Phaser.GameObjects.Image) {
+      return gameObject.texture;
+    } else if (gameObject instanceof Phaser.GameObjects.Group) {
+      // For atlas and spritesheet, return the texture of the first child
+      const firstChild = gameObject.getChildren()[0] as Phaser.GameObjects.Sprite;
+      return firstChild ? firstChild.texture : null;
     }
   }
-  
+
   // If the texture isn't found, try to load it
   const psdData = plugin.getData(psdKey);
   if (psdData && psdData.basePath) {
@@ -47,7 +54,7 @@ export function getTexture(
       return plugin.game.textures.get(key);
     }
   }
-  
+
   console.warn(`Texture not found for sprite: ${spritePath}`);
   return null;
 }
