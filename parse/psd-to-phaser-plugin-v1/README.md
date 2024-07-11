@@ -253,10 +253,11 @@ At the moment, there are two : `lazyLoad` and `draggable`.
 
 ### LazyLoad
 
-In the PSD, any sprites or tile layers that have been given the `lazyLoad` attribute will have
-not been loaded during preload() and not placed. This camera feature gives you the
-ability to load them only when the camera needs them, potentially keeping load times
-much smaller.
+This camera works in conjunction with the `lazyLoad` attribute, which you can set to true on any sprite or tile layer. Any sprite or tile layers that have been given the `lazyLoad` attribute will not loaded during preload() but later, when they enter the camera. This gives you the ability to load assets only when the camera needs them, potentially keeping load times much (much) smaller.
+
+**Note:** There are some tradeoffs to using `lazyLoad`. The biggest difference is that you can't manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they'll just show up when needed. 
+
+The other tradeoff is that you MUST use the lazyLoad camera to see them at all, as the plugin just leaves them out of the initial load sequence.
 
 ```js
 // Initialize a lazyLoad camera
@@ -266,15 +267,18 @@ this.lazyCamera = this.P2P.cameras.createCamera(
   "simple_psd",
   {
     lazyLoadingOptions: {
-      preloadRange: 0,
-      transitionStyle: "fade",
+    extendPreloadBounds: -30,
+    // Show the boundary of the lazyLoad camera
+    // and the lazyLoad sprites.
+    debug: {
+      shape: true,
+    },
     },
   }
 );
 ```
 
-Now P2P is keeping track of where the camera is and whether there is any overlap with
-the location of sprites or tiles. If there is overlap, it will trigger a load sequence
+Now P2P is keeping track of where the camera is and whether there is any overlap with the location of sprites or tiles. If there is overlap, it will trigger a load sequence
 
 You can also deactivate the feature by setting active to false.
 
@@ -303,9 +307,10 @@ this.events.on("loadingComplete", () => {
 });
 ```
 
+
 ### Draggable
 
-The draggable camera lets you click and drag around the canvas.
+The draggable camera lets you click and drag around the canvas. That's about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.
 
 ```js
 // Initialize a draggable camera. Try it out!
@@ -318,7 +323,7 @@ this.dragCam = this.P2P.createCamera(this.camera, ['draggable']
   })
 ```
 
-Just like the lazyLoad feature, you can create a draggable camera with defaults and set parameters later on.
+Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.
 
 Dragging triggers events, so you can listen for "dragOnStart", "isDragging" and "dragOnComplete".
 
