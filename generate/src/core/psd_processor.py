@@ -40,6 +40,8 @@ class PSDProcessor:
         return processed_data
 
     def process_psd(self, psd, psd_file, psd_output_dir):
+        print(f"Config in psd_processosl.py/process_psd: {self.config}")
+
         psd_data = {
             'name': os.path.splitext(os.path.basename(psd_file))[0],
             'width': psd.width,

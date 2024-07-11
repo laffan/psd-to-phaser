@@ -64,7 +64,7 @@ class MergedSprite(BaseSprite):
         image.save(self.output_path, 'PNG')
         
         # Optimize the PNG
-        optimize_pngs(self.output_path, self.config.get('optimizePNGs', {}))
+        optimize_pngs(self.output_path, self.config.get('pngQualityRange', {}))
 
     def _process_children(self):
         # Override this method to do nothing for merged sprites

@@ -17,14 +17,15 @@ import subprocess
 def optimize_pngs(path, config):
     print(f"Optimizing PNGs in: {path}")
 
-    quality_range = config.get('pngQualityRange', {'low': 45, 'high': 65})
+    # quality_range = config.get('pngQualityRange', {'low': 45, 'high': 65})
+    print(f"optimize_pngs configuration : {config}")
 
     def optimize_file(filepath):
         try:
             # Optimize the PNG directly, without creating a separate temp file
             subprocess.run([
                 'pngquant',
-                '--quality', f"{quality_range['low']}-{quality_range['high']}",
+                '--quality', f"{config['low']}-{config['high']}",
                 '--speed', '1',
                 '--force',
                 '--ext', '.png',

@@ -3,6 +3,16 @@ import os
 import time
 from src.core.psd_processor import PSDProcessor
 from src.core.json_generator import JSONGenerator
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,  # Set the logging level to DEBUG to capture all levels of log messages
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Define the log message format
+    handlers=[
+        logging.StreamHandler()  # Add a StreamHandler to output log messages to the console
+    ]
+)
 
 def get_file_mtime(filepath):
     try:
@@ -13,7 +23,8 @@ def get_file_mtime(filepath):
 def process_psds(config):
     # Ensure output directory exists
     os.makedirs(config['output_dir'], exist_ok=True)
-    
+    print(f"Configuration in main.py/process_psds: {config}")
+
     # Process PSD files
     processor = PSDProcessor(config)
     processed_data = processor.process_all_psds()

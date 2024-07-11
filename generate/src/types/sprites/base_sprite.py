@@ -94,7 +94,7 @@ class BaseSprite:
         os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
         image = self._get_composite_image(self.layer)
         image.save(self.output_path, 'PNG')
-        optimize_pngs(self.output_path, self.config.get('optimizePNGs', {}))
+        optimize_pngs(self.output_path, self.config.get('pngQualityRange', {}))
 
     @staticmethod
     def create_sprite(layer, output_dir, config, parent_path=''):

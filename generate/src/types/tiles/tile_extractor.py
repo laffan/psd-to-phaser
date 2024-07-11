@@ -25,7 +25,7 @@ def extract_tiles(tiles_group, psd_output_dir, config):
     tile_slice_size = config.get('tile_slice_size', 512)
     tile_scaled_versions = config.get('tile_scaled_versions', [])
     jpgQuality = config.get('jpgQuality', 85)
-    optimize_config = config.get('optimizePNGs', {})
+    optimize_config = config.get('pngQualityRange', {})
 
     # Calculate number of rows and columns based on the PSD size
     columns = (tiles_group.width + tile_slice_size - 1) // tile_slice_size

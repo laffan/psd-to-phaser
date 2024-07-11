@@ -10,10 +10,10 @@
     "alpha": false,
     "blend_mode": false
   },
-  "generateOnSave": true,
+  "generateOnSave": false,
   "pngQualityRange": {
-    "low": 65,
-    "high": 85
+    "low": 99,
+    "high": 100
   },
   "jpgQuality": 80
 }

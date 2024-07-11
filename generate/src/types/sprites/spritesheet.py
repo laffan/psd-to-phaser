@@ -117,7 +117,7 @@ class SpritesheetSprite(BaseSprite):
     def _save_image(self, image):
         os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
         image.save(self.output_path, 'PNG')
-        optimize_pngs(self.output_path, self.config.get('optimizePNGs', {}))
+        optimize_pngs(self.output_path, self.config.get('pngQualityRange', {}))
 
     def _process_children(self):
         # Override this method to do nothing for spritesheet sprites
