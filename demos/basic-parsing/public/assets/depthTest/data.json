@@ -1,0 +1,249 @@
+{
+  "name": "depthTest",
+  "width": 300,
+  "height": 300,
+  "tiles": {
+    "tile_slice_size": 300,
+    "tile_scaled_versions": [],
+    "columns": 2,
+    "rows": 2,
+    "layers": [
+      {
+        "name": "background",
+        "lazyLoad": true,
+        "layerOrder": 0
+      },
+      {
+        "name": "aboveBackground",
+        "type": "transparent",
+        "lazyLoad": true,
+        "layerOrder": 1
+      }
+    ]
+  },
+  "sprites": [
+    {
+      "name": "topSprite",
+      "type": "simple",
+      "x": 13,
+      "y": 94,
+      "width": 153,
+      "height": 176,
+      "layerOrder": 21,
+      "lazyLoad": true,
+      "filePath": "sprites/topSprite.png"
+    },
+    {
+      "name": "nest1",
+      "type": "simple",
+      "x": 13,
+      "y": 18,
+      "width": 259,
+      "height": 274,
+      "layerOrder": 22,
+      "children": [
+        {
+          "name": "nested",
+          "type": "simple",
+          "x": 13,
+          "y": 124,
+          "width": 153,
+          "height": 138,
+          "layerOrder": 23,
+          "lazyLoad": true,
+          "filePath": "sprites/nest1/nested.png"
+        },
+        {
+          "name": "nested2",
+          "type": "simple",
+          "x": 23,
+          "y": 167,
+          "width": 153,
+          "height": 103,
+          "layerOrder": 24,
+          "filePath": "sprites/nest1/nested2.png"
+        },
+        {
+          "name": "lazyDot",
+          "type": "simple",
+          "x": 144,
+          "y": 212,
+          "width": 37,
+          "height": 37,
+          "layerOrder": 25,
+          "lazyLoad": true,
+          "filePath": "sprites/nest1/lazyDot.png"
+        },
+        {
+          "name": "boxes",
+          "type": "spritesheet",
+          "x": 199,
+          "y": 72,
+          "width": 73,
+          "height": 170,
+          "layerOrder": 26,
+          "visible": false,
+          "filename": "sprites/nest1/boxes.png",
+          "frame_width": 73,
+          "frame_height": 46,
+          "frame_count": 3,
+          "columns": 2,
+          "rows": 2,
+          "placement": [
+            {
+              "frame": 0,
+              "x": 0,
+              "y": 0,
+              "layerOrder": 0,
+              "instanceName": "anderson_0"
+            },
+            {
+              "frame": 1,
+              "x": 0,
+              "y": 65,
+              "layerOrder": 1,
+              "instanceName": "anderson copy_0"
+            },
+            {
+              "frame": 2,
+              "x": 0,
+              "y": 124,
+              "layerOrder": 2,
+              "instanceName": "anderson copy 2_0"
+            }
+          ]
+        },
+        {
+          "name": "bounce",
+          "type": "animation",
+          "x": 178,
+          "y": 18,
+          "width": 13,
+          "height": 272,
+          "layerOrder": 27,
+          "frameRate": 3,
+          "filename": "sprites/nest1/bounce.png",
+          "frame_width": 13,
+          "frame_height": 272,
+          "frame_count": 9,
+          "columns": 3,
+          "rows": 3
+        },
+        {
+          "name": "aboveBounce",
+          "type": "simple",
+          "x": 13,
+          "y": 229,
+          "width": 153,
+          "height": 63,
+          "layerOrder": 28,
+          "filePath": "sprites/nest1/aboveBounce.png"
+        },
+        {
+          "name": "dots",
+          "type": "atlas",
+          "x": 207,
+          "y": 257,
+          "width": 39,
+          "height": 19,
+          "layerOrder": 2,
+          "filePath": "sprites/nest1/dots.png",
+          "atlas": {
+            "frames": [
+              {
+                "filename": "pink",
+                "frame": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 19,
+                  "h": 19
+                },
+                "rotated": false,
+                "trimmed": false,
+                "spriteSourceSize": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 19,
+                  "h": 19
+                },
+                "sourceSize": {
+                  "w": 19,
+                  "h": 19
+                },
+                "pivot": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "filename": "green",
+                "frame": {
+                  "x": 19,
+                  "y": 0,
+                  "w": 19,
+                  "h": 19
+                },
+                "rotated": false,
+                "trimmed": false,
+                "spriteSourceSize": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 19,
+                  "h": 19
+                },
+                "sourceSize": {
+                  "w": 19,
+                  "h": 19
+                },
+                "pivot": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            ],
+            "meta": {
+              "app": "http://www.codeandweb.com/texturepacker",
+              "version": "1.0",
+              "image": "sprites/nest1/dots.png",
+              "format": "RGBA8888",
+              "size": {
+                "w": 38,
+                "h": 19
+              },
+              "scale": "1",
+              "smartupdate": "$TexturePacker:SmartUpdate:5e8f90752cfd57d3adfb39bcd3eef1b6:87d98cec6fa616080f731b87726d6a1e:b55588eba103b49b35a0a59665ed84fd$"
+            }
+          },
+          "placement": [
+            {
+              "frame": "pink",
+              "layerOrder": 0,
+              "instanceName": "pink_0",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "frame": "green",
+              "layerOrder": 1,
+              "instanceName": "green_0",
+              "x": 20,
+              "y": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "topLevelTop",
+      "type": "simple",
+      "x": 33,
+      "y": 246,
+      "width": 112,
+      "height": 29,
+      "layerOrder": 30,
+      "filePath": "sprites/topLevelTop.png"
+    }
+  ],
+  "zones": [],
+  "points": []
+}
