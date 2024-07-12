@@ -125,6 +125,13 @@ export class LazyLoadCamera {
   private checkVisibility() {
     this.lazyObjects.forEach((object) => {
       if (!object.loaded && !object.loading) {
+        // Check if the object is a group (has children) and has lazyLoad applied
+        if (object.children && object.lazyLoad) {
+          // Mark the group as loaded without attempting to load a file
+          object.loaded = true;
+          return; // Skip the rest of the loop for this object
+        }
+
         const objectRect = new Phaser.Geom.Rectangle(
           object.x,
           object.y,
