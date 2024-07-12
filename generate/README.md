@@ -200,7 +200,11 @@ it should output the following in the "points" array of the final JSON blob :
   ],}
 ```
 
-## Known Issues
+## TODOs
 
-- Compressed PNG quality on merged groups with low opacity is terrible.  An easy fix is to just convert the group to a smart object and treat it like a regular sprite.
-- Atlas items can't keep track of their opacity.
+### Finish
+
+### Bugs
+- [ ] `captureLayerProps/alpha` doesn't work with atlas items.
+
+## New Features
