@@ -165,6 +165,9 @@ function placeSpritesRecursively(
     setAlpha: (alpha: number) => {
       group.setAlpha(alpha);
     },
+    setVisible: (visible: boolean) => {
+      group.setVisible(visible);
+    },
     ...getCustomAttributes(sprites[0]),
   };
 
@@ -192,6 +195,7 @@ function createLazyLoadPlaceholder(
     remove: createRemoveFunction(storageManager, psdKey, fullPath),
     setPosition: (x: number, y: number) => placeholder.setPosition(x, y),
     setAlpha: (alpha: number) => placeholder.setAlpha(alpha),
+    setVisible: (visible: boolean) => placeholder.setVisible(visible),
     ...getCustomAttributes(sprite),
   };
 
@@ -239,7 +243,6 @@ function placeSingleSprite(
       if (sprite.scale !== undefined && !(spriteObject instanceof Phaser.GameObjects.Group)) {
         spriteObject.setScale(sprite.scale);
       }
-      if (sprite.visible !== undefined) spriteObject.setVisible(sprite.visible);
 
       console.log(`Set depth of ${fullPath} to ${sprite.layerOrder}`);
       spriteObject.setDepth(sprite.layerOrder);
@@ -266,8 +269,13 @@ function placeSingleSprite(
         setAlpha: (alpha: number) => {
           spriteObject!.setAlpha(alpha);
         },
+        setVisible: (visible: boolean) => {
+          spriteObject!.setVisible(visible);
+        },
         ...getCustomAttributes(sprite),
       };
+
+      if (sprite.visible !== undefined) spriteObject.setVisible(sprite.visible);
 
       return wrappedSprite;
     }
