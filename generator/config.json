@@ -1,10 +1,9 @@
 {
-  "output_dir": "../demos/phaser-platformer/public/assets/",
+  "output_dir": "../demos/introduction/public/assets/",
   "psd_files": [
-    "../demos/psds/sensible.psd",
-    "../demos/psds/depthTest.psd"
+    "../demos/psds/introduction.psd"
   ],
-  "tile_slice_size": 300,
+  "tile_slice_size": 150,
   "tile_scaled_versions": [],
   "captureLayerProps": {
     "alpha": false,

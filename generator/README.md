@@ -78,6 +78,9 @@ Once you have everything as you like it, just run
    python generator/main.py # For mac users it might be python3
    ```
 
+#### Generate on save
+
+If you have `generateOnSave` set to true, saving any PSD in your `psd_files` array will trigger the script. Ideally you have the same thing turned on for frontend development (see [demos](./../demos/platformer/), so saved changes immediately show up in the browser.)
 
 ## Setting Up Your PSD
 

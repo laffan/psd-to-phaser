@@ -53,7 +53,7 @@ class PSDProcessor:
             if layer_name_lower == 'sprites':
                 psd_data['sprites'] = process_sprites(layer, psd_output_dir, self.config)
             elif layer_name_lower == 'tiles':
-                psd_data['tiles'] = extract_tiles(layer, psd_output_dir, self.config)
+                psd_data['tiles'] = extract_tiles(layer, psd_output_dir, self.config, psd.width, psd.height)
             elif layer_name_lower == 'points':
                 psd_data['points'] = process_points(layer, self.config)
             elif layer_name_lower == 'zones':
