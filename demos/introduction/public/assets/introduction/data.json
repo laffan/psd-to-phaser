@@ -1,0 +1,183 @@
+{
+  "name": "introduction",
+  "width": 900,
+  "height": 300,
+  "tiles": {
+    "tile_slice_size": 150,
+    "tile_scaled_versions": [],
+    "columns": 6,
+    "rows": 2,
+    "layers": [
+      {
+        "name": "backgroundGradient",
+        "layerOrder": 0
+      },
+      {
+        "name": "dotHills",
+        "type": "transparent",
+        "layerOrder": 1
+      },
+      {
+        "name": "pattern",
+        "type": "transparent",
+        "layerOrder": 2
+      }
+    ]
+  },
+  "sprites": [
+    {
+      "name": "sun",
+      "type": "animation",
+      "x": -1,
+      "y": 36,
+      "width": 608,
+      "height": 261,
+      "layerOrder": 0,
+      "frameRate": 1,
+      "filename": "sprites/sun.png",
+      "frame_width": 608,
+      "frame_height": 261,
+      "frame_count": 7,
+      "columns": 3,
+      "rows": 3
+    },
+    {
+      "name": "sparkles",
+      "type": "simple",
+      "x": 381,
+      "y": 67,
+      "width": 113,
+      "height": 138,
+      "layerOrder": 1,
+      "spritesheet": true,
+      "children": [
+        {
+          "name": "reddot",
+          "type": "simple",
+          "x": 423,
+          "y": 122,
+          "width": 28,
+          "height": 30,
+          "layerOrder": 2,
+          "filePath": "sprites/sparkles/reddot.png"
+        },
+        {
+          "name": "blueline",
+          "type": "simple",
+          "x": 399,
+          "y": 157,
+          "width": 38,
+          "height": 48,
+          "layerOrder": 3,
+          "filePath": "sprites/sparkles/blueline.png"
+        },
+        {
+          "name": "tanline",
+          "type": "simple",
+          "x": 446,
+          "y": 67,
+          "width": 32,
+          "height": 49,
+          "layerOrder": 4,
+          "filePath": "sprites/sparkles/tanline.png"
+        },
+        {
+          "name": "tandot",
+          "type": "simple",
+          "x": 381,
+          "y": 110,
+          "width": 20,
+          "height": 19,
+          "layerOrder": 5,
+          "filePath": "sprites/sparkles/tandot.png"
+        },
+        {
+          "name": "orange1",
+          "type": "simple",
+          "x": 462,
+          "y": 131,
+          "width": 32,
+          "height": 53,
+          "layerOrder": 6,
+          "filePath": "sprites/sparkles/orange1.png"
+        }
+      ]
+    },
+    {
+      "name": "tree",
+      "type": "simple",
+      "x": 29,
+      "y": 134,
+      "width": 49,
+      "height": 84,
+      "layerOrder": 7,
+      "atlas": true,
+      "children": [
+        {
+          "name": "leafDarkBlue",
+          "type": "simple",
+          "x": 39,
+          "y": 134,
+          "width": 28,
+          "height": 24,
+          "layerOrder": 8,
+          "filePath": "sprites/tree/leafDarkBlue.png"
+        },
+        {
+          "name": "leafTan",
+          "type": "simple",
+          "x": 29,
+          "y": 156,
+          "width": 25,
+          "height": 28,
+          "layerOrder": 9,
+          "filePath": "sprites/tree/leafTan.png"
+        },
+        {
+          "name": "leafRed",
+          "type": "simple",
+          "x": 52,
+          "y": 155,
+          "width": 26,
+          "height": 26,
+          "layerOrder": 10,
+          "filePath": "sprites/tree/leafRed.png"
+        },
+        {
+          "name": "trunkBlue",
+          "type": "simple",
+          "x": 52,
+          "y": 174,
+          "width": 12,
+          "height": 44,
+          "layerOrder": 11,
+          "filePath": "sprites/tree/trunkBlue.png"
+        }
+      ]
+    }
+  ],
+  "points": [
+    {
+      "name": "zones",
+      "x": 453.0,
+      "y": 263.5,
+      "children": [
+        {
+          "name": "fillZone",
+          "x": 453.0,
+          "y": 263.5
+        }
+      ]
+    },
+    {
+      "name": "leftPoint",
+      "x": 44.0,
+      "y": 31.0
+    },
+    {
+      "name": "rightPoint",
+      "x": 860.0,
+      "y": 31.0
+    }
+  ]
+}
