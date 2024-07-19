@@ -15,6 +15,7 @@
       {
         "name": "dotHills",
         "type": "transparent",
+        "lazyLoad": true,
         "layerOrder": 1
       },
       {
@@ -32,7 +33,7 @@
       "y": 36,
       "width": 608,
       "height": 261,
-      "layerOrder": 0,
+      "layerOrder": 24,
       "frameRate": 1,
       "filename": "sprites/sun.png",
       "frame_width": 608,
@@ -48,7 +49,7 @@
       "y": 67,
       "width": 113,
       "height": 138,
-      "layerOrder": 1,
+      "layerOrder": 25,
       "spritesheet": true,
       "children": [
         {
@@ -58,7 +59,7 @@
           "y": 122,
           "width": 28,
           "height": 30,
-          "layerOrder": 2,
+          "layerOrder": 26,
           "filePath": "sprites/sparkles/reddot.png"
         },
         {
@@ -68,7 +69,7 @@
           "y": 157,
           "width": 38,
           "height": 48,
-          "layerOrder": 3,
+          "layerOrder": 27,
           "filePath": "sprites/sparkles/blueline.png"
         },
         {
@@ -78,7 +79,7 @@
           "y": 67,
           "width": 32,
           "height": 49,
-          "layerOrder": 4,
+          "layerOrder": 28,
           "filePath": "sprites/sparkles/tanline.png"
         },
         {
@@ -88,7 +89,7 @@
           "y": 110,
           "width": 20,
           "height": 19,
-          "layerOrder": 5,
+          "layerOrder": 29,
           "filePath": "sprites/sparkles/tandot.png"
         },
         {
@@ -98,7 +99,7 @@
           "y": 131,
           "width": 32,
           "height": 53,
-          "layerOrder": 6,
+          "layerOrder": 30,
           "filePath": "sprites/sparkles/orange1.png"
         }
       ]
@@ -110,7 +111,7 @@
       "y": 134,
       "width": 49,
       "height": 84,
-      "layerOrder": 7,
+      "layerOrder": 31,
       "atlas": true,
       "children": [
         {
@@ -120,7 +121,7 @@
           "y": 134,
           "width": 28,
           "height": 24,
-          "layerOrder": 8,
+          "layerOrder": 32,
           "filePath": "sprites/tree/leafDarkBlue.png"
         },
         {
@@ -130,7 +131,7 @@
           "y": 156,
           "width": 25,
           "height": 28,
-          "layerOrder": 9,
+          "layerOrder": 33,
           "filePath": "sprites/tree/leafTan.png"
         },
         {
@@ -140,7 +141,7 @@
           "y": 155,
           "width": 26,
           "height": 26,
-          "layerOrder": 10,
+          "layerOrder": 34,
           "filePath": "sprites/tree/leafRed.png"
         },
         {
@@ -150,7 +151,7 @@
           "y": 174,
           "width": 12,
           "height": 44,
-          "layerOrder": 11,
+          "layerOrder": 35,
           "filePath": "sprites/tree/trunkBlue.png"
         }
       ]

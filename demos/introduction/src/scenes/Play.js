@@ -13,6 +13,12 @@ export class PlayScene extends Scene {
     this.P2P.zones.placeAll(this, "psd_key");
     this.P2P.sprites.placeAll(this, "psd_key");
 
+    const hills = this.P2P.tiles.get("psd_key", "dotHills");
+    const sun = this.P2P.sprites.get("psd_key", "sun")
+    console.log(hills);
+    console.log(sun);
+    // sun.placed.setDepth(0.5);
+
     // this.lazyCamera = this.P2P.cameras.createCamera(
     //   this.cameras.main,
     //   ["lazyLoading", "draggable"],
