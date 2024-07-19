@@ -9,7 +9,7 @@
     "alpha": false,
     "blend_mode": false
   },
-  "generateOnSave": false,
+  "generateOnSave": true,
   "pngQualityRange": {
     "low": 99,
     "high": 100
