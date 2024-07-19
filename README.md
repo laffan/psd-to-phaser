@@ -4,16 +4,6 @@
 
 This is a proof-of-concept, inspired by [Tiled](https://www.mapeditor.org/), powered by [psd_tools](https://pypi.org/project/psd-tools/) and [coded by robots](#credits--authorship). 
 
-## Launch Sequence
-- [ ] Demos / Introduction
-- [ ] Demos / Platformer
-- [ ] cameras.parallax?
-- [ ] Demos / Mobile
-- [ ] Intro video
-- [ ] generate TODOs
-- [ ] plugin TODOs
-- [ ] publish to npm
-
 ## Generator
 
 This is a series of python scripts that uses psd_tools to break up the PSD, read positions, attributes, etc and then output a JSON blob with a series of optimized assets.  You can read more about how to use the generator in its [README](./generator/README.md).
