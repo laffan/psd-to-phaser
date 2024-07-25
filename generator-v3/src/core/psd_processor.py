@@ -1,6 +1,8 @@
 import os
 from psd_tools import PSDImage
 from src.helpers.parsers import parse_attributes
+from src.types.point import process_points
+from src.types.zone import process_zones
 
 class PSDProcessor:
     def __init__(self, config):
@@ -11,6 +13,7 @@ class PSDProcessor:
     def process_all_psds(self):
         processed_data = {}
         for psd_file in self.config['psd_files']:
+            self.depth_counter = 0  # Reset depth counter for each PSD
             psd = PSDImage.open(psd_file)
             psd_name = os.path.splitext(os.path.basename(psd_file))[0]
             psd_output_dir = os.path.join(self.config['output_dir'], psd_name)
@@ -19,15 +22,11 @@ class PSDProcessor:
         return processed_data
 
     def process_psd(self, psd, psd_file, psd_output_dir):
-        self.depth_counter = 0  # Reset depth counter for each PSD
         layers = self.process_layers(psd)
         
         # Reverse the depth values
         max_depth = self.depth_counter - 1
-        for layer in layers:
-            layer['initialDepth'] = max_depth - layer['initialDepth']
-            if 'children' in layer:
-                self.reverse_children_depth(layer['children'], max_depth)
+        self.reverse_depth(layers, max_depth)
 
         psd_data = {
             'name': os.path.splitext(os.path.basename(psd_file))[0],
@@ -47,10 +46,8 @@ class PSDProcessor:
             layer_info = {
                 'name': parsed_layer['name'],
                 'category': parsed_layer['category'],
-                'left': layer.left,
-                'top': layer.top,
-                'width': layer.width,
-                'height': layer.height,
+                'x': layer.left + (layer.width / 2),
+                'y': layer.top + (layer.height / 2),
                 'initialDepth': self.depth_counter
             }
             self.depth_counter += 1  # Increment the depth counter for each valid layer
@@ -60,7 +57,11 @@ class PSDProcessor:
                 if key not in ['name', 'category']:
                     layer_info[key] = value
 
-            if layer.is_group():
+            if layer_info['category'] == 'point':
+                layer_info = process_points(layer_info, self.config)
+            elif layer_info['category'] == 'zone':
+                layer_info = process_zones(layer_info, layer)
+            elif layer.is_group():
                 children = self.process_layers(layer)
                 if children:
                     layer_info['children'] = children
@@ -69,8 +70,9 @@ class PSDProcessor:
 
         return layers
 
-    def reverse_children_depth(self, children, max_depth):
-        for child in children:
-            child['initialDepth'] = max_depth - child['initialDepth']
-            if 'children' in child:
-                self.reverse_children_depth(child['children'], max_depth)
+    def reverse_depth(self, layers, max_depth):
+        for layer in layers:
+            if 'initialDepth' in layer:
+                layer['initialDepth'] = max_depth - layer['initialDepth']
+            if 'children' in layer:
+                self.reverse_depth(layer['children'], max_depth)
