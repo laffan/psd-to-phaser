@@ -84,7 +84,9 @@ class PSDProcessor:
 
     def reverse_depth(self, layers, max_depth):
         for layer in layers:
+            if layer is None:
+                continue
             if 'initialDepth' in layer:
                 layer['initialDepth'] = max_depth - layer['initialDepth']
-            if 'children' in layer:
+            if 'children' in layer and layer['children']:
                 self.reverse_depth(layer['children'], max_depth)

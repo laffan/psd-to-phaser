@@ -1,3 +1,5 @@
+```python
+
 import os
 from PIL import Image
 from psd_tools.api.layers import Layer, Group
@@ -9,8 +11,7 @@ class AtlasSprite(Sprite):
         super().__init__(layer_info, layer, config, output_dir, psd_name)
         self.type = 'atlas'
         self.frames = []
-        self.unique_frames = {}
-        self.instances = []
+        self.frame_dict = {}
         self.layer_order_counter = 0
         self.data = {
             'name': self.layer_info['name'],
@@ -19,7 +20,7 @@ class AtlasSprite(Sprite):
 
     def process(self):
         self._collect_frames()
-        if not self.unique_frames:
+        if not self.frames:
             print(f"Warning: No valid frames found for atlas '{self.layer_info['name']}'. Skipping atlas creation.")
             return None
         atlas_image, atlas_data = self._create_atlas()
@@ -33,34 +34,27 @@ class AtlasSprite(Sprite):
                 self._process_layer(child)
         else:
             print(f"Warning: Atlas layer '{self.layer_info['name']}' is not a group. Skipping atlas creation.")
-        self.frames = list(self.unique_frames.values())
 
     def _process_layer(self, layer):
         if layer is None or not layer.is_visible():
             return
         frame = self._create_frame(layer)
         if frame:
-            if frame['name'] not in self.unique_frames:
-                self.unique_frames[frame['name']] = frame
-            self._add_instance(frame, layer)
+            self.frames.append(frame)
+            self.frame_dict[layer.name] = frame
 
     def _create_frame(self, layer):
         frame = {
             'name': layer.name,
             'image': layer.composite(),
             'order': self.layer_order_counter,
+            'psd_x': layer.left,
+            'psd_y': layer.top,
             'width': layer.width,
             'height': layer.height
         }
         self.layer_order_counter += 1
         return frame
-
-    def _add_instance(self, frame, layer):
-        self.instances.append({
-            'name': layer.name,
-            'x': layer.left,
-            'y': layer.top,
-        })
 
     def _create_atlas(self):
         total_width = sum(frame['width'] for frame in self.frames)
@@ -82,7 +76,13 @@ class AtlasSprite(Sprite):
                 y_offset += max_height
 
         atlas_data = {
-            'instances': self.instances,
+            'instances': [
+                {
+                    'name': frame['name'],
+                    'x': frame['psd_x'],
+                    'y': frame['psd_y'],
+                } for frame in self.frames
+            ],
             'frames': {
                 frame['name']: {
                     'x': frame['atlas_x'],
@@ -102,3 +102,5 @@ class AtlasSprite(Sprite):
 
     def export(self):
         return self.data
+
+```

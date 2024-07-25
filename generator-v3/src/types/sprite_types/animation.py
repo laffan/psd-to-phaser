@@ -8,6 +8,10 @@ class AnimationSprite(Sprite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.frames = []
+        self.min_x = float('inf')
+        self.min_y = float('inf')
+        self.max_width = 0
+        self.max_height = 0
 
     def process(self):
         self._collect_frames()
@@ -17,18 +21,21 @@ class AnimationSprite(Sprite):
         spritesheet = self._create_spritesheet()
         file_path = self._save_image(spritesheet)
 
+        width = self.max_width - self.min_x
+        height = self.max_height - self.min_y
+
         sprite_data = {
             **self.layer_info,
             "filePath": file_path,
-            "frame_width": self.layer.width,
-            "frame_height": self.layer.height,
+            "frame_width": width,
+            "frame_height": height,
             "frame_count": len(self.frames),
             "columns": self.columns,
             "rows": self.rows,
-            "x": self.layer.left,
-            "y": self.layer.top,
-            "width": self.layer.width,
-            "height": self.layer.height
+            "x": self.min_x,
+            "y": self.min_y,
+            "width": width,
+            "height": height
         }
 
         return sprite_data
@@ -45,6 +52,11 @@ class AnimationSprite(Sprite):
                     int(layer.name)  # Attempt to use the layer name as a frame number
                     frame = layer.composite()
                     self.frames.append((layer, frame))
+
+                    self.min_x = min(self.min_x, layer.left)
+                    self.min_y = min(self.min_y, layer.top)
+                    self.max_width = max(self.max_width, layer.right)
+                    self.max_height = max(self.max_height, layer.bottom)
                 except ValueError:
                     print(f"Warning: Layer name '{layer.name}' in animation group '{self.layer.name}' is not a valid integer. Skipping this frame.")
         finally:
@@ -56,27 +68,19 @@ class AnimationSprite(Sprite):
         self.columns = math.ceil(math.sqrt(frame_count))
         self.rows = math.ceil(frame_count / self.columns)
 
-        group_width = self.layer.width
-        group_height = self.layer.height
+        width = self.max_width - self.min_x
+        height = self.max_height - self.min_y
 
-        spritesheet = Image.new('RGBA', (self.columns * group_width, self.rows * group_height), (0, 0, 0, 0))
+        spritesheet = Image.new('RGBA', (self.columns * width, self.rows * height), (0, 0, 0, 0))
 
         for index, (layer, frame) in enumerate(self.frames):
-            x = (index % self.columns) * group_width
-            y = (index // self.columns) * group_height
+            x = (index % self.columns) * width
+            y = (index // self.columns) * height
 
-            # Create a new image with the group's dimensions
-            frame_image = Image.new('RGBA', (group_width, group_height), (0, 0, 0, 0))
-            
-            # Calculate the position of the frame within the group
-            frame_x = layer.left - self.layer.left
-            frame_y = layer.top - self.layer.top
-            
-            # Paste the frame onto the group-sized image
-            frame_image.paste(frame, (frame_x, frame_y))
-            
-            # Paste the group-sized image onto the spritesheet
-            spritesheet.paste(frame_image, (x, y))
+            frame_x = layer.left - self.min_x
+            frame_y = layer.top - self.min_y
+
+            spritesheet.paste(frame, (x + frame_x, y + frame_y))
 
         return spritesheet
 

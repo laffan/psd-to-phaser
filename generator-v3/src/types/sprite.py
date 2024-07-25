@@ -35,6 +35,7 @@ class Sprite:
         from src.types.sprite_types.basic import BasicSprite
         from src.types.sprite_types.spritesheet import SpritesheetSprite
         from src.types.sprite_types.animation import AnimationSprite
+        from src.types.sprite_types.atlas import AtlasSprite
 
         sprite_type = layer_info.get('type', 'basic')
         
@@ -43,7 +44,6 @@ class Sprite:
         elif sprite_type == 'animation':
             return AnimationSprite(layer_info, layer, config, output_dir, psd_name)
         elif sprite_type == 'atlas':
-            print(f"Getting back to {sprite_type} sprite processing")
-            return None
+            return AtlasSprite(layer_info, layer, config, output_dir, psd_name)
         else:
             return BasicSprite(layer_info, layer, config, output_dir, psd_name)
