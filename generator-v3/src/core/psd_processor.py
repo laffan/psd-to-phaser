@@ -3,12 +3,15 @@ from psd_tools import PSDImage
 from src.helpers.parsers import parse_attributes
 from src.types.point import process_points
 from src.types.zone import process_zones
+from src.types.sprite import Sprite
 
 class PSDProcessor:
     def __init__(self, config):
         self.config = config
         self.output_dir = config['output_dir']
         self.depth_counter = 0
+        self.psd_name = None  # Add this line
+
 
     def process_all_psds(self):
         processed_data = {}
@@ -22,6 +25,7 @@ class PSDProcessor:
         return processed_data
 
     def process_psd(self, psd, psd_file, psd_output_dir):
+        self.psd_name = os.path.splitext(os.path.basename(psd_file))[0]  
         layers = self.process_layers(psd)
         
         # Reverse the depth values
@@ -61,7 +65,15 @@ class PSDProcessor:
                 layer_info = process_points(layer_info, self.config)
             elif layer_info['category'] == 'zone':
                 layer_info = process_zones(layer_info, layer)
-            elif layer.is_group():
+            elif layer_info['category'] == 'sprite':
+                sprite = Sprite.create_sprite(layer_info, layer, self.config, self.output_dir, self.psd_name)
+                if sprite:
+                    layer_info = sprite.process()
+                else:
+                    # For now, just add a note that this sprite type is not yet processed
+                    layer_info['note'] = f"Sprite type '{layer_info.get('type', 'basic')}' not yet processed"
+            
+            if layer.is_group():
                 children = self.process_layers(layer)
                 if children:
                     layer_info['children'] = children
