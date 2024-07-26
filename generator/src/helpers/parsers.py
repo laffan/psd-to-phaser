@@ -1,22 +1,10 @@
-""" src/helpers/parsers.py
-Parses layer names and attributes from PSD files.
-
-This module contains utility functions for extracting and interpreting
-information from layer names, including layer types and custom attributes.
-
-Parameters:
-  layer_name (str) = Name of the layer to parse
-
-Returns:
-  parsed_data (dict) = Dictionary containing extracted information such as
-                       layer type, name, and custom attributes
-"""
+import re
 
 def parse_string(value):
     if value.startswith('"') and value.endswith('"'):
         return value[1:-1].replace('\\"', '"')
     else:
-        raise ValueError(f"Invalid string format: {value}")
+        return value.strip()
 
 def parse_array(value):
     if value.startswith('[') and value.endswith(']'):
@@ -40,8 +28,7 @@ def parse_array(value):
             elements.append(parse_value(current_element.strip()))
         return elements
     else:
-        return [value.strip()]
-      
+        return [parse_value(v.strip()) for v in value.split(',')]
 
 def parse_object(value):
     if value.startswith('{') and value.endswith('}'):
@@ -54,7 +41,8 @@ def parse_object(value):
             if char == ':' and not quote_open:
                 key_mode = False
             elif char == ',' and not quote_open:
-                obj[current_key.strip()] = parse_value(current_value.strip())
+                if current_key:
+                    obj[current_key.strip()] = parse_value(current_value.strip())
                 current_key = ''
                 current_value = ''
                 key_mode = True
@@ -69,11 +57,12 @@ def parse_object(value):
             obj[current_key.strip()] = parse_value(current_value.strip())
         return obj
     else:
-        raise ValueError(f"Invalid object format: {value}")
+        return value
 
-      
 def parse_value(value):
     value = value.strip()
+    if not value:
+        return None
     if value.startswith('"'):
         return parse_string(value)
     elif value.startswith('['):
@@ -93,72 +82,56 @@ def parse_value(value):
             except ValueError:
                 return value
 
-def parse_attributes(name):
-    parts = name.split('|')
-    if len(parts) > 2:
-        name = parts[0].strip()
-        type_info = parts[1].strip()
-        attributes = parts[2].strip()
-    elif len(parts) > 1:
-        name = parts[0].strip()
-        type_info = None
-        attributes = parts[1].strip()
-    else:
-        return {"name": name}, {}
+def parse_attributes(layer_name):
+    parts = [part.strip() for part in layer_name.split('|')]
 
-    attributes_dict = {}
-    current_key = ''
-    current_value = ''
-    key_mode = True
-    quote_open = False
-    bracket_count = 0
-    brace_count = 0
+    if len(parts) < 2 or len(parts) > 4:
+        return None  # Invalid format, ignore this layer
 
-    for i, char in enumerate(attributes):
-        if char == ':' and not quote_open and bracket_count == 0 and brace_count == 0:
-            key_mode = False
-            # Check if the next non-space character is a comma or end of string
-            next_char = next((c for c in attributes[i+1:] if not c.isspace()), None)
-            if next_char in [',', None]:
-                # This is a boolean attribute without an explicit value
-                attributes_dict[current_key.strip()] = True
-                current_key = ''
-                key_mode = True
-        elif char == ',' and not quote_open and bracket_count == 0 and brace_count == 0:
-            if key_mode:
-                # This is a boolean attribute without a colon
-                attributes_dict[current_key.strip()] = True
-            else:
-                attributes_dict[current_key.strip()] = parse_value(current_value.strip())
-            current_key = ''
-            current_value = ''
-            key_mode = True
-        else:
-            if char == '"':
-                quote_open = not quote_open
-            elif char == '[':
-                bracket_count += 1
-            elif char == ']':
-                bracket_count -= 1
-            elif char == '{':
-                brace_count += 1
-            elif char == '}':
-                brace_count -= 1
-            if key_mode:
-                current_key += char
-            else:
-                current_value += char
+    category_map = {
+        'Z': 'zone',
+        'P': 'point',
+        'S': 'sprite',
+        'T': 'tileset',
+        'G': 'group'
+    }
 
-    # Handle the last attribute
-    if current_key:
-        if key_mode:
-            # This is a boolean attribute without a colon at the end
-            attributes_dict[current_key.strip()] = True
-        else:
-            attributes_dict[current_key.strip()] = parse_value(current_value.strip())
+    category = parts[0].upper()
+    if category not in category_map:
+        return None  # Invalid category, ignore this layer
 
-    name_type_dict = {"name": name}
-    if type_info:
-        name_type_dict["type"] = type_info
+    result = {
+        'category': category_map[category],
+        'name': parts[1]
+    }
 
-    return name_type_dict, attributes_dict
+    if len(parts) == 3:
+        attributes = parse_attribute_string(parts[2])
+        if attributes:
+            result.update(attributes)
+    elif len(parts) == 4:
+        result['type'] = parts[2]
+        attributes = parse_attribute_string(parts[3])
+        if attributes:
+            result.update(attributes)
+
+    return result
+
+def parse_attribute_string(attr_string):
+    attr_string = attr_string.strip()
+    if not attr_string:
+        return None
+
+    attributes = {}
+    for item in re.split(r',\s*(?=[^:]+:)', attr_string):
+        item = item.strip()
+        if ':' in item:
+            key, value = map(str.strip, item.split(':', 1))
+            if key:
+                parsed_value = parse_value(value)
+                if parsed_value is not None:
+                    attributes[key] = parsed_value
+        elif item:
+            attributes[item] = True
+
+    return attributes if attributes else None

@@ -1,18 +1,18 @@
 {
   "output_dir": "../demos/introduction/public/assets/",
   "psd_files": [
-    "../demos/psds/introduction.psd"
+    "../demos/psds/introduction-v3.psd"
   ],
   "tile_slice_size": 150,
-  "tile_scaled_versions": [],
+  "tile_scaled_versions": [100],
   "captureLayerProps": {
     "alpha": false,
     "blend_mode": false
   },
-  "generateOnSave": true,
+  "generateOnSave": false,
   "pngQualityRange": {
-    "low": 99,
-    "high": 100
+    "low": 85,
+    "high": 90
   },
   "jpgQuality": 80
 }

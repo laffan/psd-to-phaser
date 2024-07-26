@@ -1,37 +1,23 @@
-""" src/core/psd_processor.py
-Processes PSD files and extracts relevant information.
-
-This module is responsible for opening PSD files, extracting layers,
-and delegating the processing of different types (points, sprites, tiles, zones)
-to their respective handlers.
-
-Parameters:
-  config (dict) = Configuration dictionary containing processing options
-
-Returns:
-  processed_data (dict) = Dictionary containing all extracted and processed information
-"""
-
-import os
-import logging
-from psd_tools import PSDImage
-from src.types.sprites.base_sprite import process_sprites
-from src.types.tiles.tile_extractor import extract_tiles
-from src.types.points import process_points
-from src.types.zones import process_zones
-
 import os
 from psd_tools import PSDImage
-from src.types.sprites.base_sprite import process_sprites
+from src.helpers.parsers import parse_attributes
+from src.types.point import process_points
+from src.types.zone import process_zones
+from src.types.sprite import Sprite
+from src.types.tiles import Tiles  
 
 class PSDProcessor:
     def __init__(self, config):
         self.config = config
         self.output_dir = config['output_dir']
+        self.depth_counter = 0
+        self.psd_name = None  
+
 
     def process_all_psds(self):
         processed_data = {}
         for psd_file in self.config['psd_files']:
+            self.depth_counter = 0  # Reset depth counter for each PSD
             psd = PSDImage.open(psd_file)
             psd_name = os.path.splitext(os.path.basename(psd_file))[0]
             psd_output_dir = os.path.join(self.config['output_dir'], psd_name)
@@ -40,65 +26,74 @@ class PSDProcessor:
         return processed_data
 
     def process_psd(self, psd, psd_file, psd_output_dir):
-        print(f"Config in psd_processosl.py/process_psd: {self.config}")
+        self.psd_name = os.path.splitext(os.path.basename(psd_file))[0]  
+        self.tiles_processor = Tiles(self.config, psd_output_dir) 
+
+        layers = self.process_layers(psd)
+
+        # Reverse the depth values
+        max_depth = self.depth_counter - 1
+        self.reverse_depth(layers, max_depth)
 
         psd_data = {
             'name': os.path.splitext(os.path.basename(psd_file))[0],
             'width': psd.width,
             'height': psd.height,
+            'tile_slice_size': self.config.get('tile_slice_size', 512),
+            'tile_scaled_versions': self.config.get('tile_scaled_versions', []),
+            'layers': layers
         }
-
-        for layer in psd:
-            layer_name_lower = layer.name.lower()
-            if layer_name_lower == 'sprites':
-                psd_data['sprites'] = process_sprites(layer, psd_output_dir, self.config)
-            elif layer_name_lower == 'tiles':
-                psd_data['tiles'] = extract_tiles(layer, psd_output_dir, self.config, psd.width, psd.height)
-            elif layer_name_lower == 'points':
-                psd_data['points'] = process_points(layer, self.config)
-            elif layer_name_lower == 'zones':
-                psd_data['zones'] = process_zones(layer, self.config)
-
         return psd_data
-    
-    def process_group(self, group, data, psd_output_dir):
-        for layer in group:
-            logging.debug(f"Processing layer: {layer.name}")
-            if layer.name.lower() == 'points':
-                data['points'] = process_points(layer, self.config)
-            elif layer.name.lower() == 'zones':
-                data['zones'] = process_zones(layer, self.config)
-            elif layer.name.lower() == 'tiles':
-                optimize_config = {
-                    'pngQualityRange': self.config.get('pngQualityRange', {'low': 45, 'high': 65}),
-                    'forceAllTiles': self.config.get('forceAllTiles', True)
-                }
-                data['tiles'] = extract_tiles(layer, 
-                                              psd_output_dir, 
-                                              self.config['tile_slice_size'], 
-                                              self.config['tile_scaled_versions'], 
-                                              group,
-                                              self.config.get('jpgQuality', 85),
-                                              optimize_config)
-            elif layer.is_group():
-                name_type_dict, _ = parse_attributes(layer.name)
-                layer_name = name_type_dict.get('name', layer.name)
-                data[layer_name] = {}
-                if 'type' in name_type_dict:
-                    data[layer_name]['type'] = name_type_dict['type']
-                self.process_group(layer, data[layer_name], psd_output_dir)
-            else:
-                self.process_layer(layer, data)
 
-    def process_layer(self, layer, data):
-        layer_name_lower = layer.name.lower()
-        if layer_name_lower == 'sprites':
-            data['sprites'] = process_sprites(layer, self.output_dir, self.config)
-        # We don't need to handle 'zones' here anymore as it's handled in process_group
-        
-    def process_sprites_group(self, sprites_group):
-        sprites_data = []
-        for layer in sprites_group:
-            sprite_data = process_sprite(layer, self.output_dir, self.config)
-            sprites_data.append(sprite_data)
-        return sprites_data
+    def process_layers(self, parent_layer):
+        layers = []
+
+        for layer in reversed(parent_layer):
+            parsed_layer = parse_attributes(layer.name)
+            if parsed_layer is None:
+                continue  # Skip layers that don't conform to the new naming convention
+
+            layer_info = {
+                'name': parsed_layer['name'],
+                'category': parsed_layer['category'],
+                'x': layer.left + (layer.width / 2),
+                'y': layer.top + (layer.height / 2),
+                'initialDepth': self.depth_counter
+            }
+            self.depth_counter += 1  
+
+            # Add all other attributes directly to layer_info
+            for key, value in parsed_layer.items():
+                if key not in ['name', 'category']:
+                    layer_info[key] = value
+
+            if layer_info['category'] == 'point':
+                layer_info = process_points(layer_info, self.config)
+            elif layer_info['category'] == 'zone':
+                layer_info = process_zones(layer_info, layer)
+            elif layer_info['category'] == 'tileset': 
+                layer_info = self.tiles_processor.process_tiles(layer)
+            elif layer_info['category'] == 'sprite':
+                sprite = Sprite.create_sprite(layer_info, layer, self.config, self.output_dir, self.psd_name)
+                if sprite:
+                    layer_info = sprite.process()
+                else:
+                    # For now, just add a note that this sprite type is not yet processed
+                    layer_info['note'] = f"Sprite type '{layer_info.get('type', 'basic')}' not yet processed"
+            if layer.is_group():
+                children = self.process_layers(layer)
+                if children:
+                    layer_info['children'] = children
+
+            layers.append(layer_info)
+
+        return layers
+
+    def reverse_depth(self, layers, max_depth):
+        for layer in layers:
+            if layer is None:
+                continue
+            if 'initialDepth' in layer:
+                layer['initialDepth'] = max_depth - layer['initialDepth']
+            if 'children' in layer and layer['children']:
+                self.reverse_depth(layer['children'], max_depth)
