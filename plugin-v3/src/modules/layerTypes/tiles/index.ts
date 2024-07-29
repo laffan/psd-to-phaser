@@ -3,37 +3,6 @@ import { getDebugOptions } from "../../utils/sharedUtils";
 
 export default function tilesModule(plugin: PsdToPhaserPlugin) {
   return {
-    load(
-      scene: Phaser.Scene,
-      tiles: any,
-      basePath: string,
-      onProgress: () => void
-    ) {
-      if (!tiles || !tiles.layers || tiles.layers.length === 0) {
-        console.warn("No tiles to load or invalid tiles data");
-        return;
-      }
-
-      tiles.layers.forEach((layer: any) => {
-        for (let col = 0; col < tiles.columns; col++) {
-          for (let row = 0; row < tiles.rows; row++) {
-            const tileKey = `${layer.name}_tile_${col}_${row}`;
-            const tilePath = `${basePath}/tiles/${tiles.tile_slice_size}/${tileKey}.jpg`;
-            scene.load.image(tileKey, tilePath);
-            scene.load.once(`filecomplete-image-${tileKey}`, onProgress);
-            if (plugin.options.debug) {
-              console.log(`Loading tile: ${tileKey} from ${tilePath}`);
-            }
-          }
-        }
-      });
-    },
-
-    countTiles(tilesData: any): number {
-      if (!tilesData || !tilesData.layers) return 0;
-      return tilesData.layers.length * tilesData.columns * tilesData.rows;
-    },
-
     place(
       scene: Phaser.Scene,
       psdKey: string,
@@ -46,36 +15,45 @@ export default function tilesModule(plugin: PsdToPhaserPlugin) {
         return null;
       }
 
-      const layer = psdData.tiles.layers.find((l: any) => l.name === layerName);
+      const layer = psdData.tiles.find((l: any) => l.name === layerName);
       if (!layer) {
         console.warn(`Tile layer '${layerName}' not found.`);
         return null;
       }
 
-      return this.placeTileLayer(scene, psdData.tiles, layer, options);
+      return this.placeTileLayer(scene, layer, options);
     },
 
     placeTileLayer(
       scene: Phaser.Scene,
-      tilesData: any,
       layer: any,
       options: any = {}
     ): any {
+      console.log('Placing tile layer:', layer.name, 'Lazy:', layer.lazyLoad);
+      
+      if (layer.lazyLoad) {
+        // For lazy-loaded layers, just return the layer data
+        return { layerData: layer, tileLayer: null, isLazyLoaded: true };
+      }
+
       const group = scene.add.group();
       group.name = layer.name;
 
-      for (let col = 0; col < tilesData.columns; col++) {
-        for (let row = 0; row < tilesData.rows; row++) {
+      for (let col = 0; col < layer.columns; col++) {
+        for (let row = 0; row < layer.rows; row++) {
           const tileKey = `${layer.name}_tile_${col}_${row}`;
-          const x = col * tilesData.tile_slice_size;
-          const y = row * tilesData.tile_slice_size;
+          const x = layer.x + col * layer.tile_slice_size;
+          const y = layer.y + row * layer.tile_slice_size;
 
           if (scene.textures.exists(tileKey)) {
             const tile = scene.add.image(x, y, tileKey).setOrigin(0, 0);
+            if (layer.initialDepth !== undefined) {
+              tile.setDepth(layer.initialDepth);
+            }
             group.add(tile);
 
             if (plugin.options.debug) {
-              console.log(`Placed tile: ${tileKey} at (${x}, ${y})`);
+              console.log(`Placed tile: ${tileKey} at (${x}, ${y}) with depth ${layer.initialDepth}`);
             }
           } else {
             console.warn(`Texture for tile ${tileKey} not found`);
@@ -85,35 +63,40 @@ export default function tilesModule(plugin: PsdToPhaserPlugin) {
 
       const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
       if (debugOptions.shape) {
-        this.addDebugVisualization(
-          scene,
-          layer,
-          tilesData,
-          group,
-          debugOptions
-        );
+        this.addDebugVisualization(scene, layer, group, debugOptions);
       }
 
-      return { layerData: layer, tileLayer: group };
+      return { layerData: layer, tileLayer: group, isLazyLoaded: false };
+    },
+
+    placeAll(scene: Phaser.Scene, psdKey: string, options: any = {}): any[] {
+      const psdData = plugin.getData(psdKey);
+      if (!psdData || !psdData.tiles) {
+        console.warn(`Tiles data for key '${psdKey}' not found.`);
+        return [];
+      }
+
+      return psdData.tiles.map((layer: any) =>
+        this.placeTileLayer(scene, layer, options)
+      );
     },
 
     addDebugVisualization(
       scene: Phaser.Scene,
       layer: any,
-      tilesData: any,
       group: Phaser.GameObjects.Group,
-      debugOptions: any
+      debugOptions: DebugOptions
     ): void {
       const graphics = scene.add.graphics();
       graphics.lineStyle(2, 0xff00ff, 1);
 
-      const width = tilesData.columns * tilesData.tile_slice_size;
-      const height = tilesData.rows * tilesData.tile_slice_size;
+      const width = layer.columns * layer.tile_slice_size;
+      const height = layer.rows * layer.tile_slice_size;
 
-      graphics.strokeRect(0, 0, width, height);
+      graphics.strokeRect(layer.x, layer.y, width, height);
 
       if (debugOptions.label) {
-        const text = scene.add.text(0, -20, layer.name, {
+        const text = scene.add.text(layer.x, layer.y - 20, layer.name, {
           fontSize: "16px",
           color: "#ff00ff",
         });
@@ -121,17 +104,6 @@ export default function tilesModule(plugin: PsdToPhaserPlugin) {
       }
 
       group.add(graphics);
-    },
-    placeAll(scene: Phaser.Scene, psdKey: string, options: any = {}): any[] {
-      const psdData = plugin.getData(psdKey);
-      if (!psdData || !psdData.tiles || !psdData.tiles.layers) {
-        console.warn(`Tiles data for key '${psdKey}' not found.`);
-        return [];
-      }
-
-      return psdData.tiles.layers.map((layer: any) =>
-        this.placeTileLayer(scene, psdData.tiles, layer, options)
-      );
     },
 
     get(psdKey: string, layerName: string): any {

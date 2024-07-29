@@ -8,15 +8,42 @@ export class PlayScene extends Scene {
 
   create() {
 
-    this.P2P.tiles.placeAll(this, "psd_key");
-    this.P2P.points.placeAll(this, "psd_key");
-    this.P2P.zones.placeAll(this, "psd_key");
-    this.P2P.sprites.placeAll(this, "psd_key");
 
-    const hills = this.P2P.tiles.get("psd_key", "dotHills");
-    const sun = this.P2P.sprites.get("psd_key", "sun")
-    console.log(hills);
-    console.log(sun);
+this.P2P.tiles.placeAll(this, "psd_key");
+
+this.lazyCamera = this.P2P.cameras.createCamera(
+  this.cameras.main,
+  ["lazyLoading",  "draggable"],
+  "psd_key",
+  {
+    lazyLoadingOptions: {
+      extendPreloadBounds: -30,
+      debug: {
+        shape: true,
+      },
+    },
+  }
+);
+
+this.events.on("loadProgress", (progress, currentlyLoading) => {
+  console.log(`lazy loading is ${progress} complete.`);
+  console.log(currentlyLoading); // Array of items currently loading.
+});
+
+this.events.on("loadingComplete", () => {
+  console.log(`Lazy loading is complete.`);
+});
+
+
+    // this.P2P.tiles.placeAll(this, "psd_key");
+    // this.P2P.points.placeAll(this, "psd_key");
+    // this.P2P.zones.placeAll(this, "psd_key");
+    // this.P2P.sprites.placeAll(this, "psd_key");
+
+    // const hills = this.P2P.tiles.get("psd_key", "dotHills");
+    // const sun = this.P2P.sprites.get("psd_key", "sun")
+    // console.log(hills);
+    // console.log(sun);
     // sun.placed.setDepth(0.5);
 
     // this.lazyCamera = this.P2P.cameras.createCamera(

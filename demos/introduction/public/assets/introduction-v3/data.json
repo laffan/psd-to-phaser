@@ -1,0 +1,446 @@
+{
+  "name": "introduction-v3",
+  "width": 900,
+  "height": 300,
+  "tile_slice_size": 150,
+  "tile_scaled_versions": [
+    100
+  ],
+  "layers": [
+    {
+      "x": -5,
+      "y": -7,
+      "width": 912,
+      "height": 315,
+      "name": "frame",
+      "category": "tileset",
+      "columns": 7,
+      "rows": 3,
+      "initialDepth": 14,
+      "filetype": "png"
+    },
+    {
+      "name": "pointsLayers",
+      "category": "group",
+      "x": 452.0,
+      "y": 31.0,
+      "initialDepth": 13,
+      "children": [
+        {
+          "name": "rightPoint",
+          "category": "point",
+          "x": 860.0,
+          "y": 31.0,
+          "initialDepth": 12
+        },
+        {
+          "name": "leftPoint",
+          "category": "point",
+          "x": 44.0,
+          "y": 31.0,
+          "initialDepth": 11
+        }
+      ]
+    },
+    {
+      "name": "randomGroup",
+      "category": "group",
+      "x": 564.0,
+      "y": 158.0,
+      "initialDepth": 10,
+      "isCandy": true,
+      "children": [
+        {
+          "name": "sunZone",
+          "category": "zone",
+          "x": 192.0,
+          "y": 101.0,
+          "initialDepth": 9,
+          "subpaths": [
+            [
+              [
+                197,
+                50
+              ],
+              [
+                207,
+                52
+              ],
+              [
+                217,
+                56
+              ],
+              [
+                226,
+                63
+              ],
+              [
+                233,
+                71
+              ],
+              [
+                238,
+                80
+              ],
+              [
+                241,
+                90
+              ],
+              [
+                242,
+                100
+              ],
+              [
+                241,
+                111
+              ],
+              [
+                238,
+                121
+              ],
+              [
+                233,
+                130
+              ],
+              [
+                226,
+                138
+              ],
+              [
+                217,
+                145
+              ],
+              [
+                207,
+                149
+              ],
+              [
+                197,
+                151
+              ],
+              [
+                186,
+                151
+              ],
+              [
+                176,
+                149
+              ],
+              [
+                166,
+                145
+              ],
+              [
+                157,
+                138
+              ],
+              [
+                150,
+                130
+              ],
+              [
+                145,
+                121
+              ],
+              [
+                142,
+                111
+              ],
+              [
+                141,
+                100
+              ],
+              [
+                142,
+                90
+              ],
+              [
+                145,
+                80
+              ],
+              [
+                150,
+                71
+              ],
+              [
+                157,
+                63
+              ],
+              [
+                166,
+                56
+              ],
+              [
+                176,
+                52
+              ],
+              [
+                186,
+                50
+              ]
+            ]
+          ],
+          "bbox": {
+            "left": 138,
+            "top": 47,
+            "right": 246,
+            "bottom": 155
+          },
+          "fillDensity": 30
+        },
+        {
+          "name": "fillZone",
+          "category": "zone",
+          "x": 453.0,
+          "y": 263.5,
+          "initialDepth": 8,
+          "subpaths": [
+            [
+              [
+                -3,
+                265
+              ],
+              [
+                50,
+                276
+              ],
+              [
+                209,
+                287
+              ],
+              [
+                357,
+                281
+              ],
+              [
+                499,
+                263
+              ],
+              [
+                586,
+                241
+              ],
+              [
+                674,
+                221
+              ],
+              [
+                768,
+                222
+              ],
+              [
+                911,
+                243
+              ],
+              [
+                908,
+                302
+              ],
+              [
+                -5,
+                305
+              ]
+            ]
+          ],
+          "bbox": {
+            "left": -9,
+            "top": 218,
+            "right": 915,
+            "bottom": 309
+          }
+        },
+        {
+          "name": "tree",
+          "type": "atlas",
+          "filepath": "sprites/tree.png",
+          "instances": [
+            {
+              "name": "leafDarkBlue",
+              "x": 42,
+              "y": 140
+            },
+            {
+              "name": "leafDarkBlue",
+              "x": 54,
+              "y": 130
+            },
+            {
+              "name": "leafDarkBlue",
+              "x": 33,
+              "y": 118
+            },
+            {
+              "name": "leafTan",
+              "x": 30,
+              "y": 156
+            },
+            {
+              "name": "leafRed",
+              "x": 53,
+              "y": 155
+            },
+            {
+              "name": "trunkBlue",
+              "x": 53,
+              "y": 174
+            }
+          ],
+          "frames": {
+            "leafDarkBlue": {
+              "x": 0,
+              "y": 0,
+              "width": 28,
+              "height": 24
+            },
+            "leafTan": {
+              "x": 28,
+              "y": 0,
+              "width": 25,
+              "height": 28
+            },
+            "leafRed": {
+              "x": 53,
+              "y": 0,
+              "width": 26,
+              "height": 26
+            },
+            "trunkBlue": {
+              "x": 0,
+              "y": 44,
+              "width": 12,
+              "height": 44
+            }
+          }
+        },
+        {
+          "name": "groupOfSprites",
+          "category": "group",
+          "x": 571.0,
+          "y": 187.0,
+          "initialDepth": 6,
+          "children": [
+            {
+              "name": "sparklesNOT",
+              "category": "sprite",
+              "x": 653.5,
+              "y": 134.0,
+              "initialDepth": 5,
+              "not": "a spritesheet",
+              "filePath": "sprites/sparklesNOT.png",
+              "width": 61,
+              "height": 82
+            },
+            {
+              "name": "sparkles",
+              "category": "sprite",
+              "x": 433.0,
+              "y": 136.0,
+              "initialDepth": 4,
+              "type": "spritesheet",
+              "filePath": "sprites/sparkles.png",
+              "frame_width": 38,
+              "frame_height": 53,
+              "frame_count": 5,
+              "columns": 3,
+              "rows": 2,
+              "placement": [
+                {
+                  "frame": 0,
+                  "x": 24,
+                  "y": 29,
+                  "layerOrder": 0,
+                  "instanceName": "reddot_0"
+                },
+                {
+                  "frame": 1,
+                  "x": 0,
+                  "y": 27,
+                  "layerOrder": 1,
+                  "instanceName": "blueline_0"
+                },
+                {
+                  "frame": 2,
+                  "x": 24,
+                  "y": 0,
+                  "layerOrder": 2,
+                  "instanceName": "tanline_0"
+                },
+                {
+                  "frame": 3,
+                  "x": 9,
+                  "y": 20,
+                  "layerOrder": 3,
+                  "instanceName": "tandot_0"
+                },
+                {
+                  "frame": 4,
+                  "x": 34,
+                  "y": 33,
+                  "layerOrder": 4,
+                  "instanceName": "orange1_0"
+                }
+              ]
+            },
+            {
+              "name": "sun",
+              "category": "sprite",
+              "x": 134,
+              "y": 19,
+              "initialDepth": 3,
+              "type": "animation",
+              "frameRate": 1,
+              "filePath": "sprites/sun.png",
+              "frame_width": 608,
+              "frame_height": 262,
+              "frame_count": 7,
+              "columns": 3,
+              "rows": 3,
+              "width": 608,
+              "height": 262
+            }
+          ]
+        },
+        {
+          "x": -57,
+          "y": 7,
+          "width": 1242,
+          "height": 300,
+          "name": "pattern",
+                        "initialDepth": 2,
+
+          "category": "tileset",
+          "columns": 9,
+          "rows": 2,
+          "filetype": "png"
+        }
+      ]
+    },
+    {
+      "x": -24,
+      "y": 30,
+      "width": 945,
+      "height": 642,
+      "name": "dotHills",
+      "category": "tileset",
+      "lazyLoad": true,
+      "columns": 7,
+      "initialDepth": 1,
+
+      "rows": 5,
+      "filetype": "png"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "height": 300,
+      "name": "backgroundGradient",
+      "category": "tileset",
+      "columns": 6,
+                    "initialDepth": 0,
+      "rows": 2,
+      "filetype": "jpg",
+      "type": "jpg"
+    }
+  ]
+}

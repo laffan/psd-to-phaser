@@ -1,4 +1,3 @@
-import { createPSDObject } from "../core/PSDObject";
 import { loadAssetsFromJSON } from "./loadAssetsFromJSON";
 import PsdToPhaserPlugin from "../../PsdToPhaserPlugin";
 
@@ -9,100 +8,129 @@ export function processJSON(
   psdFolderPath: string,
   plugin: PsdToPhaserPlugin
 ): void {
+  console.log('processJSON called with key:', key);
 
-  if (!data) {
-    console.error(`Data is null or undefined for key: ${key}`);
+  if (!data || !data.layers || !Array.isArray(data.layers)) {
+    console.error(`Invalid or missing layers data for key: ${key}`);
     return;
   }
 
-  if (!data.sprites || !Array.isArray(data.sprites)) {
-    console.error(`Invalid or missing sprites data for key: ${key}`);
-    return;
-  }
-
-  const lazyLoadObjects = findLazyLoadObjects(data, data.sprites);
-  const immediateSprites = removeLayandNestedLazySprites(data.sprites);
+  const { regularTiles, lazyLoadTiles } = extractTiles(data.layers, data.tile_slice_size);
+  const sprites = extractSprites(data.layers);
+  const lazyLoadSprites = extractLazyLoadSprites(sprites);
 
   const processedData = {
     ...data,
     basePath: psdFolderPath,
-    sprites: immediateSprites,
-    zones: Array.isArray(data.zones)
-      ? data.zones.map((zoneData: any) => createPSDObject(zoneData))
-      : [],
-    points: Array.isArray(data.points)
-      ? data.points.map((pointData: any) => createPSDObject(pointData))
-      : [],
-    lazyLoadObjects: lazyLoadObjects,
+    tiles: regularTiles,
+    // sprites: sprites.filter(sprite => !sprite.lazyLoad),
+    lazyLoadObjects: [...lazyLoadTiles, ...lazyLoadSprites],
+    zones: extractZones(data.layers),
+    points: extractPoints(data.layers),
   };
 
   plugin.setData(key, processedData);
 
   if (plugin.options.debug) {
     console.log(`Processed JSON for key "${key}":`, processedData);
+    console.log('Regular tiles:', regularTiles.length);
+    console.log('Lazy-load tiles:', lazyLoadTiles.length);
+    console.log('Sprites:', sprites.length);
+    console.log('Lazy-load sprites:', lazyLoadSprites.length);
+    console.log('Zones:', processedData.zones.length);
+    console.log('Points:', processedData.points.length);
+    console.log('Lazy-load objects:', processedData.lazyLoadObjects);
   }
 
   loadAssetsFromJSON(scene, key, processedData, plugin);
 }
 
-function removeLayandNestedLazySprites(sprites: any[]): any[] {
-  return sprites.reduce((acc: any[], sprite: any) => {
-    if (!sprite.lazyLoad) {
-      const newSprite = { ...sprite };
-      if (newSprite.children) {
-        newSprite.children = removeLayandNestedLazySprites(newSprite.children);
-      }
-      acc.push(newSprite);
-    }
-    return acc;
-  }, []);
-}
-
-
-
-function findLazyLoadObjects(data: any, lazySprites: any[]): any[] {
-  const lazyObjects: any[] = [];
-
-  function recursiveFind(obj: any, path: string = "", isParentLazy: boolean = false) {
-    const isLazy = isParentLazy || obj.lazyLoad === true;
-
-    if (isLazy) {
-      lazyObjects.push({ ...obj, path, type: 'sprite' });
-    }
-
-    if (obj.children && Array.isArray(obj.children)) {
-      obj.children.forEach((child: any) => {
-        recursiveFind(child, path ? `${path}/${child.name}` : child.name, isLazy);
+function extractTiles(layers: any[], defaultTileSize: number): { regularTiles: any[], lazyLoadTiles: any[] } {
+  function extractTilesRecursively(layer: any): any[] {
+    let tiles = [];
+    
+    if (layer.category === 'tileset') {
+      tiles.push({
+        ...layer,
+        tile_slice_size: layer.tile_slice_size || defaultTileSize,
+        path: `tiles/${layer.name}/${layer.tile_slice_size || defaultTileSize}`,
+        filetype: layer.filetype || 'png',
+        lazyLoad: layer.lazyLoad || false
       });
     }
+
+    if (layer.children && Array.isArray(layer.children)) {
+      layer.children.forEach((child: any) => {
+        tiles = tiles.concat(extractTilesRecursively(child));
+      });
+    }
+
+    return tiles;
   }
 
-  lazySprites.forEach(sprite => recursiveFind(sprite));
+  const allTiles = layers.flatMap(layer => extractTilesRecursively(layer));
+  return {
+    regularTiles: allTiles.filter(tile => !tile.lazyLoad),
+    lazyLoadTiles: allTiles.filter(tile => tile.lazyLoad).map(tile => ({
+      ...tile,
+      loaded: false,
+      loading: false,
+      type: 'tileset'
+    }))
+  };
+}
 
-  // Handle lazy load tiles
-  if (data.tiles && data.tiles.layers) {
-    data.tiles.layers.forEach((layer: any) => {
-      if (layer.lazyLoad) {
-        const fileExtension = layer.type === "transparent" ? 'png' : 'jpg';
-        for (let col = 0; col < data.tiles.columns; col++) {
-          for (let row = 0; row < data.tiles.rows; row++) {
-            const tileKey = `${layer.name}_tile_${col}_${row}`;
-            lazyObjects.push({
-              type: 'tile',
-              name: tileKey,
-              path: `tiles/${data.tiles.tile_slice_size}/${tileKey}.${fileExtension}`,
-              x: col * data.tiles.tile_slice_size,
-              y: row * data.tiles.tile_slice_size,
-              width: data.tiles.tile_slice_size,
-              height: data.tiles.tile_slice_size,
-              lazyLoad: true,
-              transparent: layer.type === "transparent"
-            });
-          }
-        }
-      }
-    });
+function extractSprites(layers: any[]): any[] {
+  function extractSpritesRecursively(layer: any): any[] {
+    let sprites = [];
+    
+    if (layer.category === 'sprite' || (layer.category === 'group' && layer.children)) {
+      sprites.push(layer);
+    }
+
+    if (layer.children && Array.isArray(layer.children)) {
+      layer.children.forEach((child: any) => {
+        sprites = sprites.concat(extractSpritesRecursively(child));
+      });
+    }
+
+    return sprites;
   }
 
-  return lazyObjects;
+  return layers.flatMap(layer => extractSpritesRecursively(layer));
+}
+
+function extractLazyLoadSprites(sprites: any[]): any[] {
+  function extractLazyLoadSpritesRecursively(sprite: any, path: string = ""): any[] {
+    let lazySprites = [];
+    
+    if (sprite.lazyLoad) {
+      lazySprites.push({
+        ...sprite,
+        path,
+        type: 'sprite',
+        loaded: false,
+        loading: false
+      });
+    }
+
+    if (sprite.children && Array.isArray(sprite.children)) {
+      sprite.children.forEach((child: any) => {
+        const childPath = path ? `${path}/${child.name}` : child.name;
+        lazySprites = lazySprites.concat(extractLazyLoadSpritesRecursively(child, childPath));
+      });
+    }
+
+    return lazySprites;
+  }
+
+  return sprites.flatMap(sprite => extractLazyLoadSpritesRecursively(sprite));
+}
+
+function extractZones(layers: any[]): any[] {
+  return layers.filter(layer => layer.category === 'zone');
+}
+
+function extractPoints(layers: any[]): any[] {
+  return layers.filter(layer => layer.category === 'point');
 }

@@ -34,23 +34,36 @@ export class LazyLoadCamera {
       this.camera.scrollX,
       this.camera.scrollY
     );
-    this.preloadBounds = new Phaser.Geom.Rectangle(0, 0, 0, 0); // Initialize with dummy values
+    this.preloadBounds = new Phaser.Geom.Rectangle(0, 0, 0, 0);
 
     this.initializeLazyObjects();
     this.setupEvents();
     this.setupDebug();
-    this.updatePreloadBounds(); // Now safe to call this
+    this.updatePreloadBounds();
   }
 
   private initializeLazyObjects() {
     const psdData = this.plugin.getData(this.psdKey);
-    if (psdData && psdData.lazyLoadObjects) {
-      this.lazyObjects = psdData.lazyLoadObjects.map((obj) => ({
-        ...obj,
-        loaded: false,
-      }));
+    if (this.plugin.options.debug) {
+      console.log("PSD Data retrieved:", psdData);
+    }
+
+    if (
+      psdData &&
+      psdData.lazyLoadObjects &&
+      psdData.lazyLoadObjects.length > 0
+    ) {
+      this.lazyObjects = psdData.lazyLoadObjects;
+      if (this.plugin.options.debug) {
+        console.log(
+          `Initialized ${this.lazyObjects.length} lazy objects for PSD key: ${this.psdKey}`
+        );
+      }
     } else {
       console.warn(`No lazy load objects found for PSD key: ${this.psdKey}`);
+      if (this.plugin.options.debug) {
+        console.log("Full PSD data:", psdData);
+      }
     }
   }
 
@@ -62,7 +75,7 @@ export class LazyLoadCamera {
     if (this.config.debug && this.config.debug.shape) {
       this.debugGraphics = this.camera.scene.add.graphics();
       this.debugGraphics.setDepth(1000);
-      this.updateDebugGraphics(); // Draw initial debug shape
+      this.updateDebugGraphics();
     }
   }
 
@@ -104,7 +117,6 @@ export class LazyLoadCamera {
   }
 
   private getCameraView(): Phaser.Geom.Rectangle {
-    // If the camera's worldView is properly set, use it
     if (
       this.camera.worldView &&
       this.camera.worldView.width > 0 &&
@@ -113,7 +125,6 @@ export class LazyLoadCamera {
       return this.camera.worldView;
     }
 
-    // Otherwise, construct a view based on the camera's position and size
     return new Phaser.Geom.Rectangle(
       this.camera.scrollX,
       this.camera.scrollY,
@@ -125,18 +136,11 @@ export class LazyLoadCamera {
   private checkVisibility() {
     this.lazyObjects.forEach((object) => {
       if (!object.loaded && !object.loading) {
-        // Check if the object is a group (has children) and has lazyLoad applied
-        if (object.children && object.lazyLoad) {
-          // Mark the group as loaded without attempting to load a file
-          object.loaded = true;
-          return; // Skip the rest of the loop for this object
-        }
-
         const objectRect = new Phaser.Geom.Rectangle(
           object.x,
           object.y,
-          object.width,
-          object.height
+          object.width || object.columns * object.tile_slice_size,
+          object.height || object.rows * object.tile_slice_size
         );
         if (
           Phaser.Geom.Intersects.RectangleToRectangle(
@@ -145,6 +149,9 @@ export class LazyLoadCamera {
           )
         ) {
           this.queueForLoading(object);
+          if (this.plugin.options.debug) {
+            console.log("Queuing for loading:", object);
+          }
         }
       }
     });
@@ -174,17 +181,12 @@ export class LazyLoadCamera {
     this.loadingObjects.push(object);
     this.camera.scene.events.emit("lazyLoadStart", object);
 
-    const loadPromise =
-      object.type === "sprite"
-        ? this.loadSprite(object)
-        : this.loadTile(object);
-
-    loadPromise
+    this.loadTileLayer(object)
       .then(() => {
         this.finishLoading(object);
       })
       .catch((error) => {
-        console.error(`Error loading ${object.type}:`, error);
+        console.error(`Error loading tileset:`, error);
         object.loading = false;
         this.loadingObjects = this.loadingObjects.filter(
           (obj) => obj !== object
@@ -192,94 +194,58 @@ export class LazyLoadCamera {
       });
   }
 
-  private loadSprite(object: any) {
+  private loadTileLayer(object: any) {
     return new Promise<void>((resolve, reject) => {
-      try {
-        const key = `${this.psdKey}_${object.name}`;
-        const url = `${this.plugin.getData(this.psdKey).basePath}/${
-          object.filePath
-        }`;
+      const tilesLoaded = { count: 0, total: object.columns * object.rows };
 
-        this.camera.scene.load.image(key, url);
-        this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
-          const sprite = this.camera.scene.add.sprite(object.x, object.y, key);
-          sprite.setName(object.name);
-          sprite.setOrigin(0, 0);
-          if (object.layerOrder !== undefined) {
-            sprite.setDepth(object.layerOrder);
-          }
-          const wrappedSprite = {
-            name: object.name,
-            type: "sprite",
-            placed: sprite,
-          };
-          this.plugin.storageManager.addToGroup(
-            this.psdKey,
-            object.path.split("/").slice(0, -1).join("/"),
-            wrappedSprite
-          );
-          this.updateDepths();
-          resolve();
-        });
-        this.camera.scene.load.start();
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
+      for (let col = 0; col < object.columns; col++) {
+        for (let row = 0; row < object.rows; row++) {
+          const tileKey = `${object.name}_tile_${col}_${row}`;
+          const url = `${this.plugin.getData(this.psdKey).basePath}/tiles/${
+            object.name
+          }/${object.tile_slice_size}/${tileKey}.${object.filetype}`;
 
-  private loadTile(object: any) {
-    return new Promise<void>((resolve, reject) => {
-      const key = object.name;
-      const url = `${this.plugin.getData(this.psdKey).basePath}/${object.path}`;
-
-      this.camera.scene.load.image(key, url);
-      this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
-        try {
-          const tile = this.camera.scene.add.image(object.x, object.y, key);
-          tile.setOrigin(0, 0);
-          if (object.layerOrder !== undefined) {
-            tile.setDepth(object.layerOrder);
-          }
-          this.plugin.storageManager.store(this.psdKey, object.path, {
-            name: object.name,
-            type: "tile",
-            placed: tile,
+          this.camera.scene.load.image(tileKey, url);
+          this.camera.scene.load.once(`filecomplete-image-${tileKey}`, () => {
+            tilesLoaded.count++;
+            if (tilesLoaded.count === tilesLoaded.total) {
+              this.placeTileLayer(object);
+              resolve();
+            }
           });
-          this.updateDepths();
-          resolve();
-        } catch (error) {
-          reject(error);
         }
-      });
+      }
+
       this.camera.scene.load.once(`loaderror`, (file) => {
-        if (file.key === key) {
-          reject(new Error(`Failed to load tile: ${key}`));
-        }
+        reject(new Error(`Failed to load tile layer: ${object.name}`));
       });
+
       this.camera.scene.load.start();
     });
   }
 
-  private updateDepths() {
-    const allObjects = this.plugin.storageManager.getAll(this.psdKey);
-    const sortedObjects = allObjects
-      .filter(
-        (obj) =>
-          obj.placed &&
-          (obj.placed instanceof Phaser.GameObjects.Image ||
-            obj.placed instanceof Phaser.GameObjects.Sprite)
-      )
-      .sort((a, b) => {
-        const aDepth =
-          a.layerOrder !== undefined ? a.layerOrder : a.placed.depth;
-        const bDepth =
-          b.layerOrder !== undefined ? b.layerOrder : b.placed.depth;
-        return aDepth - bDepth;
-      });
+  private placeTileLayer(object: any) {
+    const group = this.camera.scene.add.group();
+    group.name = object.name;
 
-    sortedObjects.forEach((obj, index) => {
-      obj.placed.setDepth(index);
+    for (let col = 0; col < object.columns; col++) {
+      for (let row = 0; row < object.rows; row++) {
+        const tileKey = `${object.name}_tile_${col}_${row}`;
+        const x = object.x + col * object.tile_slice_size;
+        const y = object.y + row * object.tile_slice_size;
+
+        const tile = this.camera.scene.add.image(x, y, tileKey).setOrigin(0, 0);
+        if (object.initialDepth !== undefined) {
+          tile.setDepth(object.initialDepth);
+        }
+        group.add(tile);
+      }
+    }
+
+    this.plugin.storageManager.store(this.psdKey, object.name, {
+      name: object.name,
+      type: "tileLayer",
+      placed: group,
     });
   }
 
@@ -322,30 +288,11 @@ export class LazyLoadCamera {
         this.debugGraphics.strokeRect(
           object.x,
           object.y,
-          object.width,
-          object.height
+          object.width || object.columns * object.tile_slice_size,
+          object.height || object.rows * object.tile_slice_size
         );
       });
     }
-  }
-
-  private getCameraView(): Phaser.Geom.Rectangle {
-    // If the camera's worldView is properly set, use it
-    if (
-      this.camera.worldView &&
-      this.camera.worldView.width > 0 &&
-      this.camera.worldView.height > 0
-    ) {
-      return this.camera.worldView;
-    }
-
-    // Otherwise, construct a view based on the camera's position and size
-    return new Phaser.Geom.Rectangle(
-      this.camera.scrollX,
-      this.camera.scrollY,
-      this.camera.width,
-      this.camera.height
-    );
   }
 
   public updateConfig(config: Partial<LazyLoadingOptions>) {
