@@ -5,10 +5,6 @@
   ],
   "tile_slice_size": 150,
   "tile_scaled_versions": [100],
-  "captureLayerProps": {
-    "alpha": false,
-    "blend_mode": false
-  },
   "generateOnSave": false,
   "pngQualityRange": {
     "low": 85,
