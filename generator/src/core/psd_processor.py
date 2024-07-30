@@ -1,5 +1,7 @@
 import os
 from psd_tools import PSDImage
+from psd_tools.constants import BlendMode
+
 from src.helpers.parsers import parse_attributes
 from src.types.point import process_points
 from src.types.zone import process_zones
@@ -45,49 +47,70 @@ class PSDProcessor:
         }
         return psd_data
 
+    def capture_layer_properties(self, layer, layer_info):
+        # Capture alpha if not 100%
+        if layer.opacity != 255:
+            layer_info['alpha'] = round(layer.opacity / 255, 2)
+
+        # Capture blend mode if not PASS_THROUGH or NORMAL
+        blend_mode = layer.blend_mode
+
+        if blend_mode not in [BlendMode.PASS_THROUGH, BlendMode.NORMAL]:
+            layer_info['blendMode'] = blend_mode.name
+            print(blend_mode.name)
+            print(layer_info)
+        return layer_info
+
     def process_layers(self, parent_layer):
-        layers = []
+      layers = []
 
-        for layer in reversed(parent_layer):
-            parsed_layer = parse_attributes(layer.name)
-            if parsed_layer is None:
-                continue  # Skip layers that don't conform to the new naming convention
+      for layer in reversed(parent_layer):
+          parsed_layer = parse_attributes(layer.name)
+          if parsed_layer is None:
+              continue  # Skip layers that don't conform to the new naming convention
 
-            layer_info = {
-                'name': parsed_layer['name'],
-                'category': parsed_layer['category'],
-                'x': layer.left + (layer.width / 2),
-                'y': layer.top + (layer.height / 2),
-                'initialDepth': self.depth_counter
-            }
-            self.depth_counter += 1  
+          layer_info = {
+              'name': parsed_layer['name'],
+              'category': parsed_layer['category'],
+              'x': layer.left + (layer.width / 2),
+              'y': layer.top + (layer.height / 2),
+              'initialDepth': self.depth_counter
+          }
 
-            # Add all other attributes directly to layer_info
-            for key, value in parsed_layer.items():
-                if key not in ['name', 'category']:
-                    layer_info[key] = value
 
-            if layer_info['category'] == 'point':
-                layer_info = process_points(layer_info, self.config)
-            elif layer_info['category'] == 'zone':
-                layer_info = process_zones(layer_info, layer)
-            elif layer_info['category'] == 'tileset': 
-                layer_info = self.tiles_processor.process_tiles(layer)
-            elif layer_info['category'] == 'sprite':
-                sprite = Sprite.create_sprite(layer_info, layer, self.config, self.output_dir, self.psd_name)
-                if sprite:
-                    layer_info = sprite.process()
-                else:
-                    # For now, just add a note that this sprite type is not yet processed
-                    layer_info['note'] = f"Sprite type '{layer_info.get('type', 'basic')}' not yet processed"
-            if layer.is_group():
-                children = self.process_layers(layer)
-                if children:
-                    layer_info['children'] = children
+          self.depth_counter += 1
 
-            layers.append(layer_info)
+          # Add all other attributes directly to layer_info
+          for key, value in parsed_layer.items():
+              if key not in ['name', 'category']:
+                  layer_info[key] = value
 
-        return layers
+          if layer_info['category'] == 'point':
+              layer_info = process_points(layer_info, self.config)
+          elif layer_info['category'] == 'zone':
+              layer_info = process_zones(layer_info, layer)
+          elif layer_info['category'] == 'tileset':
+              layer_info = self.tiles_processor.process_tiles(layer)
+              layer_info['initialDepth'] = layer_info.pop('initialDepth', self.depth_counter - 1)
+          elif layer_info['category'] == 'sprite':
+              sprite = Sprite.create_sprite(layer_info, layer, self.config, self.output_dir, self.psd_name)
+              if sprite:
+                  layer_info = sprite.process()
+                  layer_info['initialDepth'] = layer_info.pop('initialDepth', self.depth_counter - 1)
+              else:
+                  layer_info['note'] = f"Sprite type '{layer_info.get('type', 'basic')}' not yet processed"
+
+          if layer.is_group():
+              children = self.process_layers(layer)
+              if children:
+                  layer_info['children'] = children
+
+          # Capture alpha and blend mode
+          layer_info = self.capture_layer_properties(layer, layer_info)
+
+          layers.append(layer_info)
+
+      return layers
 
     def reverse_depth(self, layers, max_depth):
         for layer in layers:

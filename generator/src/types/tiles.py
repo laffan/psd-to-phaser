@@ -19,7 +19,7 @@ class Tiles:
             "x": layer.left,
             "y": layer.top,
             "width": layer.width,
-            "height": layer.height
+            "height": layer.height,
         }
 
         tiles_output_dir = os.path.join(self.output_dir, 'tiles')
