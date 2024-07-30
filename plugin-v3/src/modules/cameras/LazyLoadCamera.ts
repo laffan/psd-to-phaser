@@ -1,3 +1,5 @@
+// src/modules/cameras/LazyLoadCamera.ts
+
 import PsdToPhaserPlugin from "../../PsdToPhaserPlugin";
 import { LazyLoadingOptions } from "../typeDefinitions";
 
@@ -9,7 +11,6 @@ export class LazyLoadCamera {
   private lazyObjects: any[] = [];
   private loadingObjects: any[] = [];
   private loadQueue: any[] = [];
-  private lastCameraPosition: Phaser.Math.Vector2;
   private preloadBounds: Phaser.Geom.Rectangle;
   private debugGraphics: Phaser.GameObjects.Graphics | null = null;
 
@@ -30,11 +31,7 @@ export class LazyLoadCamera {
       ...config,
     };
 
-    this.lastCameraPosition = new Phaser.Math.Vector2(
-      this.camera.scrollX,
-      this.camera.scrollY
-    );
-    this.preloadBounds = new Phaser.Geom.Rectangle(0, 0, 0, 0);
+    this.preloadBounds = new Phaser.Geom.Rectangle();
 
     this.initializeLazyObjects();
     this.setupEvents();
@@ -44,26 +41,14 @@ export class LazyLoadCamera {
 
   private initializeLazyObjects() {
     const psdData = this.plugin.getData(this.psdKey);
-    if (this.plugin.options.debug) {
-      console.log("PSD Data retrieved:", psdData);
-    }
-
-    if (
-      psdData &&
-      psdData.lazyLoadObjects &&
-      psdData.lazyLoadObjects.length > 0
-    ) {
-      this.lazyObjects = psdData.lazyLoadObjects;
-      if (this.plugin.options.debug) {
-        console.log(
-          `Initialized ${this.lazyObjects.length} lazy objects for PSD key: ${this.psdKey}`
-        );
-      }
+    if (psdData && psdData.lazyLoadObjects) {
+      this.lazyObjects = psdData.lazyLoadObjects.map((obj) => ({
+        ...obj,
+        loaded: false,
+        loading: false,
+      }));
     } else {
       console.warn(`No lazy load objects found for PSD key: ${this.psdKey}`);
-      if (this.plugin.options.debug) {
-        console.log("Full PSD data:", psdData);
-      }
     }
   }
 
@@ -75,87 +60,52 @@ export class LazyLoadCamera {
     if (this.config.debug && this.config.debug.shape) {
       this.debugGraphics = this.camera.scene.add.graphics();
       this.debugGraphics.setDepth(1000);
-      this.updateDebugGraphics();
     }
+  }
+
+  private updatePreloadBounds() {
+    const extend = this.config.extendPreloadBounds || 0;
+    this.preloadBounds.setTo(
+      this.camera.scrollX - extend,
+      this.camera.scrollY - extend,
+      this.camera.width + extend * 2,
+      this.camera.height + extend * 2
+    );
   }
 
   public update = () => {
     if (!this.config.active) return;
 
-    const currentPosition = new Phaser.Math.Vector2(
-      this.camera.scrollX,
-      this.camera.scrollY
-    );
-    if (!currentPosition.equals(this.lastCameraPosition)) {
-      this.lastCameraPosition = currentPosition;
-      this.updatePreloadBounds();
-      this.checkVisibility();
-      this.updateDebugGraphics();
-    }
-
+    this.updatePreloadBounds();
+    this.checkVisibility();
     this.processLoadQueue();
+    this.updateDebugGraphics();
   };
 
   public forceUpdate() {
     if (this.config.active) {
       this.updatePreloadBounds();
       this.checkVisibility();
-      this.updateDebugGraphics();
       this.processLoadQueue();
+      this.updateDebugGraphics();
     }
-  }
-
-  private updatePreloadBounds() {
-    const extend = this.config.extendPreloadBounds || 0;
-    const cameraView = this.getCameraView();
-    this.preloadBounds.setTo(
-      cameraView.x - extend,
-      cameraView.y - extend,
-      cameraView.width + extend * 2,
-      cameraView.height + extend * 2
-    );
-  }
-
-  private getCameraView(): Phaser.Geom.Rectangle {
-    if (
-      this.camera.worldView &&
-      this.camera.worldView.width > 0 &&
-      this.camera.worldView.height > 0
-    ) {
-      return this.camera.worldView;
-    }
-
-    return new Phaser.Geom.Rectangle(
-      this.camera.scrollX,
-      this.camera.scrollY,
-      this.camera.width,
-      this.camera.height
-    );
   }
 
   private checkVisibility() {
-    this.lazyObjects.forEach((object) => {
-      if (!object.loaded && !object.loading) {
-        const objectRect = new Phaser.Geom.Rectangle(
-          object.x,
-          object.y,
-          object.width || object.columns * object.tile_slice_size,
-          object.height || object.rows * object.tile_slice_size
-        );
-        if (
-          Phaser.Geom.Intersects.RectangleToRectangle(
-            objectRect,
-            this.preloadBounds
-          )
-        ) {
-          this.queueForLoading(object);
-          if (this.plugin.options.debug) {
-            console.log("Queuing for loading:", object);
-          }
-        }
+  this.lazyObjects.forEach((object) => {
+    if (!object.loaded && !object.loading) {
+      const objectRect = new Phaser.Geom.Rectangle(
+        object.x,
+        object.y,
+        object.width,
+        object.height
+      );
+      if (Phaser.Geom.Intersects.RectangleToRectangle(objectRect, this.preloadBounds)) {
+        this.queueForLoading(object);
       }
-    });
-  }
+    }
+  });
+}
 
   private queueForLoading(object: any) {
     if (!this.loadQueue.includes(object)) {
@@ -178,76 +128,82 @@ export class LazyLoadCamera {
   }
 
   private loadObject(object: any) {
-    this.loadingObjects.push(object);
-    this.camera.scene.events.emit("lazyLoadStart", object);
+  this.loadingObjects.push(object);
+  this.camera.scene.events.emit("lazyLoadStart", object);
 
-    this.loadTileLayer(object)
-      .then(() => {
-        this.finishLoading(object);
-      })
-      .catch((error) => {
-        console.error(`Error loading tileset:`, error);
-        object.loading = false;
-        this.loadingObjects = this.loadingObjects.filter(
-          (obj) => obj !== object
-        );
-      });
-  }
+  const loadPromise = object.type === 'tile' ? this.loadTile(object) : this.loadSprite(object);
 
-  private loadTileLayer(object: any) {
+  loadPromise
+    .then(() => {
+      this.finishLoading(object);
+    })
+    .catch((error) => {
+      console.error(`Error loading ${object.type}:`, error);
+      object.loading = false;
+      this.loadingObjects = this.loadingObjects.filter(
+        (obj) => obj !== object
+      );
+    });
+}
+
+  private loadSprite(object: any) {
     return new Promise<void>((resolve, reject) => {
-      const tilesLoaded = { count: 0, total: object.columns * object.rows };
+      try {
+        const key = object.name;
+        const url = `${this.plugin.getData(this.psdKey).basePath}/${object.filePath}`;
 
-      for (let col = 0; col < object.columns; col++) {
-        for (let row = 0; row < object.rows; row++) {
-          const tileKey = `${object.name}_tile_${col}_${row}`;
-          const url = `${this.plugin.getData(this.psdKey).basePath}/tiles/${
-            object.name
-          }/${object.tile_slice_size}/${tileKey}.${object.filetype}`;
-
-          this.camera.scene.load.image(tileKey, url);
-          this.camera.scene.load.once(`filecomplete-image-${tileKey}`, () => {
-            tilesLoaded.count++;
-            if (tilesLoaded.count === tilesLoaded.total) {
-              this.placeTileLayer(object);
-              resolve();
-            }
-          });
-        }
+        this.camera.scene.load.image(key, url);
+        this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
+          const sprite = this.camera.scene.add.sprite(object.x, object.y, key);
+          sprite.setName(object.name);
+          sprite.setOrigin(0, 0);
+          if (object.layerOrder !== undefined) {
+            sprite.setDepth(object.layerOrder);
+          }
+          const wrappedSprite = {
+            name: object.name,
+            type: "sprite",
+            placed: sprite,
+          };
+          this.plugin.storageManager.addToGroup(
+            this.psdKey,
+            object.path.split("/").slice(0, -1).join("/"),
+            wrappedSprite
+          );
+          resolve();
+        });
+        this.camera.scene.load.start();
+      } catch (error) {
+        reject(error);
       }
-
-      this.camera.scene.load.once(`loaderror`, (file) => {
-        reject(new Error(`Failed to load tile layer: ${object.name}`));
-      });
-
-      this.camera.scene.load.start();
     });
   }
 
-  private placeTileLayer(object: any) {
-    const group = this.camera.scene.add.group();
-    group.name = object.name;
+  private loadTile(tile: any) {
+  return new Promise<void>((resolve, reject) => {
+    const tileKey = tile.name;
+    const tilePath = `${this.plugin.getData(this.psdKey).basePath}/${tile.path}`;
 
-    for (let col = 0; col < object.columns; col++) {
-      for (let row = 0; row < object.rows; row++) {
-        const tileKey = `${object.name}_tile_${col}_${row}`;
-        const x = object.x + col * object.tile_slice_size;
-        const y = object.y + row * object.tile_slice_size;
+    this.camera.scene.load.image(tileKey, tilePath);
+    this.camera.scene.load.once(`filecomplete-image-${tileKey}`, () => {
+      try {
+        const tileImage = this.camera.scene.add.image(tile.x, tile.y, tileKey);
+        tileImage.setOrigin(0, 0);
 
-        const tile = this.camera.scene.add.image(x, y, tileKey).setOrigin(0, 0);
-        if (object.initialDepth !== undefined) {
-          tile.setDepth(object.initialDepth);
-        }
-        group.add(tile);
+        this.plugin.storageManager.store(this.psdKey, tile.path, {
+          name: tile.name,
+          type: "tile",
+          placed: tileImage,
+        });
+
+        resolve();
+      } catch (error) {
+        reject(error);
       }
-    }
-
-    this.plugin.storageManager.store(this.psdKey, object.name, {
-      name: object.name,
-      type: "tileLayer",
-      placed: group,
     });
-  }
+    this.camera.scene.load.start();
+  });
+}
 
   private finishLoading(object: any) {
     object.loaded = true;
@@ -270,30 +226,26 @@ export class LazyLoadCamera {
   }
 
   private updateDebugGraphics() {
-    if (this.debugGraphics && this.config.debug && this.config.debug.shape) {
-      this.debugGraphics.clear();
+  if (!this.debugGraphics || !this.config.debug?.shape) return;
 
-      // Draw preload bounds
-      this.debugGraphics.lineStyle(2, 0xff0000, 1);
-      this.debugGraphics.strokeRect(
-        this.preloadBounds.x,
-        this.preloadBounds.y,
-        this.preloadBounds.width,
-        this.preloadBounds.height
-      );
+  this.debugGraphics.clear();
 
-      // Draw lazy object bounds
-      this.debugGraphics.lineStyle(2, 0x00ff00, 1);
-      this.lazyObjects.forEach((object) => {
-        this.debugGraphics.strokeRect(
-          object.x,
-          object.y,
-          object.width || object.columns * object.tile_slice_size,
-          object.height || object.rows * object.tile_slice_size
-        );
-      });
-    }
-  }
+  // Draw preload bounds
+  this.debugGraphics.lineStyle(2, 0xff0000, 1);
+  this.debugGraphics.strokeRect(
+    this.preloadBounds.x,
+    this.preloadBounds.y,
+    this.preloadBounds.width,
+    this.preloadBounds.height
+  );
+
+  // Draw lazy object bounds
+  this.debugGraphics.lineStyle(2, 0x00ff00, 1);
+  this.lazyObjects.forEach((object) => {
+    this.debugGraphics.strokeRect(object.x, object.y, object.width, object.height);
+  });
+}
+
 
   public updateConfig(config: Partial<LazyLoadingOptions>) {
     Object.assign(this.config, config);
