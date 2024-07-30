@@ -32,57 +32,60 @@ export default function tilesModule(plugin: PsdToPhaserPlugin) {
     },
 
     placeTileLayer(
-      scene: Phaser.Scene,
-      layer: any,
-      options: any = {}
-    ): any {
-      const group = scene.add.group();
-      group.name = layer.name;
+  scene: Phaser.Scene,
+  layer: any,
+  options: any = {}
+): any {
+  const group = scene.add.group();
+  group.name = layer.name;
 
-      for (let col = 0; col < layer.columns; col++) {
-        for (let row = 0; row < layer.rows; row++) {
-          const tileKey = `${layer.name}_tile_${col}_${row}`;
-          const x = layer.x + col * layer.tile_slice_size;
-          const y = layer.y + row * layer.tile_slice_size;
+  for (let col = 0; col < layer.columns; col++) {
+    for (let row = 0; row < layer.rows; row++) {
+      const tileKey = `${layer.name}_tile_${col}_${row}`;
+      const x = layer.x + col * layer.tile_slice_size;
+      const y = layer.y + row * layer.tile_slice_size;
 
-          if (scene.textures.exists(tileKey)) {
-            const tile = scene.add.image(x, y, tileKey).setOrigin(0, 0);
-            group.add(tile);
-            tile.setDepth(layer.layerOrder || 0);
+      if (scene.textures.exists(tileKey)) {
+        const tile = scene.add.image(x, y, tileKey).setOrigin(0, 0);
+        group.add(tile);
+        tile.setDepth(layer.initialDepth || 0);
 
-            if (plugin.options.debug) {
-              console.log(`Placed tile: ${tileKey} at (${x}, ${y})`);
-            }
-          } else if (!layer.lazyLoad) {
-            console.warn(`Texture for tile ${tileKey} not found`);
-          }
+        if (plugin.options.debug) {
+          console.log(`Placed tile: ${tileKey} at (${x}, ${y}), depth: ${layer.initialDepth || 0}`);
         }
+      } else if (!layer.lazyLoad) {
+        console.warn(`Texture for tile ${tileKey} not found`);
       }
+    }
+  }
 
-      const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
-      if (debugOptions.shape) {
-        this.addDebugVisualization(
-          scene,
-          layer,
-          group,
-          debugOptions
-        );
-      }
+  // Set the depth for the entire group
+  group.setDepth(layer.initialDepth || 0);
 
-      return { layerData: layer, tileLayer: group };
-    },
+  const debugOptions = getDebugOptions(options.debug, plugin.options.debug);
+  if (debugOptions.shape) {
+    this.addDebugVisualization(
+      scene,
+      layer,
+      group,
+      debugOptions
+    );
+  }
+
+  return { layerData: layer, tileLayer: group };
+},
 
 
     placeAll(scene: Phaser.Scene, psdKey: string, options: any = {}): any[] {
-      const psdData = plugin.getData(psdKey);
-      if (!psdData || !psdData.tiles) {
-        console.warn(`Tiles data for key '${psdKey}' not found.`);
-        return [];
-      }
+  const psdData = plugin.getData(psdKey);
+  if (!psdData || !psdData.tiles) {
+    console.warn(`Tiles data for key '${psdKey}' not found.`);
+    return [];
+  }
 
-      console.log(`Placing all tiles for key '${psdKey}'. Total tilesets: ${psdData.tiles.length}`);
-      return psdData.tiles.map((layer: any) => this.placeTileLayer(scene, layer, options));
-    },
+  console.log(`Placing all tiles for key '${psdKey}'. Total tilesets: ${psdData.tiles.length}`);
+  return psdData.tiles.map((layer: any) => this.placeTileLayer(scene, layer, options));
+},
 
 
     place(

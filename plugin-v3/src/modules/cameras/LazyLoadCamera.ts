@@ -92,20 +92,25 @@ export class LazyLoadCamera {
   }
 
   private checkVisibility() {
-  this.lazyObjects.forEach((object) => {
-    if (!object.loaded && !object.loading) {
-      const objectRect = new Phaser.Geom.Rectangle(
-        object.x,
-        object.y,
-        object.width,
-        object.height
-      );
-      if (Phaser.Geom.Intersects.RectangleToRectangle(objectRect, this.preloadBounds)) {
-        this.queueForLoading(object);
+    this.lazyObjects.forEach((object) => {
+      if (!object.loaded && !object.loading) {
+        const objectRect = new Phaser.Geom.Rectangle(
+          object.x,
+          object.y,
+          object.width,
+          object.height
+        );
+        if (
+          Phaser.Geom.Intersects.RectangleToRectangle(
+            objectRect,
+            this.preloadBounds
+          )
+        ) {
+          this.queueForLoading(object);
+        }
       }
-    }
-  });
-}
+    });
+  }
 
   private queueForLoading(object: any) {
     if (!this.loadQueue.includes(object)) {
@@ -128,29 +133,32 @@ export class LazyLoadCamera {
   }
 
   private loadObject(object: any) {
-  this.loadingObjects.push(object);
-  this.camera.scene.events.emit("lazyLoadStart", object);
+    this.loadingObjects.push(object);
+    this.camera.scene.events.emit("lazyLoadStart", object);
 
-  const loadPromise = object.type === 'tile' ? this.loadTile(object) : this.loadSprite(object);
+    const loadPromise =
+      object.type === "tile" ? this.loadTile(object) : this.loadSprite(object);
 
-  loadPromise
-    .then(() => {
-      this.finishLoading(object);
-    })
-    .catch((error) => {
-      console.error(`Error loading ${object.type}:`, error);
-      object.loading = false;
-      this.loadingObjects = this.loadingObjects.filter(
-        (obj) => obj !== object
-      );
-    });
-}
+    loadPromise
+      .then(() => {
+        this.finishLoading(object);
+      })
+      .catch((error) => {
+        console.error(`Error loading ${object.type}:`, error);
+        object.loading = false;
+        this.loadingObjects = this.loadingObjects.filter(
+          (obj) => obj !== object
+        );
+      });
+  }
 
   private loadSprite(object: any) {
     return new Promise<void>((resolve, reject) => {
       try {
         const key = object.name;
-        const url = `${this.plugin.getData(this.psdKey).basePath}/${object.filePath}`;
+        const url = `${this.plugin.getData(this.psdKey).basePath}/${
+          object.filePath
+        }`;
 
         this.camera.scene.load.image(key, url);
         this.camera.scene.load.once(`filecomplete-image-${key}`, () => {
@@ -180,30 +188,37 @@ export class LazyLoadCamera {
   }
 
   private loadTile(tile: any) {
-  return new Promise<void>((resolve, reject) => {
-    const tileKey = tile.name;
-    const tilePath = `${this.plugin.getData(this.psdKey).basePath}/${tile.path}`;
+    return new Promise<void>((resolve, reject) => {
+      const tileKey = tile.name;
+      const tilePath = `${this.plugin.getData(this.psdKey).basePath}/${
+        tile.path
+      }`;
 
-    this.camera.scene.load.image(tileKey, tilePath);
-    this.camera.scene.load.once(`filecomplete-image-${tileKey}`, () => {
-      try {
-        const tileImage = this.camera.scene.add.image(tile.x, tile.y, tileKey);
-        tileImage.setOrigin(0, 0);
+      this.camera.scene.load.image(tileKey, tilePath);
+      this.camera.scene.load.once(`filecomplete-image-${tileKey}`, () => {
+        try {
+          const tileImage = this.camera.scene.add.image(
+            tile.x,
+            tile.y,
+            tileKey
+          );
+          tileImage.setOrigin(0, 0);
+          tileImage.setDepth(tile.initialDepth || 0);
 
-        this.plugin.storageManager.store(this.psdKey, tile.path, {
-          name: tile.name,
-          type: "tile",
-          placed: tileImage,
-        });
+          this.plugin.storageManager.store(this.psdKey, tile.path, {
+            name: tile.name,
+            type: "tile",
+            placed: tileImage,
+          });
 
-        resolve();
-      } catch (error) {
-        reject(error);
-      }
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
+      this.camera.scene.load.start();
     });
-    this.camera.scene.load.start();
-  });
-}
+  }
 
   private finishLoading(object: any) {
     object.loaded = true;
@@ -226,26 +241,30 @@ export class LazyLoadCamera {
   }
 
   private updateDebugGraphics() {
-  if (!this.debugGraphics || !this.config.debug?.shape) return;
+    if (!this.debugGraphics || !this.config.debug?.shape) return;
 
-  this.debugGraphics.clear();
+    this.debugGraphics.clear();
 
-  // Draw preload bounds
-  this.debugGraphics.lineStyle(2, 0xff0000, 1);
-  this.debugGraphics.strokeRect(
-    this.preloadBounds.x,
-    this.preloadBounds.y,
-    this.preloadBounds.width,
-    this.preloadBounds.height
-  );
+    // Draw preload bounds
+    this.debugGraphics.lineStyle(2, 0xff0000, 1);
+    this.debugGraphics.strokeRect(
+      this.preloadBounds.x,
+      this.preloadBounds.y,
+      this.preloadBounds.width,
+      this.preloadBounds.height
+    );
 
-  // Draw lazy object bounds
-  this.debugGraphics.lineStyle(2, 0x00ff00, 1);
-  this.lazyObjects.forEach((object) => {
-    this.debugGraphics.strokeRect(object.x, object.y, object.width, object.height);
-  });
-}
-
+    // Draw lazy object bounds
+    this.debugGraphics.lineStyle(2, 0x00ff00, 1);
+    this.lazyObjects.forEach((object) => {
+      this.debugGraphics.strokeRect(
+        object.x,
+        object.y,
+        object.width,
+        object.height
+      );
+    });
+  }
 
   public updateConfig(config: Partial<LazyLoadingOptions>) {
     Object.assign(this.config, config);

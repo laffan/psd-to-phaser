@@ -61,7 +61,7 @@ function extractTiles(layers: any[], defaultTileSize: number): { regularTiles: a
         rows: layer.rows,
         tile_slice_size: layer.tile_slice_size || defaultTileSize,
         filetype: layer.filetype || 'png',
-        layerOrder: layer.layerOrder,
+        initialDepth: layer.initialDepth,
         lazyLoad: layer.lazyLoad || false,
         type: 'tileset',
         path: `tiles/${layer.name}/${layer.tile_slice_size || defaultTileSize}`
