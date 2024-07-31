@@ -5,7 +5,7 @@ export interface SpriteData {
     y: number;
     width: number;
     height: number;
-    layerOrder: number;
+    initialDepth: number;
     filePath?: string;
     children?: SpriteData[];
     atlas?: any;
@@ -18,7 +18,7 @@ export interface SpriteData {
         frame: number | string;
         x: number;
         y: number;
-        layerOrder: number;
+        initialDepth: number;
         instanceName: string;
         [key: string]: any;
     }>;

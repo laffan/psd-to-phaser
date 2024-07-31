@@ -11,7 +11,7 @@ export function placeSprite(
   const gameObject = scene.add.sprite(sprite.x, sprite.y, fullPath);
   gameObject.setName(sprite.name);
   gameObject.setOrigin(0, 0);
-  gameObject.setDepth(sprite.layerOrder); 
+  gameObject.setDepth(sprite.initialDepth); 
 
   if (sprite.frame !== undefined) {
     gameObject.setFrame(sprite.frame);

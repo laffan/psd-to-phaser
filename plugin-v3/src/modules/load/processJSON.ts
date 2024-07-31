@@ -26,7 +26,7 @@ export function processJSON(
     ...data,
     basePath: psdFolderPath,
     tiles: regularTiles,
-    // sprites: sprites.filter(sprite => !sprite.lazyLoad),
+    sprites: sprites.filter(sprite => !sprite.lazyLoad),
     lazyLoadObjects: [...lazyLoadTiles, ...lazyLoadSprites],
     zones: extractZones(data.layers),
     points: extractPoints(data.layers),

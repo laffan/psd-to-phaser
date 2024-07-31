@@ -145,9 +145,9 @@ function placeSpritesRecursively(
     }
   });
 
-  if (sprites[0] && sprites[0].layerOrder !== undefined) {
-    console.log(`Set depth of ${parentPath} to ${sprites[0].layerOrder}`);
-    group.setDepth(sprites[0].layerOrder);
+  if (sprites[0] && sprites[0].initialDepth !== undefined) {
+    console.log(`Set depth of ${parentPath} to ${sprites[0].initialDepth}`);
+    group.setDepth(sprites[0].initialDepth);
   }
 
   const wrappedGroup: WrappedObject = {
@@ -186,7 +186,7 @@ function createLazyLoadPlaceholder(
 ): WrappedObject {
   const placeholder = scene.add.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, 0xcccccc, 0.5);
   placeholder.setOrigin(0, 0);
-  placeholder.setDepth(sprite.layerOrder);
+  placeholder.setDepth(sprite.initialDepth);
 
   const wrappedPlaceholder: WrappedObject = {
     name: sprite.name,
@@ -244,8 +244,8 @@ function placeSingleSprite(
         spriteObject.setScale(sprite.scale);
       }
 
-      console.log(`Set depth of ${fullPath} to ${sprite.layerOrder}`);
-      spriteObject.setDepth(sprite.layerOrder);
+      console.log(`Set depth of ${fullPath} to ${sprite.initialDepth}`);
+      spriteObject.setDepth(sprite.initialDepth);
 
       const wrappedSprite: WrappedObject = {
         name: sprite.name,

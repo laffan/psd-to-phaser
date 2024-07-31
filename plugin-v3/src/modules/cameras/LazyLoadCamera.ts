@@ -165,8 +165,8 @@ export class LazyLoadCamera {
           const sprite = this.camera.scene.add.sprite(object.x, object.y, key);
           sprite.setName(object.name);
           sprite.setOrigin(0, 0);
-          if (object.layerOrder !== undefined) {
-            sprite.setDepth(object.layerOrder);
+          if (object.initialDepth !== undefined) {
+            sprite.setDepth(object.initialDepth);
           }
           const wrappedSprite = {
             name: object.name,

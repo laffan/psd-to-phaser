@@ -11,16 +11,16 @@ export function placeSpritesheet(
 
   if (sprite.placement && Array.isArray(sprite.placement)) {
     sprite.placement.forEach((piece) => {
-      const { frame, x, y, layerOrder, instanceName } = piece;
+      const { frame, x, y, initialDepth, instanceName } = piece;
       const spriteObject = scene.add.sprite(x, y, fullPath, frame);
       spriteObject.setName(instanceName);
       spriteObject.setOrigin(0, 0);
       group.add(spriteObject);
-      spriteObject.setDepth(layerOrder);
+      spriteObject.setDepth(initialDepth);
     });
   }
 
-  group.setDepth(sprite.layerOrder || 0);
+  group.setDepth(sprite.initialDepth || 0);
 
   return group;
 }

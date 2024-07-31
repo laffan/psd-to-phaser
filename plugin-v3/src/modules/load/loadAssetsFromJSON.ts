@@ -37,7 +37,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
   };
 
   if (spritesToLoad.length > 0) {
-    // loadSprites(scene, spritesToLoad, basePath, updateProgress, plugin.options.debug);
+    loadSprites(scene, spritesToLoad, basePath, updateProgress, plugin.options.debug);
   }
 
   if (tilesToLoad.length > 0) {
