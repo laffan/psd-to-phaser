@@ -1,20 +1,18 @@
-import os
 from psd_tools import PSDImage
 from psd_tools.constants import BlendMode
-
+import os
 from src.helpers.parsers import parse_attributes
 from src.types.point import process_points
 from src.types.zone import process_zones
 from src.types.sprite import Sprite
-from src.types.tiles import Tiles  
+from src.types.tiles import Tiles
 
 class PSDProcessor:
     def __init__(self, config):
         self.config = config
         self.output_dir = config['output_dir']
         self.depth_counter = 0
-        self.psd_name = None  
-
+        self.psd_name = None
 
     def process_all_psds(self):
         processed_data = {}
@@ -28,8 +26,8 @@ class PSDProcessor:
         return processed_data
 
     def process_psd(self, psd, psd_file, psd_output_dir):
-        self.psd_name = os.path.splitext(os.path.basename(psd_file))[0]  
-        self.tiles_processor = Tiles(self.config, psd_output_dir) 
+        self.psd_name = os.path.splitext(os.path.basename(psd_file))[0]
+        self.tiles_processor = Tiles(self.config, psd_output_dir)
 
         layers = self.process_layers(psd)
 
@@ -47,6 +45,64 @@ class PSDProcessor:
         }
         return psd_data
 
+    def process_layers(self, parent_layer):
+        layers = []
+
+        for layer in reversed(parent_layer):
+            parsed_layer = parse_attributes(layer.name)
+            if parsed_layer is None:
+                continue  # Skip layers that don't conform to the new naming convention
+
+            # Get the bounding box of the layer in absolute coordinates
+            bbox = layer.bbox
+
+            layer_info = {
+                'name': parsed_layer['name'],
+                'category': parsed_layer['category'],
+                'x': bbox[0],
+                'y': bbox[1],
+                'width': bbox[2] - bbox[0],
+                'height': bbox[3] - bbox[1],
+                'initialDepth': self.depth_counter
+            }
+
+            self.depth_counter += 1
+
+            # Add all other attributes directly to layer_info
+            for key, value in parsed_layer.items():
+                if key not in ['name', 'category']:
+                    layer_info[key] = value
+
+            if layer_info['category'] == 'point':
+                # For points, adjust to the center of the layer
+                layer_info['x'] += layer_info['width'] / 2
+                layer_info['y'] += layer_info['height'] / 2
+                layer_info = process_points(layer_info, self.config)
+            elif layer_info['category'] == 'zone':
+                layer_info = process_zones(layer_info, layer)
+            elif layer_info['category'] == 'tileset':
+                layer_info = self.tiles_processor.process_tiles(layer)
+                layer_info['initialDepth'] = layer_info.pop('initialDepth', self.depth_counter - 1)
+            elif layer_info['category'] == 'sprite':
+                sprite = Sprite.create_sprite(layer_info, layer, self.config, self.output_dir, self.psd_name)
+                if sprite:
+                    layer_info = sprite.process()
+                    layer_info['initialDepth'] = layer_info.pop('initialDepth', self.depth_counter - 1)
+                else:
+                    layer_info['note'] = f"Sprite type '{layer_info.get('type', 'basic')}' not yet processed"
+
+            if layer.is_group():
+                children = self.process_layers(layer)
+                if children:
+                    layer_info['children'] = children
+
+            # Capture alpha and blend mode
+            layer_info = self.capture_layer_properties(layer, layer_info)
+
+            layers.append(layer_info)
+
+        return layers
+
     def capture_layer_properties(self, layer, layer_info):
         # Capture alpha if not 100%
         if layer.opacity != 255:
@@ -60,57 +116,6 @@ class PSDProcessor:
             print(blend_mode.name)
             print(layer_info)
         return layer_info
-
-    def process_layers(self, parent_layer):
-      layers = []
-
-      for layer in reversed(parent_layer):
-          parsed_layer = parse_attributes(layer.name)
-          if parsed_layer is None:
-              continue  # Skip layers that don't conform to the new naming convention
-
-          layer_info = {
-              'name': parsed_layer['name'],
-              'category': parsed_layer['category'],
-              'x': layer.left + (layer.width / 2),
-              'y': layer.top + (layer.height / 2),
-              'initialDepth': self.depth_counter
-          }
-
-
-          self.depth_counter += 1
-
-          # Add all other attributes directly to layer_info
-          for key, value in parsed_layer.items():
-              if key not in ['name', 'category']:
-                  layer_info[key] = value
-
-          if layer_info['category'] == 'point':
-              layer_info = process_points(layer_info, self.config)
-          elif layer_info['category'] == 'zone':
-              layer_info = process_zones(layer_info, layer)
-          elif layer_info['category'] == 'tileset':
-              layer_info = self.tiles_processor.process_tiles(layer)
-              layer_info['initialDepth'] = layer_info.pop('initialDepth', self.depth_counter - 1)
-          elif layer_info['category'] == 'sprite':
-              sprite = Sprite.create_sprite(layer_info, layer, self.config, self.output_dir, self.psd_name)
-              if sprite:
-                  layer_info = sprite.process()
-                  layer_info['initialDepth'] = layer_info.pop('initialDepth', self.depth_counter - 1)
-              else:
-                  layer_info['note'] = f"Sprite type '{layer_info.get('type', 'basic')}' not yet processed"
-
-          if layer.is_group():
-              children = self.process_layers(layer)
-              if children:
-                  layer_info['children'] = children
-
-          # Capture alpha and blend mode
-          layer_info = self.capture_layer_properties(layer, layer_info)
-
-          layers.append(layer_info)
-
-      return layers
 
     def reverse_depth(self, layers, max_depth):
         for layer in layers:

@@ -1,7 +1,7 @@
 {
   "output_dir": "../demos/introduction/public/assets/",
   "psd_files": [
-    "../demos/psds/introduction-v3.psd"
+    "../demos/psds/calibration.psd"
   ],
   "tile_slice_size": 150,
   "tile_scaled_versions": [100],
