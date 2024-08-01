@@ -6,6 +6,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
   const basePath = data.basePath;
   const spritesToLoad = data.sprites || [];
   const tilesToLoad = data.tiles || [];
+  const tileSliceSize = data.tile_slice_size || 150; // Default to 150 if not specified
 
   const totalAssets = spritesToLoad.length + tilesToLoad.length;
   let loadedAssets = 0;
@@ -14,6 +15,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
     console.log(`Total assets to load: ${totalAssets}`);
     console.log(`Sprites to load: ${spritesToLoad.length}`);
     console.log(`Tiles to load: ${tilesToLoad.length}`);
+    console.log(`Tile slice size: ${tileSliceSize}`);
   }
 
   const updateProgress = () => {
@@ -39,7 +41,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
   }
 
   if (tilesToLoad.length > 0) {
-    loadTiles(scene, tilesToLoad, basePath, updateProgress, plugin.isDebugEnabled('console'));
+    loadTiles(scene, tilesToLoad, basePath, tileSliceSize, updateProgress, plugin.isDebugEnabled('console'));
   }
 
   if (totalAssets === 0) {

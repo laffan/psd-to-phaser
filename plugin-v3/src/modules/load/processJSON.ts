@@ -1,5 +1,5 @@
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
-// import { loadAssetsFromJSON } from './loadAssetsFromJSON';
+import { loadAssetsFromJSON } from './loadAssetsFromJSON';
 
 export function processJSON(
   scene: Phaser.Scene,
@@ -29,11 +29,7 @@ export function processJSON(
     console.log(`Processed JSON for key "${key}":`, processedData);
   }
 
-  // Commented out for now to prevent build errors
-  // loadAssetsFromJSON(scene, key, processedData, plugin);
-
-  // Temporary: Emit psdLoadComplete event
-  scene.events.emit('psdLoadComplete');
+  loadAssetsFromJSON(scene, key, processedData, plugin);
 }
 
 function extractTiles(layers: any[]): any[] {
