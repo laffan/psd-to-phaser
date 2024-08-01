@@ -16,15 +16,23 @@ new Phaser.Game({
         plugin: PsdToJSONPlugin,
         start: true,
         mapping: "P2P", // all examples below assume you're mapping to P2P
-        data: { debug: true },
+        data: {
+          debug: {
+            // can also be set to "true" to have all debug options set to true
+            shape: false, // outline all items
+            label: false, // text labels for all objects
+            console: false, // output placement & progress info to console
+          },
+          lazyLoadAll: false, //  all items are lazyLoad unless explicitly set otherwise
+          applyAlphaAll: false, // apply alpha value of to all items  by default.
+          applyBlendModesAll: false, // apply blendMode of all items by default.
+        },
       },
     ],
   },
   // ...
 });
 ```
-
-Note that the optional debug mode is on, which gives you simple visualizations of where all objects are being placed. This can be turned on individually for each item as well.
 
 ## Rebuilding the PSD.
 
@@ -52,157 +60,144 @@ this.events.once(
 );
 ```
 
-### Placement
+### place()
 
-All types have place() and placeAll() methods.  
-
-#### placeAll()
+If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional "options" object allows you to limit the recursion ("levels") and set debugging options ("debug").
 
 ```js
-// Place the the layerTypes all at once
-// Doing all four should rebuild your whole PSD
-// (Will need lazyLoad camera to see lazyLoad layers)
-
-this.P2P.tiles.placeAll(this, "psd_key");
-this.P2P.points.placeAll(this, "psd_key");
-this.P2P.zones.placeAll(this, "psd_key");
-this.P2P.sprites.placeAll(this, "psd_key");
-```
-
-#### place()
-
-If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format.
-
-```js
-// Place a nested group
-this.mySprites = this.P2P.sprites.place(
+// Place a top level layer
+this.myTiles = this.P2P.place(
   this,
   "psd_key"
-  "nestedSprites/spriteName",
+  "tileSetName",
+);
+
+// Place a nested item
+this.mySprite = this.P2P.place(
+  this,
+  "psd_key"
+  "groupName/spriteName",
+);
+
+// Place all the children of a nested group with some optional overrides
+this.myItem = this.P2P.place(
+  this,
+  "psd_key"
+  "groupName/nestedGroup",
+  {
+    levels: 1, // Only place top level items in this group, not the descendants
+    debug: {
+      shape: true
+    },
+  }
 );
 ```
 
-Finally, if you need to limit the placement recursion, you can pass in a depth parameter.
+### placeAll()
+
+Place all items at once.
 
 ```js
-// Place a nested group
-this.mySprites = this.P2P.sprites.place(
-  this,
-  "psd_key"
-  "nestedSprites/spriteName",
-);
+// Place all layers in your scene.
+this.P2P.placeAll(this, "psd_key");
 ```
 
-#### Automatic Attributes
 
-If you pass `alpha: int`, `visible:bool` attributes in through the layer attributes, they will be automatically applied to the sprite. In the case of `alpha` you can pair this with the generator's `captureLayerProps` feature to keep alpha manipulable between PSD and Phaser. (At the moment this feature does not work on atlases.)
-
-[Animation sprites](#type--animation) sprites accept most paramaters as an automatic attribute.
-
-### Removal
+### remove()
 
 Anything placed on the canvas comes with a remove() method. This works a lot like the place() method. It is recursive by default (so if you apply it to a layer group the descendants go away too) but you can pass in a `depth` parameter to limit recursion.
 
 ```js
-// Place on the canvas
-this.doomed = this.P2P.sprites.place(this, "nestedSprites", "psd_key");
+// Place a sprite on the canvas
+this.doomed = this.P2P.place(this, "psd_key", "aSprite");
 
-// Remove only the immediate children.
-this.doomed.remove({ depth: 1 });
+// Place a group on the canvas.
+this.doomedGroup = this.P2P.place(this, "psd_key", "groupOfSprites");
 
-// Remove all descendants.
+// Remove the sprite
 this.doomed.remove();
+
+// Remove the group with all descendants
+this.doomedGroup.remove();
+
+// Remove only the top level descendants of a group.
+this.doomed.remove({ levels: 1 });
 ```
 
-### Retreival
+### get()
 
-#### get()
-
-Once you have placed sprites, you can get them using get().
+Any placed group has a get() method, which you can use to retrieve its contents.
 
 ```js
-// Returns an individual sprite
-this.nested = this.P2P.sprites.get(
-  "psd_key",
-  "nestedSprites/moreNested/aNestedSprite"
+// Place a group on the canvas.
+this.placed = this.P2P.place(this, "groupOfSprites");
+
+// Return a single placed sprite
+this.singleSprite = this.placed.get(
+  "nestedSprites/moreNested/aSingleSprite"
+);
+
+// Returns an array of descendants
+this.allDescendants = this.placed.get("nestedSprites/moreNested");
+
+// Returns an array of only immediate descendants
+this.immediateDescendants = this.placed.get("nestedSprites/moreNested"  {
+    levels: 1,
+  }
 );
 ```
 
-This returns the full nested structure of whatever you've asked for.
+### getTexture()
 
-#### getTexture()
+Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet. 
 
-Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.
-
-**Note:** Because the plugin is maintaining layer order with setDepth() it is very likely that new items will be hidden behind something. Just set the depth of your new item to something larger than the number of layers and you'll probably see it.
+Note : When placing new items, remember the [depth gotchya](#depth--placing-your-own-items).
 
 ```js
 // Get the texture of a spritesheet
-const spritesheetTex = this.P2P.sprites.getTexture('psd_key', 'nested/dotSheet');
-const atlasTex = this.P2P.sprites.getTexture('psd_key', 'nested/dotAtlas');
+const spriteTex = this.P2P.getTexture("psd_key", "simpleSprite");
+const spritesheetTex = this.P2P.getTexture('psd_key', 'nested/aSpritesheet');
+const atlasTex = this.P2P.getTexture('psd_key', 'nested/anAtlas');
+
+// Now you have access to just those textures and can use them however you please.
+// For example :
+
+// Create the new sprite like you normally would
+this.newSprite = this.add.sprite(200, 30, spriteTex);
 
 // Emit spritesheet frames
-this.add.particles(200, 30, spritesheetTex, {
+this.spriteSheetParticles = this.add.particles(200, 30, spritesheetTex, {
   frame: [0, 1, 2, 3],
   speed: 100,
   scale: { start: 1, end: 0 },
 });
 
 // Emit atlas frames
-this.add.particles(200, 30, atlasTex, {
+this.atlasParticles = this.add.particles(200, 30, atlasTex, {
   frame: ['pinkDot', 'greenDot']
   speed: 100,
   scale: { start: 1, end: 0 },
 });
 
-// Place the 'pinkDot' of the spritesheet elsewhere in the scene
+// Place the 'pinkDot' of the atlas elsewhere in the scene as its own sprite.
 const testSprite = this.add.sprite(200, 30, atlasTex, 'pinkDot');
 
-// Make sure it's visible
-testSprite.setDepth(100);
+// Avoid the depth gotchya! Make sure these new items are visible
+this.newSprite.setDepth(100);
+this.atlasParticles.setDepth(100);
+this.atlasParticles.setDepth(100);
 
-```
-
-Of course you can also grab regular sprite textures as well. This can be very powerful if you'd like to add more instances of a particular sprite to the canvas.
-
-```js
-// Get the texture
-const spriteTex = this.P2P.sprites.getTexture("psd_key", "simpleSprite");
-
-// Create the new sprite like you normally would
-const newSprite = this.add.sprite(200, 30, spriteTex);
-
-// Make sure it's visible
-testSprite.setDepth(100);
 ```
 
 ## Sprite Types
 
-In the PSD, each layer can be given a type, which tells the tool what kind of image to create and how it should be represented in the JSON.
-
-### Type : Spritesheets
-
-Generates a basic spritesheet of the child layers. The default behaviour is the place all of the sprites where they show up in the PSD. (Note that naming two layers the same thing will cause one of them to overwrite the other.)
-
-```
-demoSpritesheet | spritesheet |
-```
-
-### Type : Atlas
-
-Generates a packed atlas of the child layers. The default behaviour is to place all of the sprites where they show up in the PSD. (Note that naming two layers the same thing will cause one of them to overwrite the other.)
-
-```
-demoSpritesheet | atlas |
-```
+In the PSD, each layer can be given a type, which tells the tool what kind of image to create and how it should be represented in the JSON. For more information on how to properly name these in the PSD, check out the [Generator README](./../../generator/README.md).
 
 ### Type : Animation
 
-An animation is just a spreadsheet with different trimming rules on the layers that automatically loads as an animation. The layers in an animation group need to be integers, so it knows what frames to put where. If you've done your layer naming properly, though, you should just see an animated sprite when you place the Sprite.
+Animations automatically play when placed. However, you can override the default animation properties at several points.
 
-You can override the default animation properties at several points.
-
-1. Layer naming : In Photoshop, the attributes of the layer name itself can control animation properties. If you pass valid animation parameters, they will be merged in when instantiating the animation.
+1. Layer naming : In the PSD itself, the attributes of the layer name itself can control animation properties. If you pass valid animation parameters, they will be merged in when instantiating the animation.
 
 ```
 bounce | animation | frameRate: 5, yoyo: true
@@ -212,7 +207,7 @@ bounce | animation | frameRate: 5, yoyo: true
 
 ```js
 // For individual sprites
-this.P2P.sprites.place(this, "nested/bounce", "psd_key", {
+this.bounce = this.P2P.place(this, "psd_key", "nested/bounce");
   animationOptions: {
     frameRate: 5,
     yoyo: true,
@@ -223,7 +218,7 @@ this.P2P.sprites.place(this, "nested/bounce", "psd_key", {
 3. Using get() : You can always use get() to retreive the sprite and then use updateAnimation():
 
 ```js
-this.bounce = this.P2P.sprites.get("psd_key", "nested/bounce");
+this.bounce = this.P2P.place(this, "psd_key", "nested/bounce");
 
 this.bounce.updateAnimation({
   frameRate: 5,
@@ -233,52 +228,20 @@ this.bounce.updateAnimation({
 
 ### Debugging
 
-The plugin features a top-level debug mode you can feed either a boolean or a configuration object that gives you more granular control : `{ label, shape, console}`. "Label" controls the text label of the layer, "shape" is the visual outline of what is being placed on the canvas and "console" just gives you some basic info about the placement.
-
-```js
-
-// Turn on all the lights!
-plugins: {
-    global: [
-      {
-        key: 'PsdToPhaserPlugin',
-        plugin: PsdToPhaserPlugin,
-        start: true,
-        mapping: "P2P",
-        data: true ,
-      },
-    ],
-  }
-
-// Only certain modes on
-plugins: {
-    global: [
-      {
-        key: 'PsdToPhaserPlugin',
-        plugin: PsdToPhaserPlugin,
-        start: true,
-        mapping: "P2P",
-        data: { debug: {
-          shape: true,
-          label: false
-        } },
-      },
-    ],
-  }
-```
+As mentioned [above](#initializing), the plugin features a top-level debug mode you can feed either a boolean or a configuration object that gives you more granular control : `{ label, shape, console}`. "Label" controls the text label of the layer, "shape" is the visual outline of what is being placed on the canvas and "console" just gives you some basic info about the placement.
 
 When placing objects, you can override whatever your global setting is the same way.
 
 ```js
 // Turn off the text labels
-this.P2P.tiles.place(this, "psd_key", "backgroundTiles", {
+this.P2P.place(this, "psd_key", "backgroundTiles", {
   debug: {
     label: false,
   },
 });
 
 // The equivelant of not using debug at all.
-this.P2P.points.place(this, "psd_key", "pickups/deepNestPoints", {
+this.P2P.place(this, "psd_key", "pickups/deepNestPoints", {
   debug: {
     shape: false,
     label: false,
@@ -297,9 +260,9 @@ You can add these functions to any camera by passing it in to the `createCamera`
 this.myCamera = this.P2P.createCamera(this.camera);
 ```
 
-Just doing this gives you access to the functions, but doesn't actually do anything. To get functionality working off the bat, pass in one of the camera features as an array.
+Just doing this gives you access to the functions, but doesn't actually do anything. To get functionality working off the bat, pass in one or more of the camera features as an array.
 
-At the moment, there are two feature cameras : `lazyLoad` and `draggable`.
+At the moment, there are three feature cameras : `lazyLoad`, `draggable` and `overlay`.
 
 ### LazyLoad
 
@@ -307,7 +270,7 @@ This camera works in conjunction with the `lazyLoad` attribute, which you can se
 
 **Note:** There are some tradeoffs to using `lazyLoad`. The biggest difference is that you can't manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they'll just show up when needed.
 
-The other tradeoff is that you MUST use the lazyLoad camera to see them at all, as the plugin just leaves them out of the initial load sequence.
+The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence.
 
 ```js
 // Initialize a lazyLoad camera
@@ -317,28 +280,14 @@ this.lazyCamera = this.P2P.cameras.createCamera(
   "simple_psd",
   {
     lazyLoadingOptions: {
-      extendPreloadBounds: -30,
-      // Show the boundary of the lazyLoad camera
-      // and the lazyLoad sprites.
-      debug: {
-        shape: true,
-      },
+      extendPreloadBounds: -30, // extend or contract the lazyLoad border that triggers loading.
+      debugBoundary: true, // show red outlines around all lazyLoad items
     },
   }
 );
 ```
 
-Now P2P is keeping track of where the camera is and whether there is any overlap with the location of sprites or tiles. If there is overlap, it will trigger a load sequence
-
-You can also deactivate the feature by setting active to false.
-
-```js
-this.lazyCamera.update({
-  lazyLoadOptions: { active: false},
-)
-```
-
-LazyLoading triggers events, so you can listen for "lazyLoadStart", "loadProgress", "loadingComplete".
+Now P2P is keeping track of where the camera is and whether there is any overlap with the location of sprites or tiles. If there is overlap, it will trigger a load sequence. When lazyLoad items load, they trigger loadProgress events, so you can listen for "lazyLoadStart", "lazyLoadProgress", "lazyLoadingComplete".
 
 ```js
 this.lazyCamera = this.P2P.cameras.createCamera(
@@ -347,12 +296,17 @@ this.lazyCamera = this.P2P.cameras.createCamera(
   "simple_psd"
 );
 
-this.events.on("loadProgress", (progress, currentlyLoading) => {
+this.events.on("lazyLoadStart", (progress, currentlyLoading) => {
   console.log(`Loading is ${progress} complete.`);
   console.log(currentlyLoading); // Array of items currently loading.
 });
 
-this.events.on("loadingComplete", () => {
+this.events.on("lazyLoadProgress", (progress, currentlyLoading) => {
+  console.log(`Loading is ${progress} complete.`);
+  console.log(currentlyLoading); // Array of items currently loading.
+});
+
+this.events.on("lazyLoadingComplete", () => {
   console.log(`Lazy loading is complete.`);
 });
 ```
@@ -362,7 +316,7 @@ this.events.on("loadingComplete", () => {
 The draggable camera lets you click and drag around the canvas. That's about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.
 
 ```js
-// Initialize a draggable camera. Try it out!
+// Initialize a draggable camera.
 this.dragCam = this.P2P.createCamera(this.camera, ['draggable']);
 
 // Initialize a draggable camera with options
@@ -379,13 +333,39 @@ Dragging triggers events, so you can listen for "dragOnStart", "isDragging" and 
 ```js
 this.dragCam = this.P2P.createCamera(this.camera, ["draggable"]);
 
-this.events.on("dragOnStart", () => {
+this.events.on("draggableStart", () => {
   console.log(`Drag has begun.`);
 });
 
-this.events.on("dragOnComplete", () => {
+this.events.on("draggableActive", () => {
+  console.log(`Drag has begun.`);
+});
+
+this.events.on("draggableComplete", () => {
   console.log(`Drag has completed.`);
 });
+```
+
+### Overlay
+
+Overlay cameras can be used to place certain items above others, like UI or framing. They take control of items that have been placed in the scene and keep them in a single position. You can add these items during initialiation or useing the add() method afterwards.
+
+```js
+// Initialize an empty overlay camera.
+this.overlayCam = this.P2P.createCamera(this.camera, ["overlay"]);
+
+// Initialize an overlay camera with items.
+this.overlayCam = this.P2P.createCamera(this.camera, ["overlay"], {
+  overlayOptions: {
+    contents: [this.spriteGroup, this.tileSet],
+  },
+});
+
+// Add items from your scene to the overlay camera
+this.overlayCam.add([this.spriteGroup, this.tileSet]);
+
+// Removing items normally removes them form your overlay camera.
+this.spriteGroup.remove();
 ```
 
 ### Combined
@@ -400,9 +380,7 @@ this.myCamera = this.P2P.createCamera(this.camera, ['lazyLoading', 'draggable'],
     console: true // output camera info.
   },
   lazyLoadingOptions: {
-    active: true // switch on and off
     extendPreloadBounds: 10, // extend/contract trigger bounds beyond camera
-    transitionStyle: "fade", // method of adding the tile
     debug: {
       shape: true // draw a shape around the lazyLoad trigger
     }
@@ -421,13 +399,19 @@ this.myCamera = this.P2P.createCamera(this.camera, ['lazyLoading', 'draggable'],
 Any P2P camera comes with a set of functions that are essentially presets that you can use to interact with
 the PSD features.
 
-### panToPoint()
+### panTo()
 
-Pass in a point and have the canvas pan to it. Can have it finish
+Pass in an item or x/y and have the canvas pan to it.
 
 ```js
-this.myCamera.panToPoint("psd_key", "nested/pointName", {
-  pointPlacement: "topLeft", // pans the point to "center", "topLeft". Can pass in an array of top, left padding from topLeft (ie. pointPlacement: [300, 400])
+// Pan to explicit X/Y
+this.myCamera.panTo([300, 200]);
+
+// Pan to item.
+this.myCamera.panTo(this.placedPoint, {
+  targetPositionY: "center", // "center", "top", "bottom"
+  targetPositionZ: "center", // "center", "left", "right"
+  targetOffset: [300, 100], // Adjust target with x/y
   speed: 300, // time in ms it takes to pan to point
   easing: true, // turn easing on/off
 });
@@ -436,39 +420,152 @@ this.myCamera.panToPoint("psd_key", "nested/pointName", {
 Pans trigger events, so you can listen for "panOnStart", "panProgress" and "panOnComplete".
 
 ```js
-this.myCamera.panToPoint("psd_key", "nested/pointName");
 
-this.events.on("panProgress", ( value ) => {
+this.events.on("panToStart", (  ) => {
+  console.log(`panTo has started`);
+});
+this.events.on("panToProgress", ( value ) => {
   console.log(`Pan is ${value} percent complete.`);
 });
 
-this.events.on("panOnComplete", () => {
-  console.log("Pan has started!"");
+this.events.on("panToComplete", () => {
+  console.log("Pan has completed!"");
 });
 
 ```
 
-You could then control these parameters by calling the cameara
+### fadeIn / fadeOut()
+
+Fade a camera in or out. Pass in the target alpha and options. Defaults to 300ms fade.
 
 ```js
-this.myCamera.update({
-  lazyLoadOptions: { active: false},
-  draggableOptions: { easeAmount: 11 }
-)
+// Fade in
+this.myCamera.fade(100, {
+  speed: 300,
+});
+
+// Fade out.
+this.myCamera.fade(0);
 ```
+
+Fade triggers events, so you can listen for "panOnStart", "panProgress" and "panOnComplete".
+
+```js
+
+this.events.on("fadeStart", (  ) => {
+  console.log(`fade has started`);
+});
+this.events.on("fadeProgress", ( value ) => {
+  console.log(`Ffade is ${value} percent complete.`);
+});
+
+this.events.on("fadeComplete", () => {
+  console.log("Fade has completed!"");
+});
+
+```
+
+## Presets
+
+P2P comes with a few preset functions built in that help you get started more quickly. These are stored in the 'use' class.
+
+### fillZone( zone, sprite )
+
+Randomly fills a zone with a sprite or texture. You can pass in items directly from the JSON or one you've already placed. An optional options object lets you control which frames to use (if using a spritesheet or atlas) as well as size and tint options.
+
+```js
+// Fill a zone with sprites.
+P2P.use.fillZone(this.myZone, this.mySprite);
+
+P2P.use.fillZone(this.myPlacedZone, this.mySpritesheet, {
+  useFrames: [1, 3], // optionally use only these frames from the spritesheet or atlas
+});
+
+P2P.use.fillZone(this.myZone, this.mySprite, {
+  tint: [0x15ae15, 0xdaaf3a, 0xda3a64], // optionally apply these tints to the placed items
+  scaleRange: [0.8, 1.1], // optionally randomly scale items within these bounds.
+});
+```
+
+### joystick( sprite, zone, key)
+
+Joystick allows you to move combine any sprite and zone to create a draggable "joystick" within the bounds of the zone that returns normalized x/y values. Because you may want to use multiple joysticks at once,
+each joystick requires its own key.
+
+```js
+//  aSprite is now draggable, bounded by myZone.
+P2P.use.joystick(this.mySprite, this.myZone, "joystickA");
+
+P2P.use.joystick(this.mySprite, this.myZone, "joystickB", {
+  bounceBack: true, //  On release, aSprite now bounces back to original position.
+});
+```
+
+Joystick fires events that you can use elsewhere in your project. You can parse the returned values using the keys.
+
+```js
+this.events.on("joystickStart", (values) => {
+  console.log("Joystick started");
+});
+this.events.on("joystickActive", (values) => {
+  console.log("Joystick active");
+});
+
+this.events.on("joystickRelease", (values) => {
+  console.log("Joystick Released");
+});
+```
+
+In all cases, the values object has the same structure :
+
+```js
+    values: {
+      joystickA: { // joystick key
+        isActive: false // is active or not
+        position: {x: 100, y: 30 } // new x/y of sprite
+        change: {x: 30, y: -3 } // shift from original position
+        normalized: {x: .3, y: -.6 } // normalized shift from original position
+        }
+      },
+    }
+```
+
+### panLink( sprite, pan, camera)
+
+Panlink is a simple convenience function that makes a sprite interactive and, when clicked, triggers a pan to that point. It's just creating a pan in the background, so you can control the pan with a panOptions parameter.
+
+```js
+P2P.use.panLink(this.mySprite, this.myTargetPoint, this.myTargetCamera, {
+  panOptions: {
+    targetPositionY: "center", // "center", "top", "bottom"
+    targetPositionZ: "center", // "center", "left", "right"
+    targetOffset: [300, 100], // Adjust target with x/y
+    speed: 300, // time in ms it takes to pan to point
+    easing: true, // turn easing on/off
+  },
+});
+```
+
+## Gotchas
+
+### Depth & placing your own items.
+
+Because the plugin is maintaining layer order with setDepth() it is very likely that new items will be hidden behind something. When placing something of your own, make sure you set its depth to something higher than the number of layers you're bringing in from the PSD.
 
 ## TODO
 
-### Finish 
+### Finish
+
 - [ ] panToPoint() demo
 - [ ] updateAnimation() needs to be refactored to work with new placement
 
 ### Bugs
+
 - [ ] StorageManager/addToGroup() throws an error for nested lazyLad functions
 
 ### New Features
-- [ ] Support more than one PSD per scene PsdToPhaserPlugin wrapper.
 
+- [ ] Support more than one PSD per scene PsdToPhaserPlugin wrapper.
 
 ## Development
 

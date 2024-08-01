@@ -1,75 +1,83 @@
-import Phaser from "phaser";
-import loadModule from "./modules/load/index";
-import pointsModule from "./modules/layerTypes/points/index";
-import zonesModule from "./modules/layerTypes/zones/index";
-import tilesModule from "./modules/layerTypes/tiles/index";
-import spritesModule from "./modules/layerTypes/sprites/index";
-import camerasModule from "./modules/cameras/index"; // Add this line
-import { StorageManager } from "./modules/core/StorageManager";
+import Phaser from 'phaser';
+import { StorageManager } from './core/StorageManager';
+import loadModule from './modules/load';
+// import placeModule from './modules/place';
+// import getModule from './modules/get';
+// import removeModule from './modules/remove';
+// import camerasModule from './modules/cameras/create';
+// import useModule from './modules/use';
 
 export interface DebugOptions {
-  console?: boolean;
   shape?: boolean;
   label?: boolean;
+  console?: boolean;
+}
+
+export interface PluginOptions {
+  debug?: boolean | DebugOptions;
+  lazyLoadAll?: boolean;
+  applyAlphaAll?: boolean;
+  applyBlendModesAll?: boolean;
 }
 
 export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
   private psdData: Record<string, any> = {};
   public storageManager: StorageManager;
-  public options: { debug: boolean | DebugOptions } = { debug: false };
+  public options: PluginOptions;
+
   public load: ReturnType<typeof loadModule>;
-  public points: ReturnType<typeof pointsModule>;
-  public zones: ReturnType<typeof zonesModule>;
-  public tiles: ReturnType<typeof tilesModule>;
-  public sprites: ReturnType<typeof spritesModule>;
-  public cameras: ReturnType<typeof camerasModule>; // Add this line
+  // public place: ReturnType<typeof placeModule>;
+  // public get: ReturnType<typeof getModule>;
+  // public remove: ReturnType<typeof removeModule>;
+  // public cameras: ReturnType<typeof camerasModule>;
+  // public use: ReturnType<typeof useModule>;
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
     super(pluginManager);
     this.storageManager = new StorageManager();
+    this.options = {};
+
     this.load = loadModule(this);
-    this.points = pointsModule(this);
-    this.zones = zonesModule(this);
-    this.tiles = tilesModule(this);
-    this.sprites = spritesModule(this);
-    this.cameras = camerasModule(this); // Add this line
+    // this.place = placeModule(this);
+    // this.get = getModule(this);
+    // this.remove = removeModule(this);
+    // this.cameras = camerasModule(this);
+    // this.use = useModule(this);
   }
 
-  init(options: { debug?: boolean | DebugOptions } = {}): void {
-    console.log("V34!");
-    if (typeof options.debug === "boolean") {
-      this.options.debug = options.debug
-        ? { console: true, shape: true, label: true }
-        : false;
-    } else {
-      this.options.debug = options.debug || false;
+  init(options: PluginOptions = {}): void {
+    this.options = {
+      debug: false,
+      lazyLoadAll: false,
+      applyAlphaAll: false,
+      applyBlendModesAll: false,
+      ...options
+    };
+
+    if (typeof this.options.debug === 'boolean') {
+      this.options.debug = this.options.debug ? { shape: true, label: true, console: true } : false;
     }
 
     if (this.options.debug) {
-      console.log("PsdToPhaserPlugin initialized with options:", this.options);
+      console.log('PsdToPhaserPlugin initialized with options:', this.options);
     }
   }
 
   setData(key: string, data: any): void {
     this.psdData[key] = data;
-    if (this.options.debug) {
+    if (this.isDebugEnabled('console')) {
       console.log(`Data set for key "${key}":`, data);
-      console.log("Current psdData:", this.psdData);
     }
   }
 
   getData(key: string): any {
-    if (this.options.debug) {
-      console.log(`Getting data for key "${key}"`);
-      console.log("Current psdData:", this.psdData);
-      console.log(`Data for key "${key}":`, this.psdData[key]);
-    }
-    if (!this.psdData[key]) {
-      console.warn(
-        `No data found for key "${key}". Available keys:`,
-        Object.keys(this.psdData)
-      );
+    if (this.isDebugEnabled('console')) {
+      console.log(`Getting data for key "${key}":`, this.psdData[key]);
     }
     return this.psdData[key];
+  }
+
+  isDebugEnabled(option: keyof DebugOptions): boolean {
+    return typeof this.options.debug === 'object' && !!this.options.debug[option];
   }
 }
