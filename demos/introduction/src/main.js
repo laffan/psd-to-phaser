@@ -11,7 +11,7 @@ const gameConfig = {
   parent: "game",
   type: Phaser.AUTO,
   backgroundColor: "#cfcfcf",
-  width: 300,
+  width: 900,
   height: 300,
   physics: {
     default: "arcade",
