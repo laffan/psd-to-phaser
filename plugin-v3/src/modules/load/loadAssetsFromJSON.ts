@@ -11,33 +11,28 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
   const basePath = data.basePath || '';
   const tileSliceSize = data.tile_slice_size || 150;
 
-  // Only load tiles that aren't already loaded
-  const tilesToLoad = Array.isArray(data.tiles) ? data.tiles.filter((tile: any) => {
-    if (tile.lazyLoad) return false;
-    for (let col = 0; col < tile.columns; col++) {
-      for (let row = 0; row < tile.rows; row++) {
-        const tileKey = `${tile.name}_tile_${col}_${row}`;
-        if (!scene.textures.exists(tileKey)) return true;
-      }
-    }
-    return false;
-  }) : [];
+  // Count tileset assets
+  const tilesToLoad = Array.isArray(data.tiles) ? data.tiles.reduce((count, tile) => {
+    if (tile.lazyLoad) return count;
+    return count + (tile.columns * tile.rows);
+  }, 0) : 0;
 
-  const spritesToLoad = Array.isArray(data.sprites) ? data.sprites.filter((sprite: any) => !sprite.lazyLoad && !scene.textures.exists(sprite.name)) : [];
+  // Count sprite assets
+  const spritesToLoad = Array.isArray(data.sprites) ? data.sprites.filter(sprite => !sprite.lazyLoad).length : 0;
 
-  const totalAssets = spritesToLoad.length + tilesToLoad.reduce((count, tile) => count + (tile.columns * tile.rows), 0);
+  const totalAssets = tilesToLoad + spritesToLoad;
   let loadedAssets = 0;
 
   if (plugin.isDebugEnabled('console')) {
     console.log(`Total assets to load: ${totalAssets}`);
-    console.log(`Sprites to load: ${spritesToLoad.length}`);
-    console.log(`Tiles to load: ${tilesToLoad.length}`);
+    console.log(`Tiles to load: ${tilesToLoad}`);
+    console.log(`Sprites to load: ${spritesToLoad}`);
     console.log(`Tile slice size: ${tileSliceSize}`);
   }
 
   const updateProgress = () => {
     loadedAssets++;
-    const progress = totalAssets > 0 ? loadedAssets / totalAssets : 1;
+    const progress = loadedAssets / totalAssets;
     scene.events.emit('psdLoadProgress', progress);
 
     if (plugin.isDebugEnabled('console')) {
@@ -53,12 +48,12 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
     }
   };
 
-  if (spritesToLoad.length > 0) {
-    loadSprites(scene, spritesToLoad, basePath, updateProgress, plugin.isDebugEnabled('console'));
+  if (data.tiles && data.tiles.length > 0) {
+    loadTiles(scene, data.tiles, basePath, tileSliceSize, updateProgress, plugin.isDebugEnabled('console'));
   }
 
-  if (tilesToLoad.length > 0) {
-    loadTiles(scene, tilesToLoad, basePath, tileSliceSize, updateProgress, plugin.isDebugEnabled('console'));
+  if (data.sprites && data.sprites.length > 0) {
+    loadSprites(scene, data.sprites, basePath, updateProgress, plugin.isDebugEnabled('console'));
   }
 
   if (totalAssets === 0) {
