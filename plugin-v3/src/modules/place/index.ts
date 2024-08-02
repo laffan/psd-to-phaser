@@ -1,6 +1,6 @@
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 import { placeTiles } from './types/tiles';
-// import { placeSprite } from './types/sprites/default';
+import { placeSprites } from './types/sprites';
 // import { placeZone } from './types/zones';
 // import { placePoint } from './types/points';
 
@@ -84,18 +84,10 @@ function placeLayerRecursively(
       case 'tileset':
         placeTiles(scene, currentData, plugin, tileSliceSize, group, resolve, psdKey);
         break;
-      // case 'sprite':
-      //   placeSprite(scene, currentData, plugin, group, psdKey);
-      //   resolve();
-      //   break;
-      // case 'zone':
-      //   placeZone(scene, currentData, plugin, group);
-      //   resolve();
-      //   break;
-      // case 'point':
-      //   placePoint(scene, currentData, plugin, group);
-      //   resolve();
-      //   break;
+      case 'sprite':
+        placeSprites(scene, currentData, plugin, group, resolve, psdKey);
+        break;
+      // ... (other cases remain commented out for now)
       default:
         console.error(`Unknown layer category: ${currentData.category}`);
         resolve();
