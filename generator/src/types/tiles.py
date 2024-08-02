@@ -15,11 +15,14 @@ class Tiles:
     def process_tiles(self, layer):
         print(f"Processing tiles layer: {layer.name}")
 
+        # Unpack the bbox tuple
+        x1, y1, x2, y2 = layer.bbox
+
         tiles_data = {
-            "x": layer.left,
-            "y": layer.top,
-            "width": layer.width,
-            "height": layer.height,
+            "x": x1,
+            "y": y1,
+            "width": x2 - x1,
+            "height": y2 - y1,
         }
 
         tiles_output_dir = os.path.join(self.output_dir, 'tiles')
@@ -52,13 +55,9 @@ class Tiles:
         is_jpg = tile_type.lower() == "jpg"
         tile_image = layer.composite()
         
-        bbox = layer.bbox
-        if isinstance(bbox, tuple):
-            tile_image = tile_image.crop(bbox)
-        elif hasattr(bbox, 'x1') and hasattr(bbox, 'y1') and hasattr(bbox, 'x2') and hasattr(bbox, 'y2'):
-            tile_image = tile_image.crop((bbox.x1, bbox.y1, bbox.x2, bbox.y2))
-        else:
-            print(f"Warning: Unable to crop layer {layer.name}. Using full image.")
+        # Crop the image using the bbox
+        x1, y1, x2, y2 = layer.bbox
+        tile_image = tile_image.crop((0, 0, x2 - x1, y2 - y1))
         
         tile_info = self._create_tiles(tile_image, tiles_output_dir, name, is_jpg)
 

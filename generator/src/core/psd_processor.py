@@ -53,16 +53,16 @@ class PSDProcessor:
             if parsed_layer is None:
                 continue  # Skip layers that don't conform to the new naming convention
 
-            # Get the bounding box of the layer in absolute coordinates
-            bbox = layer.bbox
+            # Unpack the bbox tuple
+            x1, y1, x2, y2 = layer.bbox
 
             layer_info = {
                 'name': parsed_layer['name'],
                 'category': parsed_layer['category'],
-                'x': bbox[0],
-                'y': bbox[1],
-                'width': bbox[2] - bbox[0],
-                'height': bbox[3] - bbox[1],
+                'x': x1,
+                'y': y1,
+                'width': x2 - x1,
+                'height': y2 - y1,
                 'initialDepth': self.depth_counter
             }
 
@@ -81,12 +81,15 @@ class PSDProcessor:
             elif layer_info['category'] == 'zone':
                 layer_info = process_zones(layer_info, layer)
             elif layer_info['category'] == 'tileset':
-                layer_info = self.tiles_processor.process_tiles(layer)
+                # Pass the entire layer to process_tiles, not just the layer_info
+                tile_info = self.tiles_processor.process_tiles(layer)
+                layer_info.update(tile_info)
                 layer_info['initialDepth'] = layer_info.pop('initialDepth', self.depth_counter - 1)
             elif layer_info['category'] == 'sprite':
                 sprite = Sprite.create_sprite(layer_info, layer, self.config, self.output_dir, self.psd_name)
                 if sprite:
-                    layer_info = sprite.process()
+                    sprite_info = sprite.process()
+                    layer_info.update(sprite_info)
                     layer_info['initialDepth'] = layer_info.pop('initialDepth', self.depth_counter - 1)
                 else:
                     layer_info['note'] = f"Sprite type '{layer_info.get('type', 'basic')}' not yet processed"
@@ -102,7 +105,7 @@ class PSDProcessor:
             layers.append(layer_info)
 
         return layers
-
+      
     def capture_layer_properties(self, layer, layer_info):
         # Capture alpha if not 100%
         if layer.opacity != 255:
