@@ -37,7 +37,6 @@ export function placeTiles(
           checkCompletion();
         });
       } else {
-        // The tile is already being loaded, so we just need to wait for it
         scene.load.once(`filecomplete-image-${key}`, () => {
           createTile(scene, x, y, key, tileData.initialDepth, group);
           tilesLoaded++;
@@ -47,11 +46,13 @@ export function placeTiles(
     }
   }
 
+  // Add debug visualization immediately
+  addDebugVisualization(scene, tileData, tileSliceSize, group, plugin);
+
   checkCompletion();
 
   function checkCompletion() {
     if (tilesLoaded === tilesToLoad) {
-      addDebugVisualization(scene, tileData, tileSliceSize, group, plugin);
       resolve();
     }
   }
@@ -75,15 +76,26 @@ function addDebugVisualization(
   group: Phaser.GameObjects.Group,
   plugin: PsdToPhaserPlugin
 ): void {
+  const debugDepth = 1000; // Very high depth to ensure visibility
+
+  console.log(`Adding debug visualization for ${tileData.name}`);
   if (plugin.isDebugEnabled('shape')) {
     const graphics = scene.add.graphics();
+    graphics.setDepth(debugDepth);
     graphics.lineStyle(2, 0xff0000, 1);
     graphics.strokeRect(tileData.x, tileData.y, tileData.columns * tileSliceSize, tileData.rows * tileSliceSize);
     group.add(graphics);
+    console.log(`Added debug shape for ${tileData.name}`);
   }
 
   if (plugin.isDebugEnabled('label')) {
-    const text = scene.add.text(tileData.x, tileData.y - 20, tileData.name, { fontSize: '16px', color: '#ff0000' });
+    const text = scene.add.text(tileData.x, tileData.y - 20, tileData.name, { 
+      fontSize: '16px', 
+      color: '#ff0000',
+      backgroundColor: '#ffffff' // Adding a white background for better visibility
+    });
+    text.setDepth(debugDepth);
     group.add(text);
+    console.log(`Added debug label for ${tileData.name}`);
   }
 }
