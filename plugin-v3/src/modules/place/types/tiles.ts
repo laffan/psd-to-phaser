@@ -28,10 +28,16 @@ export function placeTiles(
       if (scene.textures.exists(key)) {
         createTile(scene, x, y, key, tileData.initialDepth, group);
         tilesLoaded++;
-        checkCompletion();
-      } else {
+      } else if (!scene.load.isLoading(key)) {
         const tilePath = `${psdData.basePath}/tiles/${tileData.name}/${tileSliceSize}/${key}.${tileData.filetype || 'png'}`;
         scene.load.image(key, tilePath);
+        scene.load.once(`filecomplete-image-${key}`, () => {
+          createTile(scene, x, y, key, tileData.initialDepth, group);
+          tilesLoaded++;
+          checkCompletion();
+        });
+      } else {
+        // The tile is already being loaded, so we just need to wait for it
         scene.load.once(`filecomplete-image-${key}`, () => {
           createTile(scene, x, y, key, tileData.initialDepth, group);
           tilesLoaded++;
@@ -40,6 +46,8 @@ export function placeTiles(
       }
     }
   }
+
+  checkCompletion();
 
   function checkCompletion() {
     if (tilesLoaded === tilesToLoad) {

@@ -9,11 +9,23 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
   }
 
   const basePath = data.basePath || '';
-  const spritesToLoad = Array.isArray(data.sprites) ? data.sprites.filter((sprite: any) => !sprite.lazyLoad) : [];
-  const tilesToLoad = Array.isArray(data.tiles) ? data.tiles.filter((tile: any) => !tile.lazyLoad) : [];
   const tileSliceSize = data.tile_slice_size || 150;
 
-  const totalAssets = spritesToLoad.length + tilesToLoad.length;
+  // Only load tiles that aren't already loaded
+  const tilesToLoad = Array.isArray(data.tiles) ? data.tiles.filter((tile: any) => {
+    if (tile.lazyLoad) return false;
+    for (let col = 0; col < tile.columns; col++) {
+      for (let row = 0; row < tile.rows; row++) {
+        const tileKey = `${tile.name}_tile_${col}_${row}`;
+        if (!scene.textures.exists(tileKey)) return true;
+      }
+    }
+    return false;
+  }) : [];
+
+  const spritesToLoad = Array.isArray(data.sprites) ? data.sprites.filter((sprite: any) => !sprite.lazyLoad && !scene.textures.exists(sprite.name)) : [];
+
+  const totalAssets = spritesToLoad.length + tilesToLoad.reduce((count, tile) => count + (tile.columns * tile.rows), 0);
   let loadedAssets = 0;
 
   if (plugin.isDebugEnabled('console')) {
