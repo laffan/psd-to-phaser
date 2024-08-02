@@ -98,7 +98,7 @@ class AtlasSprite(Sprite):
     def _save_image(self, image):
         filename = f"{self.layer_info['name']}.png"
         filepath = self.export_image(image, filename)
-        self.data['filepath'] = filepath
+        self.data['filePath'] = filepath
 
     def export(self):
         return self.data
