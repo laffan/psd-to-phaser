@@ -2,78 +2,67 @@ import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
 
 export function placeTiles(
   scene: Phaser.Scene,
-  psdData: any,
-  layerName: string,
-  plugin: PsdToPhaserPlugin
-): Phaser.GameObjects.Group {
-  const layer = psdData.tiles.find((tile: any) => tile.name === layerName);
-  if (!layer) {
-    console.error(`No tile layer found with name: ${layerName}`);
-    return scene.add.group(); // Return an empty group
-  }
-
-  const group = scene.add.group();
-  const tileSliceSize = psdData.tile_slice_size;
-
-  const checkAndPlace = () => {
-    if (checkAllTilesLoaded(scene, layer)) {
-      createTiles(scene, layer, tileSliceSize, group, plugin);
-      addDebugVisualization(scene, layer, tileSliceSize, group, plugin);
-    } else {
-      // If not all tiles are loaded, check again in the next frame
-      scene.time.delayedCall(0, checkAndPlace);
-    }
-  };
-
-  checkAndPlace();
-
-  return group;
-}
-
-function checkAllTilesLoaded(scene: Phaser.Scene, layer: any): boolean {
-  for (let col = 0; col < layer.columns; col++) {
-    for (let row = 0; row < layer.rows; row++) {
-      const key = `${layer.name}_tile_${col}_${row}`;
-      if (!scene.textures.exists(key)) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-function createTiles(
-  scene: Phaser.Scene,
-  layer: any,
+  tileData: any,
+  plugin: PsdToPhaserPlugin,
   tileSliceSize: number,
   group: Phaser.GameObjects.Group,
-  plugin: PsdToPhaserPlugin
+  resolve: () => void,
+  psdKey: string
 ): void {
-  for (let col = 0; col < layer.columns; col++) {
-    for (let row = 0; row < layer.rows; row++) {
-      const x = layer.x + col * tileSliceSize;
-      const y = layer.y + row * tileSliceSize;
-      const key = `${layer.name}_tile_${col}_${row}`;
+  const psdData = plugin.getData(psdKey);
+  if (!psdData || !psdData.basePath) {
+    console.error(`Invalid PSD data for key: ${psdKey}`);
+    resolve();
+    return;
+  }
+
+  const tilesToLoad = tileData.columns * tileData.rows;
+  let tilesLoaded = 0;
+
+  for (let col = 0; col < tileData.columns; col++) {
+    for (let row = 0; row < tileData.rows; row++) {
+      const x = tileData.x + col * tileSliceSize;
+      const y = tileData.y + row * tileSliceSize;
+      const key = `${tileData.name}_tile_${col}_${row}`;
 
       if (scene.textures.exists(key)) {
-        const tile = scene.add.image(x, y, key);
-        tile.setOrigin(0, 0);
-        tile.setDepth(layer.initialDepth || 0);
-        group.add(tile);
-
-        if (plugin.isDebugEnabled('console')) {
-          console.log(`Placed tile: ${key} at (${x}, ${y})`);
-        }
+        createTile(scene, x, y, key, tileData.initialDepth, group);
+        tilesLoaded++;
+        checkCompletion();
       } else {
-        console.warn(`Texture not found for tile: ${key}`);
+        const tilePath = `${psdData.basePath}/tiles/${tileData.name}/${tileSliceSize}/${key}.${tileData.filetype || 'png'}`;
+        scene.load.image(key, tilePath);
+        scene.load.once(`filecomplete-image-${key}`, () => {
+          createTile(scene, x, y, key, tileData.initialDepth, group);
+          tilesLoaded++;
+          checkCompletion();
+        });
       }
     }
   }
+
+  function checkCompletion() {
+    if (tilesLoaded === tilesToLoad) {
+      addDebugVisualization(scene, tileData, tileSliceSize, group, plugin);
+      resolve();
+    }
+  }
+
+  if (!scene.load.isLoading()) {
+    scene.load.start();
+  }
+}
+
+function createTile(scene: Phaser.Scene, x: number, y: number, key: string, depth: number, group: Phaser.GameObjects.Group) {
+  const tile = scene.add.image(x, y, key);
+  tile.setOrigin(0, 0);
+  tile.setDepth(depth || 0);
+  group.add(tile);
 }
 
 function addDebugVisualization(
   scene: Phaser.Scene,
-  layer: any,
+  tileData: any,
   tileSliceSize: number,
   group: Phaser.GameObjects.Group,
   plugin: PsdToPhaserPlugin
@@ -81,12 +70,12 @@ function addDebugVisualization(
   if (plugin.isDebugEnabled('shape')) {
     const graphics = scene.add.graphics();
     graphics.lineStyle(2, 0xff0000, 1);
-    graphics.strokeRect(layer.x, layer.y, layer.columns * tileSliceSize, layer.rows * tileSliceSize);
+    graphics.strokeRect(tileData.x, tileData.y, tileData.columns * tileSliceSize, tileData.rows * tileSliceSize);
     group.add(graphics);
   }
 
   if (plugin.isDebugEnabled('label')) {
-    const text = scene.add.text(layer.x, layer.y - 20, layer.name, { fontSize: '16px', color: '#ff0000' });
+    const text = scene.add.text(tileData.x, tileData.y - 20, tileData.name, { fontSize: '16px', color: '#ff0000' });
     group.add(text);
   }
 }

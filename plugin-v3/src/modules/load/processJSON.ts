@@ -8,7 +8,7 @@ export function processJSON(
   psdFolderPath: string,
   plugin: PsdToPhaserPlugin
 ): void {
-  if (!data || !data.layers || !Array.isArray(data.layers)) {
+  if (!data || !Array.isArray(data.layers)) {
     console.error(`Invalid or missing layers data for key: ${key}`);
     return;
   }
@@ -16,12 +16,14 @@ export function processJSON(
   const processedData = {
     ...data,
     basePath: psdFolderPath,
-    tiles: extractTiles(data.layers),
-    sprites: extractSprites(data.layers),
-    zones: extractZones(data.layers),
-    points: extractPoints(data.layers),
-    lazyLoadObjects: extractLazyLoadObjects(data.layers),
+    sprites: [],
+    tiles: [],
+    zones: [],
+    points: [],
+    lazyLoadObjects: []
   };
+
+  processLayersRecursively(data.layers, processedData);
 
   plugin.setData(key, processedData);
 
@@ -32,22 +34,32 @@ export function processJSON(
   loadAssetsFromJSON(scene, key, processedData, plugin);
 }
 
-function extractTiles(layers: any[]): any[] {
-  return layers.filter(layer => layer.category === 'tileset' && !layer.lazyLoad);
-}
-
-function extractSprites(layers: any[]): any[] {
-  return layers.filter(layer => layer.category === 'sprite' && !layer.lazyLoad);
-}
-
-function extractZones(layers: any[]): any[] {
-  return layers.filter(layer => layer.category === 'zone');
-}
-
-function extractPoints(layers: any[]): any[] {
-  return layers.filter(layer => layer.category === 'point');
-}
-
-function extractLazyLoadObjects(layers: any[]): any[] {
-  return layers.filter(layer => layer.lazyLoad);
+function processLayersRecursively(layers: any[], processedData: any) {
+  layers.forEach((layer: any) => {
+    switch (layer.category) {
+      case 'tileset':
+        processedData.tiles.push(layer);
+        if (layer.lazyLoad) {
+          processedData.lazyLoadObjects.push({ ...layer, type: 'tile' });
+        }
+        break;
+      case 'sprite':
+        processedData.sprites.push(layer);
+        if (layer.lazyLoad) {
+          processedData.lazyLoadObjects.push({ ...layer, type: 'sprite' });
+        }
+        break;
+      case 'zone':
+        processedData.zones.push(layer);
+        break;
+      case 'point':
+        processedData.points.push(layer);
+        break;
+      case 'group':
+        if (Array.isArray(layer.children)) {
+          processLayersRecursively(layer.children, processedData);
+        }
+        break;
+    }
+  });
 }

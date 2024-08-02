@@ -12,17 +12,24 @@ export function loadTiles(
         const key = `${tileset.name}_tile_${col}_${row}`;
         const filePath = `${basePath}/tiles/${tileset.name}/${tileSliceSize}/${key}.${tileset.filetype || 'png'}`;
 
-        scene.load.image(key, filePath);
+        if (!scene.textures.exists(key) && !scene.textures.getTextureKeys().includes(key) && !scene.load.textureManager.exists(key)) {
+          scene.load.image(key, filePath);
 
-        scene.load.once(`filecomplete-image-${key}`, () => {
+          scene.load.once(`filecomplete-image-${key}`, () => {
+            onProgress();
+            if (debug) {
+              console.log(`Loaded tile: ${key} from ${filePath}`);
+            }
+          });
+
+          if (debug) {
+            console.log(`Queued tile for loading: ${key} from ${filePath}`);
+          }
+        } else {
           onProgress();
           if (debug) {
-            console.log(`Loaded tile: ${key} from ${filePath}`);
+            console.log(`Tile already loaded or loading: ${key}`);
           }
-        });
-
-        if (debug) {
-          console.log(`Queued tile for loading: ${key} from ${filePath}`);
         }
       }
     }
