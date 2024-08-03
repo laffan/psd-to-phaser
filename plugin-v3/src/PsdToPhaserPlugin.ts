@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { StorageManager } from './core/StorageManager';
 import loadModule from './modules/load';
 import placeModule from './modules/place';
+import placeAllModule from './modules/placeAll';
+
 // import getModule from './modules/get';
 // import removeModule from './modules/remove';
 // import camerasModule from './modules/cameras/create';
@@ -27,6 +29,8 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
 
   public load: ReturnType<typeof loadModule>;
   public place: ReturnType<typeof placeModule>;
+  public placeAll: ReturnType<typeof placeAllModule>;
+
   // public get: ReturnType<typeof getModule>;
   // public remove: ReturnType<typeof removeModule>;
   // public cameras: ReturnType<typeof camerasModule>;
@@ -39,6 +43,8 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
 
     this.load = loadModule(this);
     this.place = placeModule(this);
+    this.placeAll = placeAllModule(this);
+
     // this.get = getModule(this);
     // this.remove = removeModule(this);
     // this.cameras = camerasModule(this);
