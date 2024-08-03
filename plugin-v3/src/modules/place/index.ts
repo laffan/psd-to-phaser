@@ -1,8 +1,8 @@
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 import { placeTiles } from './types/tiles';
 import { placeSprites } from './types/sprites';
-// import { placeZone } from './types/zones';
-// import { placePoint } from './types/points';
+import { placeZones } from './types/zones';
+import { placePoints } from './types/points';
 
 export default function placeModule(plugin: PsdToPhaserPlugin) {
   return function place(scene: Phaser.Scene, psdKey: string, layerPath: string): Promise<Phaser.GameObjects.Group> {
@@ -80,7 +80,12 @@ function placeLayerRecursively(
       case 'sprite':
         placeSprites(scene, currentData, plugin, group, resolve, psdKey);
         break;
-      // ... (other cases remain commented out for now)
+    case 'zone':
+      placeZones(scene, currentData, plugin, group, resolve, psdKey);
+      break;
+    case 'point':
+      placePoints(scene, currentData, plugin, group, resolve, psdKey);
+      break;
       default:
         console.error(`Unknown layer category: ${currentData.category}`);
         resolve();

@@ -23,9 +23,6 @@ export function placeAtlas(
           group.add(spriteObject);
           spriteObject.setDepth(sprite.initialDepth || 0);
 
-          // Debug: Log the frame size
-          const frame = spriteObject.frame;
-          console.log(`Placed frame "${name}" at (${x}, ${y}) with size: ${frame.width}x${frame.height}`);
         } else {
           console.warn(`Frame "${name}" not found in atlas "${sprite.name}"`);
         }

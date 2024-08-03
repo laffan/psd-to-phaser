@@ -78,7 +78,6 @@ function addDebugVisualization(
 ): void {
   const debugDepth = 1000; // Very high depth to ensure visibility
 
-  console.log(`Adding debug visualization for ${tileData.name}`);
   if (plugin.isDebugEnabled('shape')) {
     const graphics = scene.add.graphics();
     graphics.setDepth(debugDepth);
