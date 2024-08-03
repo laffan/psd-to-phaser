@@ -4,6 +4,7 @@ import { placeSpritesheet } from './spritesheet';
 import { placeAtlas } from './atlas';
 import { placeAnimation } from './animation';
 
+
 export function placeSprites(
   scene: Phaser.Scene,
   spriteData: any,
@@ -19,44 +20,41 @@ export function placeSprites(
     return;
   }
 
-  const placeSpriteObject = () => {
-    let spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group | null = null;
+  let spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group | null = null;
 
-    switch (spriteData.type) {
-      case 'spritesheet':
-        spriteObject = placeSpritesheet(scene, spriteData, plugin, psdKey);
-        break;
-      case 'atlas':
-        spriteObject = placeAtlas(scene, spriteData, plugin, psdKey);
-        break;
-      case 'animation':
-        spriteObject = placeAnimation(scene, spriteData, plugin, psdKey);
-        break;
-      default:
-        spriteObject = placeDefaultSprite(scene, spriteData, plugin, psdKey);
-        break;
-    }
-
-    if (spriteObject) {
-      group.add(spriteObject);
-      if (spriteData.alpha !== undefined) spriteObject.setAlpha(spriteData.alpha);
-      if (spriteData.visible !== undefined) spriteObject.setVisible(spriteData.visible);
-      spriteObject.setDepth(spriteData.initialDepth || 0);
-    }
-
-    addDebugVisualization(scene, spriteData, group, plugin);
-    resolve();
-  };
-
-  if (scene.textures.exists(spriteData.name)) {
-    placeSpriteObject();
-  } else {
-    const spritePath = `${psdData.basePath}/${spriteData.filePath}`;
-    scene.load.image(spriteData.name, spritePath);
-    scene.load.once(`filecomplete-image-${spriteData.name}`, placeSpriteObject);
-    scene.load.start();
+  switch (spriteData.type) {
+    case 'spritesheet':
+      spriteObject = placeSpritesheet(scene, spriteData, plugin, psdKey);
+      break;
+    case 'atlas':
+      spriteObject = placeAtlas(scene, spriteData, plugin, psdKey);
+      break;
+    case 'animation':
+      spriteObject = placeAnimation(scene, spriteData, plugin, psdKey);
+      break;
+    default:
+      spriteObject = placeDefaultSprite(scene, spriteData, plugin, psdKey);
+      break;
   }
+
+  if (spriteObject) {
+    group.add(spriteObject);
+    if (spriteData.alpha !== undefined) spriteObject.setAlpha(spriteData.alpha);
+    if (spriteData.visible !== undefined) spriteObject.setVisible(spriteData.visible);
+    spriteObject.setDepth(spriteData.initialDepth || 0);
+    addDebugVisualization(scene, spriteData, group, plugin);
+  } else {
+    console.error(`Failed to place sprite: ${spriteData.name}`);
+  }
+
+  resolve();
 }
+
+// ... (rest of the file remains the same)
+
+// ... (rest of the file remains the same)
+
+// ... (rest of the file remains the same)
 
 function addDebugVisualization(
   scene: Phaser.Scene,

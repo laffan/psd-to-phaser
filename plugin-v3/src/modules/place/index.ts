@@ -5,33 +5,26 @@ import { placeSprites } from './types/sprites';
 // import { placePoint } from './types/points';
 
 export default function placeModule(plugin: PsdToPhaserPlugin) {
-  return function place(scene: Phaser.Scene, psdKey: string, layerPath: string): Phaser.GameObjects.Group {
-    const psdData = plugin.getData(psdKey);
-    if (!psdData) {
-      console.error(`No data found for key: ${psdKey}`);
-      return scene.add.group();
-    }
+  return function place(scene: Phaser.Scene, psdKey: string, layerPath: string): Promise<Phaser.GameObjects.Group> {
+    return new Promise((resolve) => {
+      const psdData = plugin.getData(psdKey);
+      if (!psdData) {
+        console.error(`No data found for key: ${psdKey}`);
+        resolve(scene.add.group());
+        return;
+      }
 
-    const tileSliceSize = psdData.tile_slice_size || 150;
-    const group = scene.add.group();
+      const tileSliceSize = psdData.tile_slice_size || 150;
+      const group = scene.add.group();
 
-    const loadPromise = new Promise<void>((resolve) => {
-      placeLayerRecursively(scene, psdData, layerPath, plugin, tileSliceSize, group, resolve, psdKey);
-    });
-
-    scene.load.once('complete', () => {
-      loadPromise.then(() => {
+      placeLayerRecursively(scene, psdData, layerPath, plugin, tileSliceSize, group, () => {
         scene.events.emit('layerPlaced', layerPath);
-      });
+        resolve(group);
+      }, psdKey);
     });
-
-    if (!scene.load.isLoading()) {
-      scene.load.start();
-    }
-
-    return group;
   };
 }
+
 
 function placeLayerRecursively(
   scene: Phaser.Scene,
