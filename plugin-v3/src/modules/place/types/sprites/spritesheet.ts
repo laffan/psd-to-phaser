@@ -9,8 +9,8 @@ export function placeSpritesheet(
   const group = scene.add.group();
   group.name = sprite.name;
 
-  if (sprite.placement && Array.isArray(sprite.placement)) {
-    sprite.placement.forEach((piece: any) => {
+  if (sprite.instances && Array.isArray(sprite.instances)) {
+    sprite.instances.forEach((piece: any) => {
       const { frame, x, y, initialDepth, instanceName } = piece;
       const spriteObject = scene.add.sprite(x, y, sprite.name, frame);
       spriteObject.setName(instanceName);

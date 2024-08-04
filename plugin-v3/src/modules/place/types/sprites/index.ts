@@ -50,12 +50,6 @@ export function placeSprites(
   resolve();
 }
 
-// ... (rest of the file remains the same)
-
-// ... (rest of the file remains the same)
-
-// ... (rest of the file remains the same)
-
 function addDebugVisualization(
   scene: Phaser.Scene,
   spriteData: any,

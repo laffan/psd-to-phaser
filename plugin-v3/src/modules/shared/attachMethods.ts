@@ -2,29 +2,37 @@
 
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 
-type MethodName = 'setRotation' | 'setPosition' | 'setScale' | 'setAlpha' | 'setActive' | 'setBlendMode' | 'destroy';
+type MethodName = 'setRotation' | 'setPosition' | 'setScale' | 'setAlpha' | 'setActive' | 'setBlendMode' | 'remove';
 
-const methodsToAttach: MethodName[] = ['setRotation', 'setPosition', 'setScale', 'setAlpha', 'setActive', 'setBlendMode', 'destroy'];
+const methodsToAttach: MethodName[] = ['setRotation', 'setPosition', 'setScale', 'setAlpha', 'setActive', 'setBlendMode', 'remove'];
 
 export function attachMethods(plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group): void {
-  methodsToAttach.forEach(methodName => {
-    attachMethod(plugin, gameObject, methodName);
-  });
-
   if (gameObject instanceof Phaser.GameObjects.Group) {
-    gameObject.getChildren().forEach(child => attachMethods(plugin, child));
+    attachGroupMethods(plugin, gameObject);
+  } else {
+    attachIndividualMethods(plugin, gameObject);
   }
 }
 
-function attachMethod(plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group, methodName: MethodName): void {
-  if (gameObject instanceof Phaser.GameObjects.Group) {
-    (gameObject as any)[methodName] = createGroupMethod(plugin, methodName);
-  }
+function attachGroupMethods(plugin: PsdToPhaserPlugin, group: Phaser.GameObjects.Group): void {
+  methodsToAttach.forEach(methodName => {
+    (group as any)[methodName] = createGroupMethod(plugin, methodName);
+  });
+}
+
+function attachIndividualMethods(plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject): void {
+  methodsToAttach.forEach(methodName => {
+    if (methodName === 'remove') {
+      (gameObject as any)[methodName] = (options: { depth?: number } = {}) => {
+        plugin.remove(gameObject, options);
+      };
+    }
+  });
 }
 
 function createGroupMethod(plugin: PsdToPhaserPlugin, methodName: MethodName) {
   return function(this: Phaser.GameObjects.Group, ...args: any[]) {
-    const options = typeof args[args.length - 1] === 'object' ? args.pop() : {};
+    const options = typeof args[args.length - 1] === 'object' && !Array.isArray(args[args.length - 1]) ? args.pop() : {};
     const depth = options.depth !== undefined ? options.depth : Infinity;
     
     applyMethodRecursively(this, methodName, args, depth, 0);
@@ -37,31 +45,13 @@ function applyMethodRecursively(gameObject: Phaser.GameObjects.GameObject | Phas
   }
 
   if (gameObject instanceof Phaser.GameObjects.Group) {
-    if (currentDepth === maxDepth + 1) {
-      // Apply method to the group itself if we've reached the max depth
-      if (typeof (gameObject as any)[`__original_${methodName}`] === 'function') {
-        (gameObject as any)[`__original_${methodName}`](...args);
-      }
-    } else {
-      // Continue recursion for children
+    if (currentDepth < maxDepth) {
       const children = gameObject.getChildren();
       children.forEach(child => {
         applyMethodRecursively(child, methodName, args, maxDepth, currentDepth + 1);
       });
     }
-  } else {
-    // Apply method to individual game objects
-    if (typeof (gameObject as any)[methodName] === 'function') {
-      (gameObject as any)[methodName](...args);
-    }
+  } else if (typeof (gameObject as any)[methodName] === 'function') {
+    (gameObject as any)[methodName](...args);
   }
-}
-
-// Preserve original group methods
-export function preserveOriginalMethods(group: Phaser.GameObjects.Group): void {
-  methodsToAttach.forEach(methodName => {
-    if (typeof (group as any)[methodName] === 'function') {
-      (group as any)[`__original_${methodName}`] = (group as any)[methodName];
-    }
-  });
 }
