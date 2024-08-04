@@ -94,15 +94,22 @@ this.myItem = this.P2P.place(
 ```
 
 #### Attached methods & chaining
-Both individual sprites and groups have a series of methods attached that they can use the depth parameter on.  Currently, this list includes 'setRotation' | 'setPosition' | 'setScale' | 'setAlpha' | 'setActive' | 'setBlendMode' | 'destroy'.
+You can set sprite methods on all sprites in the group by treating them like a sprite. 
+
 
 ```js
-
+// Set the alpha and rotation of a group.
 const depthTest = this.P2P.place(this, "psd_key", "depthTest" )
-depthTest.setAlpha( 0.3, { depth: 1})
-depthTest.setRotation(Math.PI / 4, { depth: 2 });
+depthTest.setAlpha( 0.3)
+depthTest.setRotation(Math.PI / 4);
 
+// Set the placement when placing.
 ```
+
+Currently, the list of supported types (somewhat arbitrarily) includes :   'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+
+**Note** : At the moment this applies the method to the indivudal sprites, rather than the group as a whole. Fixing this is a soon-as-I-can update.
+
 
 ### placeAll()
 

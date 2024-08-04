@@ -2,9 +2,30 @@
 
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 
-type MethodName = 'setRotation' | 'setPosition' | 'setScale' | 'setAlpha' | 'setActive' | 'setBlendMode' | 'remove';
 
-const methodsToAttach: MethodName[] = ['setRotation', 'setPosition', 'setScale', 'setAlpha', 'setActive', 'setBlendMode', 'remove'];
+type MethodName = string;
+;
+
+const methodsToAttach: MethodName[] = [  'setAlpha',
+  'setAngle',
+  'setBlendMode',
+  'setDepth',
+  'setDisplaySize',
+  'setFlip',
+  'setMask',
+  'setOrigin',
+  'setPipeline',
+  'setPosition',
+  'setRotation',
+  'setScale',
+  'setScrollFactor',
+  'setSize',
+  'setTint',
+  'setVisible',
+  'setX',
+  'setY',
+  'setZ',
+];
 
 export function attachMethods(plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group): void {
   if (gameObject instanceof Phaser.GameObjects.Group) {
