@@ -19,77 +19,77 @@ export default function placeModule(plugin: PsdToPhaserPlugin) {
       const tileSliceSize = psdData.tile_slice_size || 150;
       const group = scene.add.group();
 
-      const layer = findLayer(psdData.layers, layerPath.split('/'));
-      if (layer) {
-        placeLayers(scene, [layer], plugin, tileSliceSize, group, psdKey, options.depth || Infinity, 1);
-        scene.events.emit('layerPlaced', layerPath);
-        resolve(group);
-      } else {
+      const targetLayer = findLayer(psdData.layers, layerPath.split('/'));
+      if (!targetLayer) {
         console.error(`No layer found with path: ${layerPath}`);
         resolve(group);
+        return;
       }
+
+      placeLayerRecursively(scene, targetLayer, plugin, tileSliceSize, group, () => {
+        scene.events.emit('layerPlaced', layerPath);
+        resolve(group);
+      }, psdKey, options, 0);
     });
   };
 }
 
-function findLayer(layers: any[], pathParts: string[]): any | null {
+function findLayer(layers: any[], pathParts: string[]): any {
+  if (pathParts.length === 0) return layers;
   const [current, ...rest] = pathParts;
-  const found = layers.find(layer => layer.name === current);
-
+  const found = layers.find((layer: any) => layer.name === current);
   if (!found) return null;
   if (rest.length === 0) return found;
-  if (found.category === 'group' && Array.isArray(found.children)) {
-    return findLayer(found.children, rest);
-  }
-  return null;
+  return findLayer(found.children || [], rest);
 }
 
-function placeLayers(
-  scene: Phaser.Scene,
-  layers: any[],
-  plugin: PsdToPhaserPlugin,
-  tileSliceSize: number,
-  group: Phaser.GameObjects.Group,
-  psdKey: string,
-  maxDepth: number,
-  currentDepth: number
-): void {
-  layers.forEach((layer) => {
-    placeLayer(scene, layer, plugin, tileSliceSize, group, psdKey);
-
-    if (layer.category === 'group' && Array.isArray(layer.children) && currentDepth < maxDepth) {
-      const subGroup = scene.add.group();
-      group.add(subGroup);
-      placeLayers(scene, layer.children, plugin, tileSliceSize, subGroup, psdKey, maxDepth, currentDepth + 1);
-    }
-  });
-}
-
-function placeLayer(
+function placeLayerRecursively(
   scene: Phaser.Scene,
   layer: any,
   plugin: PsdToPhaserPlugin,
   tileSliceSize: number,
   group: Phaser.GameObjects.Group,
-  psdKey: string
+  resolve: () => void,
+  psdKey: string,
+  options: { depth?: number },
+  currentDepth: number
 ): void {
-  switch (layer.category) {
-    case 'tileset':
-      placeTiles(scene, layer, plugin, tileSliceSize, group, () => {}, psdKey);
-      break;
-    case 'sprite':
-      placeSprites(scene, layer, plugin, group, () => {}, psdKey);
-      break;
-    case 'zone':
-      placeZones(scene, layer, plugin, group, () => {}, psdKey);
-      break;
-    case 'point':
-      placePoints(scene, layer, plugin, group, () => {}, psdKey);
-      break;
-    case 'group':
-      // Groups are handled in placeLayers
-      break;
-    default:
-      console.warn(`Unknown layer category: ${layer.category}`);
+  if (options.depth !== undefined && currentDepth > options.depth) {
+    resolve();
+    return;
+  }
+
+  if (layer.category === 'group') {
+    if (Array.isArray(layer.children)) {
+      let childrenPlaced = 0;
+      layer.children.forEach((child: any) => {
+        placeLayerRecursively(scene, child, plugin, tileSliceSize, group, () => {
+          childrenPlaced++;
+          if (childrenPlaced === layer.children.length) {
+            resolve();
+          }
+        }, psdKey, options, currentDepth + 1);
+      });
+    } else {
+      resolve();
+    }
+  } else {
+    switch (layer.category) {
+      case 'tileset':
+        placeTiles(scene, layer, plugin, tileSliceSize, group, resolve, psdKey);
+        break;
+      case 'sprite':
+        placeSprites(scene, layer, plugin, group, resolve, psdKey);
+        break;
+      case 'zone':
+        placeZones(scene, layer, plugin, group, resolve, psdKey);
+        break;
+      case 'point':
+        placePoints(scene, layer, plugin, group, resolve, psdKey);
+        break;
+      default:
+        console.error(`Unknown layer category: ${layer.category}`);
+        resolve();
+    }
   }
 }
