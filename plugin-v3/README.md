@@ -62,7 +62,7 @@ this.events.once(
 
 ### place()
 
-If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional "options" object allows you to limit the recursion ("levels") and set debugging options ("debug").
+If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional "options" object allows you to limit the recursion ("depth") and set debugging options ("debug").
 
 ```js
 // Place a top level layer
@@ -85,12 +85,23 @@ this.myItem = this.P2P.place(
   "psd_key"
   "groupName/nestedGroup",
   {
-    levels: 1, // Only place top level items in this group, not the descendants
+    depth: 1, // Only place top level items in this group, not the descendants
     debug: {
       shape: true
     },
   }
 );
+```
+
+#### Attached methods & chaining
+Both individual sprites and groups have a series of methods attached that they can use the depth parameter on.  Currently, this list includes 'setRotation' | 'setPosition' | 'setScale' | 'setAlpha' | 'setActive' | 'setBlendMode' | 'destroy'.
+
+```js
+
+const depthTest = this.P2P.place(this, "psd_key", "depthTest" )
+depthTest.setAlpha( 0.3, { depth: 1})
+depthTest.setRotation(Math.PI / 4, { depth: 2 });
+
 ```
 
 ### placeAll()
@@ -100,52 +111,13 @@ Place all items at once.
 ```js
 // Place all layers in your scene.
 this.P2P.placeAll(this, "psd_key");
+
+// Place only top level layers.
+this.P2P.placeAll(this, "psd_key", {
+    depth: 1
+    });
 ```
 
-
-### remove()
-
-Anything placed on the canvas comes with a remove() method. This works a lot like the place() method. It is recursive by default (so if you apply it to a layer group the descendants go away too) but you can pass in a `depth` parameter to limit recursion.
-
-```js
-// Place a sprite on the canvas
-this.doomed = this.P2P.place(this, "psd_key", "aSprite");
-
-// Place a group on the canvas.
-this.doomedGroup = this.P2P.place(this, "psd_key", "groupOfSprites");
-
-// Remove the sprite
-this.doomed.remove();
-
-// Remove the group with all descendants
-this.doomedGroup.remove();
-
-// Remove only the top level descendants of a group.
-this.doomed.remove({ levels: 1 });
-```
-
-### get()
-
-Any placed group has a get() method, which you can use to retrieve its contents.
-
-```js
-// Place a group on the canvas.
-this.placed = this.P2P.place(this, "groupOfSprites");
-
-// Return a single placed sprite
-this.singleSprite = this.placed.get(
-  "nestedSprites/moreNested/aSingleSprite"
-);
-
-// Returns an array of descendants
-this.allDescendants = this.placed.get("nestedSprites/moreNested");
-
-// Returns an array of only immediate descendants
-this.immediateDescendants = this.placed.get("nestedSprites/moreNested"  {
-    levels: 1,
-  }
-);
-```
 
 ### getTexture()
 
@@ -188,6 +160,8 @@ this.atlasParticles.setDepth(100);
 this.atlasParticles.setDepth(100);
 
 ```
+
+
 
 ## Sprite Types
 
