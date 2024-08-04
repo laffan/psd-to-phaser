@@ -1,3 +1,5 @@
+// src/modules/place/index.ts
+
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 import { placeTiles } from './types/tiles';
 import { placeSprites } from './types/sprites';
@@ -5,7 +7,7 @@ import { placeZones } from './types/zones';
 import { placePoints } from './types/points';
 
 export default function placeModule(plugin: PsdToPhaserPlugin) {
-  return function place(scene: Phaser.Scene, psdKey: string, layerPath: string): Promise<Phaser.GameObjects.Group> {
+  return function place(scene: Phaser.Scene, psdKey: string, layerPath: string, options: { depth?: number } = {}): Promise<Phaser.GameObjects.Group> {
     return new Promise((resolve) => {
       const psdData = plugin.getData(psdKey);
       if (!psdData) {
@@ -17,78 +19,77 @@ export default function placeModule(plugin: PsdToPhaserPlugin) {
       const tileSliceSize = psdData.tile_slice_size || 150;
       const group = scene.add.group();
 
-      placeLayerRecursively(scene, psdData, layerPath, plugin, tileSliceSize, group, () => {
+      const layer = findLayer(psdData.layers, layerPath.split('/'));
+      if (layer) {
+        placeLayers(scene, [layer], plugin, tileSliceSize, group, psdKey, options.depth || Infinity, 1);
         scene.events.emit('layerPlaced', layerPath);
         resolve(group);
-      }, psdKey);
+      } else {
+        console.error(`No layer found with path: ${layerPath}`);
+        resolve(group);
+      }
     });
   };
 }
 
+function findLayer(layers: any[], pathParts: string[]): any | null {
+  const [current, ...rest] = pathParts;
+  const found = layers.find(layer => layer.name === current);
 
-function placeLayerRecursively(
+  if (!found) return null;
+  if (rest.length === 0) return found;
+  if (found.category === 'group' && Array.isArray(found.children)) {
+    return findLayer(found.children, rest);
+  }
+  return null;
+}
+
+function placeLayers(
   scene: Phaser.Scene,
-  psdData: any,
-  layerPath: string,
+  layers: any[],
   plugin: PsdToPhaserPlugin,
   tileSliceSize: number,
   group: Phaser.GameObjects.Group,
-  resolve: () => void,
+  psdKey: string,
+  maxDepth: number,
+  currentDepth: number
+): void {
+  layers.forEach((layer) => {
+    placeLayer(scene, layer, plugin, tileSliceSize, group, psdKey);
+
+    if (layer.category === 'group' && Array.isArray(layer.children) && currentDepth < maxDepth) {
+      const subGroup = scene.add.group();
+      group.add(subGroup);
+      placeLayers(scene, layer.children, plugin, tileSliceSize, subGroup, psdKey, maxDepth, currentDepth + 1);
+    }
+  });
+}
+
+function placeLayer(
+  scene: Phaser.Scene,
+  layer: any,
+  plugin: PsdToPhaserPlugin,
+  tileSliceSize: number,
+  group: Phaser.GameObjects.Group,
   psdKey: string
 ): void {
-  const pathParts = layerPath.split('/');
-  let currentData = psdData;
-
-  for (const part of pathParts) {
-    if (Array.isArray(currentData.layers)) {
-      currentData = currentData.layers.find((layer: any) => layer.name === part);
-    } else if (currentData.children) {
-      currentData = currentData.children.find((child: any) => child.name === part);
-    } else {
-      currentData = null;
+  switch (layer.category) {
+    case 'tileset':
+      placeTiles(scene, layer, plugin, tileSliceSize, group, () => {}, psdKey);
       break;
-    }
-
-    if (!currentData) break;
-  }
-
-  if (!currentData) {
-    console.error(`No layer found with path: ${layerPath}`);
-    resolve();
-    return;
-  }
-
-  if (currentData.category === 'group') {
-    if (Array.isArray(currentData.children)) {
-      let childrenPlaced = 0;
-      currentData.children.forEach((child: any) => {
-        placeLayerRecursively(scene, { layers: [child] }, child.name, plugin, tileSliceSize, group, () => {
-          childrenPlaced++;
-          if (childrenPlaced === currentData.children.length) {
-            resolve();
-          }
-        }, psdKey);
-      });
-    } else {
-      resolve();
-    }
-  } else {
-    switch (currentData.category) {
-      case 'tileset':
-        placeTiles(scene, currentData, plugin, tileSliceSize, group, resolve, psdKey);
-        break;
-      case 'sprite':
-        placeSprites(scene, currentData, plugin, group, resolve, psdKey);
-        break;
+    case 'sprite':
+      placeSprites(scene, layer, plugin, group, () => {}, psdKey);
+      break;
     case 'zone':
-      placeZones(scene, currentData, plugin, group, resolve, psdKey);
+      placeZones(scene, layer, plugin, group, () => {}, psdKey);
       break;
     case 'point':
-      placePoints(scene, currentData, plugin, group, resolve, psdKey);
+      placePoints(scene, layer, plugin, group, () => {}, psdKey);
       break;
-      default:
-        console.error(`Unknown layer category: ${currentData.category}`);
-        resolve();
-    }
+    case 'group':
+      // Groups are handled in placeLayers
+      break;
+    default:
+      console.warn(`Unknown layer category: ${layer.category}`);
   }
 }

@@ -22,6 +22,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
 
   const totalAssets = tilesToLoad + spritesToLoad;
   let loadedAssets = 0;
+  const remainingAssets: string[] = [];
 
   if (plugin.isDebugEnabled('console')) {
     console.log(`Total assets to load: ${totalAssets}`);
@@ -38,6 +39,11 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
     if (plugin.isDebugEnabled('console')) {
       console.log(`Loaded asset ${loadedAssets} of ${totalAssets}`);
       console.log(`Loading progress: ${(progress * 100).toFixed(2)}%`);
+      
+      // Log remaining assets
+      if (remainingAssets.length > 0) {
+        console.log('Remaining assets to load:', remainingAssets);
+      }
     }
 
     if (loadedAssets === totalAssets) {
@@ -49,11 +55,11 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
   };
 
   if (data.tiles && data.tiles.length > 0) {
-    loadTiles(scene, data.tiles, basePath, tileSliceSize, updateProgress, plugin.isDebugEnabled('console'));
+    loadTiles(scene, data.tiles, basePath, tileSliceSize, updateProgress, plugin.isDebugEnabled('console'), remainingAssets);
   }
 
   if (data.sprites && data.sprites.length > 0) {
-    loadSprites(scene, data.sprites, basePath, updateProgress, plugin.isDebugEnabled('console'));
+    loadSprites(scene, data.sprites, basePath, updateProgress, plugin.isDebugEnabled('console'), remainingAssets);
   }
 
   if (totalAssets === 0) {
