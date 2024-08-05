@@ -3,8 +3,8 @@ import { StorageManager } from './core/StorageManager';
 import loadModule from './modules/load';
 import placeModule from './modules/place';
 import placeAllModule from './modules/placeAll';
-import removeModule from './modules/remove';
 import getTextureModule from './modules/getTexture';
+import { createCamera } from './modules/cameras/create';
 
 // import getModule from './modules/get';
 // import camerasModule from './modules/cameras/create';
@@ -31,8 +31,8 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
   public load: ReturnType<typeof loadModule>;
   public place: ReturnType<typeof placeModule>;
   public placeAll: ReturnType<typeof placeAllModule>;
-  public remove: ReturnType<typeof removeModule>;
   public getTexture: ReturnType<typeof getTextureModule>;
+  public createCamera: typeof createCamera;
 
   // public get: ReturnType<typeof getModule>;
   // public cameras: ReturnType<typeof camerasModule>;
@@ -46,8 +46,8 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
     this.load = loadModule(this);
     this.place = placeModule(this);
     this.placeAll = placeAllModule(this);
-    this.remove = removeModule(this);
     this.getTexture = getTextureModule(this);
+    this.createCamera = createCamera.bind(null, this);
 
     // Initialize scene property
     // this.scene = pluginManager.scene;

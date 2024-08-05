@@ -94,22 +94,21 @@ this.myItem = this.P2P.place(
 ```
 
 #### Attached methods & chaining
-You can set sprite methods on all sprites in the group by treating them like a sprite. 
 
+You can set sprite methods on all sprites in the group by treating them like a sprite.
 
 ```js
 // Set the alpha and rotation of a group.
-const depthTest = this.P2P.place(this, "psd_key", "depthTest" )
-depthTest.setAlpha( 0.3)
+const depthTest = this.P2P.place(this, "psd_key", "depthTest");
+depthTest.setAlpha(0.3);
 depthTest.setRotation(Math.PI / 4);
 
 // Set the placement when placing.
 ```
 
-Currently, the list of supported types (somewhat arbitrarily) includes :   'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+Currently, the list of supported types (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
 
 **Note** : At the moment this applies the method to the indivudal sprites, rather than the group as a whole. Fixing this is a soon-as-I-can update.
-
 
 ### placeAll()
 
@@ -121,14 +120,13 @@ this.P2P.placeAll(this, "psd_key");
 
 // Place only top level layers.
 this.P2P.placeAll(this, "psd_key", {
-    depth: 1
-    });
+  depth: 1,
+});
 ```
-
 
 ### getTexture()
 
-Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet. 
+Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.
 
 Note : When placing new items, remember the [depth gotchya](#depth--placing-your-own-items).
 
@@ -167,8 +165,6 @@ this.atlasParticles.setDepth(100);
 this.atlasParticles.setDepth(100);
 
 ```
-
-
 
 ## Sprite Types
 
@@ -302,9 +298,15 @@ this.dragCam = this.P2P.createCamera(this.camera, ['draggable']);
 
 // Initialize a draggable camera with options
 this.dragCam = this.P2P.createCamera(this.camera, ['draggable']
-  draggableOptions: {
-    easeDragging: true // use easing defaults
-  })
+      {
+        draggable: {
+          useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+          easeDragging: true,
+          friction: 0.95,
+          minSpeed: 0.1,
+        },
+      }
+  )
 ```
 
 Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.
@@ -312,7 +314,11 @@ Just like the lazyLoad feature, you can create the camera with defaults and set 
 Dragging triggers events, so you can listen for "dragOnStart", "isDragging" and "dragOnComplete".
 
 ```js
-this.dragCam = this.P2P.createCamera(this.camera, ["draggable"]);
+this.dragCam = this.P2P.createCamera(
+  this.cameras.main,
+  ["draggable"],
+  "simple_psd"
+);
 
 this.events.on("draggableStart", () => {
   console.log(`Drag has begun.`);
