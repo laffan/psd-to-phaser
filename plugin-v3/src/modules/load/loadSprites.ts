@@ -1,24 +1,42 @@
 // src/modules/load/loadSprites.ts
 
+// src/modules/load/loadSprites.ts
+
 export function loadSprites(
   scene: Phaser.Scene,
   sprites: any[],
   basePath: string,
   onProgress: () => void,
   debug: boolean
-): void {
-  sprites.forEach(sprite => {
-    if (sprite.lazyLoad) return;
+): Promise<void> {
+  return new Promise((resolve) => {
+    let spritesToLoad = sprites.filter(sprite => !sprite.lazyLoad).length;
+    
+    sprites.forEach(sprite => {
+      if (sprite.lazyLoad) return;
 
-    const key = sprite.name;
-    const filePath = `${basePath}/${sprite.filePath}`;
+      const key = sprite.name;
+      const filePath = `${basePath}/${sprite.filePath}`;
 
-    if (sprite.type === 'atlas') {
-      loadAtlas(scene, key, filePath, sprite, onProgress, debug);
-    } else if (sprite.type === 'spritesheet' || sprite.type === 'animation') {
-      loadSpritesheet(scene, key, filePath, sprite, onProgress, debug);
-    } else {
-      loadImage(scene, key, filePath, onProgress, debug);
+      const loadHandler = () => {
+        spritesToLoad--;
+        onProgress();
+        if (spritesToLoad === 0) {
+          resolve();
+        }
+      };
+
+      if (sprite.type === 'atlas') {
+        loadAtlas(scene, key, filePath, sprite, loadHandler, debug);
+      } else if (sprite.type === 'spritesheet' || sprite.type === 'animation') {
+        loadSpritesheet(scene, key, filePath, sprite, loadHandler, debug);
+      } else {
+        loadImage(scene, key, filePath, loadHandler, debug);
+      }
+    });
+
+    if (spritesToLoad === 0) {
+      resolve();
     }
   });
 }

@@ -20,34 +20,48 @@ export function placeSprites(
     return;
   }
 
-  let spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group | null = null;
+  const maxRetries = 5;
+  const retryInterval = 100; // ms
 
-  switch (spriteData.type) {
-    case 'spritesheet':
-      spriteObject = placeSpritesheet(scene, spriteData, plugin, psdKey);
-      break;
-    case 'atlas':
-      spriteObject = placeAtlas(scene, spriteData, plugin, psdKey);
-      break;
-    case 'animation':
-      spriteObject = placeAnimation(scene, spriteData, plugin, psdKey);
-      break;
-    default:
-      spriteObject = placeDefaultSprite(scene, spriteData, plugin, psdKey);
-      break;
+  function attemptPlacement(retries = 0) {
+    if (scene.textures.exists(spriteData.name)) {
+      let spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group | null = null;
+
+      switch (spriteData.type) {
+        case 'spritesheet':
+          spriteObject = placeSpritesheet(scene, spriteData, plugin, psdKey);
+          break;
+        case 'atlas':
+          spriteObject = placeAtlas(scene, spriteData, plugin, psdKey);
+          break;
+        case 'animation':
+          spriteObject = placeAnimation(scene, spriteData, plugin, psdKey);
+          break;
+        default:
+          spriteObject = placeDefaultSprite(scene, spriteData, plugin, psdKey);
+          break;
+      }
+
+      if (spriteObject) {
+        group.add(spriteObject);
+        if (spriteData.alpha !== undefined) spriteObject.setAlpha(spriteData.alpha);
+        if (spriteData.visible !== undefined) spriteObject.setVisible(spriteData.visible);
+        spriteObject.setDepth(spriteData.initialDepth || 0);
+        addDebugVisualization(scene, spriteData, group, plugin);
+      } else {
+        console.error(`Failed to place sprite: ${spriteData.name}`);
+      }
+
+      resolve();
+    } else if (retries < maxRetries) {
+      setTimeout(() => attemptPlacement(retries + 1), retryInterval);
+    } else {
+      console.error(`Texture not found for sprite: ${spriteData.name} after ${maxRetries} attempts`);
+      resolve();
+    }
   }
 
-  if (spriteObject) {
-    group.add(spriteObject);
-    if (spriteData.alpha !== undefined) spriteObject.setAlpha(spriteData.alpha);
-    if (spriteData.visible !== undefined) spriteObject.setVisible(spriteData.visible);
-    spriteObject.setDepth(spriteData.initialDepth || 0);
-    addDebugVisualization(scene, spriteData, group, plugin);
-  } else {
-    console.error(`Failed to place sprite: ${spriteData.name}`);
-  }
-
-  resolve();
+  attemptPlacement();
 }
 
 function addDebugVisualization(

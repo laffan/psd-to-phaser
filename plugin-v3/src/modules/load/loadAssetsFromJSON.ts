@@ -39,12 +39,7 @@ export function loadAssetsFromJSON(scene: Phaser.Scene, key: string, data: any, 
     if (plugin.isDebugEnabled('console')) {
       console.log(`Loaded asset ${loadedAssets} of ${totalAssets}`);
       console.log(`Loading progress: ${(progress * 100).toFixed(2)}%`);
-      
-      // Log remaining assets
-      if (remainingAssets.length > 0) {
-        console.log('Remaining assets to load:', remainingAssets);
-      }
-    }
+          }
 
     if (loadedAssets === totalAssets) {
       scene.events.emit('psdLoadComplete');
