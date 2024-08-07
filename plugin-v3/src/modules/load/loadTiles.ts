@@ -1,3 +1,5 @@
+// src/modules/load/loadTiles.ts
+
 export function loadTiles(
   scene: Phaser.Scene,
   tiles: any[],

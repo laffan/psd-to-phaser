@@ -1,7 +1,5 @@
 // src/modules/load/loadSprites.ts
 
-// src/modules/load/loadSprites.ts
-
 export function loadSprites(
   scene: Phaser.Scene,
   sprites: any[],
@@ -10,10 +8,9 @@ export function loadSprites(
   debug: boolean
 ): Promise<void> {
   return new Promise((resolve) => {
-    let spritesToLoad = sprites.filter(sprite => !sprite.lazyLoad).length;
+    let spritesToLoad = sprites.length;
     
     sprites.forEach(sprite => {
-      if (sprite.lazyLoad) return;
 
       const key = sprite.name;
       const filePath = `${basePath}/${sprite.filePath}`;

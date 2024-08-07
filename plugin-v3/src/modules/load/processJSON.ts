@@ -1,5 +1,7 @@
+// src/modules/load/processJSON.ts
+
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
-import { loadAssetsFromJSON } from './loadAssetsFromJSON';
+import { initLoad } from './initLoad'; // Renamed from loadAssetsFromJSON
 
 export function processJSON(
   scene: Phaser.Scene,
@@ -14,16 +16,23 @@ export function processJSON(
   }
 
   const processedData = {
-    ...data,
+    original: JSON.parse(JSON.stringify(data)), // Clone of original data
     basePath: psdFolderPath,
-    sprites: [],
-    tiles: [],
-    zones: [],
-    points: [],
-    lazyLoadObjects: []
+    initialLoad: {
+      sprites: [],
+      tiles: [],
+      zones: [],
+      points: []
+    },
+    lazyLoad: {
+      sprites: [],
+      tiles: [],
+      zones: [],
+      points: []
+    }
   };
 
-  processLayersRecursively(data.layers, processedData);
+  processLayersRecursively(data.layers, processedData, false);
 
   plugin.setData(key, processedData);
 
@@ -31,33 +40,30 @@ export function processJSON(
     console.log(`Processed JSON for key "${key}":`, processedData);
   }
 
-  loadAssetsFromJSON(scene, key, processedData, plugin);
+  initLoad(scene, key, processedData.initialLoad, plugin);
 }
 
-function processLayersRecursively(layers: any[], processedData: any) {
+function processLayersRecursively(layers: any[], processedData: any, parentLazyLoad: boolean) {
   layers.forEach((layer: any) => {
+    const isLazyLoad = parentLazyLoad || layer.lazyLoad === true;
+    const targetArray = isLazyLoad ? processedData.lazyLoad : processedData.initialLoad;
+
     switch (layer.category) {
       case 'tileset':
-        processedData.tiles.push(layer);
-        if (layer.lazyLoad) {
-          processedData.lazyLoadObjects.push({ ...layer, type: 'tile' });
-        }
+        targetArray.tiles.push(layer);
         break;
       case 'sprite':
-        processedData.sprites.push(layer);
-        if (layer.lazyLoad) {
-          processedData.lazyLoadObjects.push({ ...layer, type: 'sprite' });
-        }
+        targetArray.sprites.push(layer);
         break;
       case 'zone':
-        processedData.zones.push(layer);
+        targetArray.zones.push(layer);
         break;
       case 'point':
-        processedData.points.push(layer);
+        targetArray.points.push(layer);
         break;
       case 'group':
         if (Array.isArray(layer.children)) {
-          processLayersRecursively(layer.children, processedData);
+          processLayersRecursively(layer.children, processedData, isLazyLoad);
         }
         break;
     }
