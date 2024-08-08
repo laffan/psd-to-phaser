@@ -2,22 +2,21 @@
 
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 import { loadSprites } from './loadSprites';
-import { loadTiles } from './loadTiles';
+import { loadTiles, loadSingleTile } from './loadTiles';
 
-export function initLoad(scene: Phaser.Scene, key: string, data: any, plugin: PsdToPhaserPlugin): void {
+export function loadItems(scene: Phaser.Scene, key: string, data: any, plugin: PsdToPhaserPlugin): void {
   const psdData = plugin.getData(key);
   if (!psdData || !psdData.basePath) {
     console.error(`Invalid PSD data for key: ${key}`);
     return;
   }
   
-
   const basePath = psdData.basePath;
   const tileSliceSize = psdData.original.tile_slice_size || 150;
 
   // Count assets to load
   const assetCounts = countAssets(data);
-  const totalAssets = assetCounts.tiles + assetCounts.sprites;
+  const totalAssets = assetCounts.tiles + assetCounts.sprites + assetCounts.singleTiles;
 
   let loadedAssets = 0;
   const remainingAssets: string[] = [];
@@ -26,6 +25,7 @@ export function initLoad(scene: Phaser.Scene, key: string, data: any, plugin: Ps
     console.log(`Total assets to load: ${totalAssets}`);
     console.log(`Tiles to load: ${assetCounts.tiles}`);
     console.log(`Sprites to load: ${assetCounts.sprites}`);
+    console.log(`Single tiles to load: ${assetCounts.singleTiles}`);
     console.log(`Tile slice size: ${tileSliceSize}`);
   }
 
@@ -42,18 +42,25 @@ export function initLoad(scene: Phaser.Scene, key: string, data: any, plugin: Ps
     if (loadedAssets === totalAssets) {
       scene.events.emit('psdLoadComplete');
       if (plugin.isDebugEnabled('console')) {
-        console.log('All initial PSD assets loaded');
+        console.log('All PSD assets loaded');
       }
     }
   };
 
   // Load tiles
-  if (data.tiles.length > 0) {
+  if (data.tiles && data.tiles.length > 0) {
     loadTiles(scene, data.tiles, basePath, tileSliceSize, updateProgress, plugin.isDebugEnabled('console'), remainingAssets);
   }
 
+  // Load single tiles
+  if (data.singleTiles && data.singleTiles.length > 0) {
+    data.singleTiles.forEach((tileData: any) => {
+      loadSingleTile(scene, tileData, basePath, tileSliceSize, updateProgress, plugin.isDebugEnabled('console'));
+    });
+  }
+
   // Load sprites
-  if (data.sprites.length > 0) {
+  if (data.sprites && data.sprites.length > 0) {
     loadSprites(scene, data.sprites, basePath, updateProgress, plugin.isDebugEnabled('console'), remainingAssets);
   }
 
@@ -62,16 +69,24 @@ export function initLoad(scene: Phaser.Scene, key: string, data: any, plugin: Ps
   }
 }
 
-function countAssets(data: any): { tiles: number, sprites: number } {
+function countAssets(data: any): { tiles: number, sprites: number, singleTiles: number } {
   let tileCount = 0;
   let spriteCount = 0;
+  let singleTileCount = 0;
 
   // Count tiles
-  data.tiles.forEach((tile: any) => {
-    if (!tile.lazyLoad) {
-      tileCount += tile.columns * tile.rows;
-    }
-  });
+  if (data.tiles) {
+    data.tiles.forEach((tile: any) => {
+      if (!tile.lazyLoad) {
+        tileCount += tile.columns * tile.rows;
+      }
+    });
+  }
+
+  // Count single tiles
+  if (data.singleTiles) {
+    singleTileCount = data.singleTiles.length;
+  }
 
   // Count sprites
   const countSpritesRecursively = (sprites: any[]) => {
@@ -92,8 +107,10 @@ function countAssets(data: any): { tiles: number, sprites: number } {
     });
   };
 
-  countSpritesRecursively(data.sprites);
+  if (data.sprites) {
+    countSpritesRecursively(data.sprites);
+  }
 
-  return { tiles: tileCount, sprites: spriteCount };
+  return { tiles: tileCount, sprites: spriteCount, singleTiles: singleTileCount };
 }
 

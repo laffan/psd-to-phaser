@@ -1,7 +1,7 @@
 // src/modules/load/processJSON.ts
 
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
-import { initLoad } from './initLoad'; // Renamed from loadAssetsFromJSON
+import { loadItems } from './loadItems'; // Renamed from loadAssetsFromJSON
 
 export function processJSON(
   scene: Phaser.Scene,
@@ -40,7 +40,7 @@ export function processJSON(
     console.log(`Processed JSON for key "${key}":`, processedData);
   }
 
-  initLoad(scene, key, processedData.initialLoad, plugin);
+  loadItems(scene, key, processedData.initialLoad, plugin);
 }
 
 function processLayersRecursively(layers: any[], processedData: any, parentLazyLoad: boolean) {

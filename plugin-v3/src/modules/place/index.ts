@@ -12,6 +12,7 @@ import {
 } from "../shared/lazyLoadUtils";
 
 export default function placeModule(plugin: PsdToPhaserPlugin) {
+  
   return function place(
     scene: Phaser.Scene,
     psdKey: string,
