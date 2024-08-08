@@ -1,8 +1,6 @@
 // src/modules/cameras/features/lazyLoad.ts
 
 import PsdToPhaserPlugin from "../../../PsdToPhaserPlugin";
-// import { loadSprites } from "../../load/loadSprites";
-// import { loadSingleTile } from "../../load/loadTiles";
 import { loadItems } from "../../load/loadItems";
 import { placeSprites } from "../../place/types/sprites";
 import { placeSingleTile } from "../../place/types/tiles";
@@ -144,7 +142,7 @@ export function LazyLoadCamera(
     return `sprite_${obj.name}_${Math.round(obj.x)}_${Math.round(obj.y)}`;
   }
 
-function loadObject({ data }: { data: any }) {
+  function loadObject({ data }: { data: any }) {
     const key = getObjectKey(data);
     objectsBeingLoaded.add(key);
 
@@ -152,13 +150,14 @@ function loadObject({ data }: { data: any }) {
 
     // Format the data for loadItems
     const formattedData = {
-      sprites: data.category === 'sprite' ? [data] : [],
-      singleTiles: (data.category === 'tile' || data.category === 'tileset') ? [data] : []
+      sprites: data.category === "sprite" ? [data] : [],
+      singleTiles:
+        data.category === "tile" || data.category === "tileset" ? [data] : [],
     };
 
     loadItems(scene, psdKey, formattedData, plugin);
 
-    scene.load.once('complete', () => {
+    scene.load.once("complete", () => {
       onObjectLoaded(data);
     });
 
@@ -209,28 +208,29 @@ function loadObject({ data }: { data: any }) {
     updateDebugGraphics();
   }
 
-  function tileToLazyObjects(tileset: any) {
-    const objects = [];
-    for (let col = 0; col < tileset.columns; col++) {
-      for (let row = 0; row < tileset.rows; row++) {
-        objects.push({
-          category: "tile",
-          name: `${tileset.name}_tile_${col}_${row}`,
-          x: tileset.x + col * (tileset.width / tileset.columns),
-          y: tileset.y + row * (tileset.height / tileset.rows),
-          width: tileset.width / tileset.columns,
-          height: tileset.height / tileset.rows,
-          tile_slice_size: psdData.original.tile_slice_size,
-          filetype: tileset.filetype || "png",
-          tilesetName: tileset.name,
-          col,
-          row,
-          initialDepth: tileset.initialDepth,
-        });
-      }
+function tileToLazyObjects(tileset: any) {
+  const objects = [];
+  const tileSliceSize = psdData.original.tile_slice_size;
+  for (let col = 0; col < tileset.columns; col++) {
+    for (let row = 0; row < tileset.rows; row++) {
+      objects.push({
+        category: "tile",
+        name: `${tileset.name}_tile_${col}_${row}`,
+        x: tileset.x + col * tileSliceSize,
+        y: tileset.y + row * tileSliceSize,
+        width: tileSliceSize,
+        height: tileSliceSize,
+        tile_slice_size: tileSliceSize,
+        filetype: tileset.filetype || "png",
+        tilesetName: tileset.name,
+        col,
+        row,
+        initialDepth: tileset.initialDepth,
+      });
     }
-    return objects;
   }
+  return objects;
+}
 
   function setupInterval() {
     const interval = options.checkInterval || 300;
