@@ -2,7 +2,7 @@
 
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 import { DraggableCamera, DraggableOptions } from './features/draggable';
-// import { LazyLoadCamera } from './features/lazyLoad';
+import { LazyLoadCamera } from './features/lazyLoad';
 // import { OverlayCamera } from './features/overlay';
 
 export interface CameraOptions {
@@ -18,9 +18,9 @@ export function createCamera(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.S
     Object.assign(enhancedCamera, DraggableCamera(plugin, camera, options.draggable));
   }
 
-  // if (features.includes('lazyLoading')) {
-  //   Object.assign(enhancedCamera, LazyLoadCamera(plugin, camera, psdKey, options.lazyLoad));
-  // }
+  if (features.includes('lazyLoad')) {
+  Object.assign(enhancedCamera, LazyLoadCamera(plugin, camera, psdKey, options.lazyLoad));
+  }
 
   // if (features.includes('overlay')) {
   //   Object.assign(enhancedCamera, OverlayCamera(plugin, camera, options.overlay));

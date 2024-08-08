@@ -1,5 +1,4 @@
 import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
-import { createLazyLoadPlaceholder } from '../../shared/lazyLoadUtils';
 
 export function placeTiles(
   scene: Phaser.Scene,
@@ -10,23 +9,21 @@ export function placeTiles(
   resolve: () => void,
   psdKey: string
 ): void {
-  if (tileData.lazyLoad) {
-    createLazyLoadPlaceholder(scene, tileData, plugin, group);
-    resolve();
-    return;
-  }
-
   for (let col = 0; col < tileData.columns; col++) {
     for (let row = 0; row < tileData.rows; row++) {
       const x = tileData.x + col * tileSliceSize;
       const y = tileData.y + row * tileSliceSize;
       const key = `${tileData.name}_tile_${col}_${row}`;
 
-      if (scene.textures.exists(key)) {
-        createTile(scene, x, y, key, tileData.initialDepth, group);
-      } else {
-        console.warn(`Texture not found for tile: ${key}`);
-      }
+      placeSingleTile(scene, {
+        x,
+        y,
+        key,
+        initialDepth: tileData.initialDepth,
+        tilesetName: tileData.name,
+        col,
+        row
+      }, group);
     }
   }
 
@@ -34,11 +31,30 @@ export function placeTiles(
   resolve();
 }
 
-function createTile(scene: Phaser.Scene, x: number, y: number, key: string, depth: number, group: Phaser.GameObjects.Group) {
-  const tile = scene.add.image(x, y, key);
-  tile.setOrigin(0, 0);
-  tile.setDepth(depth || 0);
-  group.add(tile);
+export function placeSingleTile(
+  scene: Phaser.Scene,
+  tileData: {
+    x: number,
+    y: number,
+    key: string,
+    initialDepth: number,
+    tilesetName: string,
+    col: number,
+    row: number
+  },
+  group: Phaser.GameObjects.Group
+): Phaser.GameObjects.Image | null {
+  if (scene.textures.exists(tileData.key)) {
+    const tile = scene.add.image(tileData.x, tileData.y, tileData.key);
+    tile.setOrigin(0, 0);
+    tile.setDepth(tileData.initialDepth || 0);
+    group.add(tile);
+    console.log(`Placed tile: ${tileData.key} at (${tileData.x}, ${tileData.y})`);
+    return tile;
+  } else {
+    console.warn(`Texture not found for tile: ${tileData.key}`);
+    return null;
+  }
 }
 
 function addDebugVisualization(
