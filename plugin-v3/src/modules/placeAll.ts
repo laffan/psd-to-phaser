@@ -1,5 +1,5 @@
 import PsdToPhaserPlugin from '../PsdToPhaserPlugin';
-import { attachMethods } from './shared/attachMethods';
+import  attachSpriteMethods  from './shared/attachedMethods/spriteMethods';
 import { placeTiles } from './place/types/tiles';
 import { placeSprites } from './place/types/sprites';
 import { placeZones } from './place/types/zones';
@@ -36,7 +36,7 @@ export default function placeAllModule(plugin: PsdToPhaserPlugin) {
       placePoints(scene, pointData, plugin, group, () => {}, psdKey);
     });
 
-    attachMethods(plugin, group);
+    attachSpriteMethods(plugin, group);
 
     scene.events.emit('allLayersPlaced');
     return group;

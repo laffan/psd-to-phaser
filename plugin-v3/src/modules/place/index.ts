@@ -5,7 +5,8 @@ import { placeTiles } from "./types/tiles";
 import { placeSprites } from "./types/sprites";
 import { placeZones } from "./types/zones";
 import { placePoints } from "./types/points";
-import { attachMethods } from "../shared/attachMethods";
+import  attachSpriteMethods  from '../shared/attachedMethods/spriteMethods';
+
 import {
   checkIfLazyLoaded,
   createLazyLoadPlaceholder,
@@ -46,7 +47,8 @@ export default function placeModule(plugin: PsdToPhaserPlugin) {
       psdKey,
       options
     );
-    attachMethods(plugin, placedObject);
+
+    attachSpriteMethods(plugin, placedObject);
 
     scene.events.emit("layerPlaced", layerPath);
 

@@ -86,29 +86,13 @@ this.myItem = this.P2P.place(
   "groupName/nestedGroup",
   {
     depth: 1, // Only place top level items in this group, not the descendants
+    ignore: ["background", "sprites/sprite1"], // array of paths to ignore
     debug: {
       shape: true
     },
   }
 );
 ```
-
-#### Attached methods & chaining
-
-You can set sprite methods on all sprites in the group by treating them like a sprite.
-
-```js
-// Set the alpha and rotation of a group.
-const depthTest = this.P2P.place(this, "psd_key", "depthTest");
-depthTest.setAlpha(0.3);
-depthTest.setRotation(Math.PI / 4);
-
-// Set the placement when placing.
-```
-
-Currently, the list of supported types (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
-
-**Note** : At the moment this applies the method to the indivudal sprites, rather than the group as a whole. Fixing this is a soon-as-I-can update.
 
 ### placeAll()
 
@@ -123,6 +107,49 @@ this.P2P.placeAll(this, "psd_key", {
   depth: 1,
 });
 ```
+
+
+
+#### [placed].[spriteMethods]()
+
+Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+
+```js
+// Set the alpha and rotation of a group.
+const depthTest = this.P2P.place(this, "psd_key", "depthTest");
+depthTest.setAlpha(0.3);
+depthTest.setRotation(Math.PI / 4);
+
+// Set the placement when placing.
+```
+
+
+#### [placed].remove()
+
+Any placed item comes with a remove method, which lets you search through the placed structure and destroy certain items.
+
+```js
+    const everything = this.P2P.placeAll(this, "psd_key");
+    everything.remove("nestedSprites", { depth: 1}) // removes only immediate children
+    everything.remove("nestedSprites") // removes all descendants from this point
+    everything.remove() // removes the entire placed item
+```
+
+#### [placed].get()
+
+If you would like to assign parts of a placed group to a new variable, you can use the get() method.
+
+```js
+    const everything = this.P2P.placeAll(this, "psd_key");
+    const topLevel = everything.get("nestedSprites", { depth: 1}) // return only immediate children
+    const entireTree = everything.get("nestedSprites") // returns all descendants from this point
+
+// You can treat these new items as you would a placed group.
+    topLevel.setAlpha(0.3)
+    entireTree.setSize(2)
+```
+
+
 
 ### getTexture()
 

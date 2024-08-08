@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { StorageManager } from './core/StorageManager';
 import loadModule from './modules/load';
 import placeModule from './modules/place';
 import placeAllModule from './modules/placeAll';
@@ -25,7 +24,6 @@ export interface PluginOptions {
 
 export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
   private psdData: Record<string, any> = {};
-  public storageManager: StorageManager;
   public options: PluginOptions;
 
   public load: ReturnType<typeof loadModule>;
@@ -40,7 +38,6 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
 
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
     super(pluginManager);
-    this.storageManager = new StorageManager();
     this.options = {};
 
     this.load = loadModule(this);
