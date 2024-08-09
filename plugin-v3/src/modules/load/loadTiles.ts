@@ -43,7 +43,6 @@ export function loadTiles(
   debug: boolean,
   remainingAssets: string[]
 ): void {
-  console.log("🚨🚨 Loading tiles:", tiles);
   
   tiles.forEach(tileset => {
     for (let col = 0; col < tileset.columns; col++) {

@@ -11,6 +11,7 @@ export interface LazyLoadOptions {
   debug?: {
     shape?: boolean;
     label?: boolean;
+    console?: boolean;
   };
 }
 
@@ -127,7 +128,9 @@ export function LazyLoadCamera(
     );
 
     if (objectsToLoad.length > 0) {
-      console.log(`LazyLoad: ${objectsToLoad.length} objects to load`);
+      if (options.debug?.console) {
+        console.log(`LazyLoad: ${objectsToLoad.length} objects to load`);
+      }
       scene.events.emit("lazyLoadStart", objectsToLoad.length);
       objectsToLoad.forEach(loadObject);
     }
@@ -146,8 +149,9 @@ export function LazyLoadCamera(
     const key = getObjectKey(data);
     objectsBeingLoaded.add(key);
 
-    console.log(`LazyLoad: Loading object ${key}`);
-
+    if (options.debug?.console) {
+      console.log(`LazyLoad: Loading object ${key}`);
+    }
     // Format the data for loadItems
     const formattedData = {
       sprites: data.category === "sprite" ? [data] : [],
@@ -169,9 +173,9 @@ export function LazyLoadCamera(
     objectsBeingLoaded.delete(key);
 
     data.loaded = true;
-
-    console.log(`LazyLoad: Object loaded ${key}`);
-
+    if (options.debug?.console) {
+      console.log(`LazyLoad: Object loaded ${key}`);
+    }
     if (data.category === "sprite") {
       placeSprites(scene, data, plugin, scene.children, () => {}, psdKey);
     } else if (data.category === "tile" || data.category === "tileset") {
@@ -195,42 +199,45 @@ export function LazyLoadCamera(
       lazyLoadObjects.length;
     const remainingObjects = Array.from(objectsBeingLoaded);
     scene.events.emit("lazyLoadProgress", progress, remainingObjects);
-    console.log(
-      `LazyLoad: Progress ${progress.toFixed(2)}, Remaining:`,
-      remainingObjects
-    );
-
+    if (options.debug?.console) {
+      console.log(
+        `LazyLoad: Progress ${progress.toFixed(2)}, Remaining:`,
+        remainingObjects
+      );
+    }
     if (lazyLoadObjects.every(({ data }) => data.loaded)) {
       scene.events.emit("lazyLoadingComplete");
-      console.log("LazyLoad: All objects loaded");
+      if (options.debug?.console) {
+        console.log("LazyLoad: All objects loaded");
+      }
     }
 
     updateDebugGraphics();
   }
 
-function tileToLazyObjects(tileset: any) {
-  const objects = [];
-  const tileSliceSize = psdData.original.tile_slice_size;
-  for (let col = 0; col < tileset.columns; col++) {
-    for (let row = 0; row < tileset.rows; row++) {
-      objects.push({
-        category: "tile",
-        name: `${tileset.name}_tile_${col}_${row}`,
-        x: tileset.x + col * tileSliceSize,
-        y: tileset.y + row * tileSliceSize,
-        width: tileSliceSize,
-        height: tileSliceSize,
-        tile_slice_size: tileSliceSize,
-        filetype: tileset.filetype || "png",
-        tilesetName: tileset.name,
-        col,
-        row,
-        initialDepth: tileset.initialDepth,
-      });
+  function tileToLazyObjects(tileset: any) {
+    const objects = [];
+    const tileSliceSize = psdData.original.tile_slice_size;
+    for (let col = 0; col < tileset.columns; col++) {
+      for (let row = 0; row < tileset.rows; row++) {
+        objects.push({
+          category: "tile",
+          name: `${tileset.name}_tile_${col}_${row}`,
+          x: tileset.x + col * tileSliceSize,
+          y: tileset.y + row * tileSliceSize,
+          width: tileSliceSize,
+          height: tileSliceSize,
+          tile_slice_size: tileSliceSize,
+          filetype: tileset.filetype || "png",
+          tilesetName: tileset.name,
+          col,
+          row,
+          initialDepth: tileset.initialDepth,
+        });
+      }
     }
+    return objects;
   }
-  return objects;
-}
 
   function setupInterval() {
     const interval = options.checkInterval || 300;

@@ -22,13 +22,15 @@ export function processJSON(
       sprites: [],
       tiles: [],
       zones: [],
-      points: []
+      points: [],
+      groups: [] 
     },
     lazyLoad: {
       sprites: [],
       tiles: [],
       zones: [],
-      points: []
+      points: [],
+      groups: [] 
     }
   };
 
@@ -62,6 +64,7 @@ function processLayersRecursively(layers: any[], processedData: any, parentLazyL
         targetArray.points.push(layer);
         break;
       case 'group':
+        targetArray.groups.push(layer); // Add this line
         if (Array.isArray(layer.children)) {
           processLayersRecursively(layer.children, processedData, isLazyLoad);
         }

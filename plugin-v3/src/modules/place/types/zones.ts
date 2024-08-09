@@ -10,6 +10,7 @@ export function placeZones(
 ): void {
   const zoneObject = createZone(scene, zoneData);
   if (zoneObject) {
+
     group.add(zoneObject);
     addDebugVisualization(scene, zoneData, group, plugin);
   }

@@ -140,13 +140,24 @@ Any placed item comes with a remove method, which lets you search through the pl
 If you would like to assign parts of a placed group to a new variable, you can use the get() method.
 
 ```js
-    const everything = this.P2P.placeAll(this, "psd_key");
-    const topLevel = everything.get("nestedSprites", { depth: 1}) // return only immediate children
-    const entireTree = everything.get("nestedSprites") // returns all descendants from this point
+// Place everything
+  const everything = this.P2P.placeAll(this, "psd_key");
+
+// Return the top level children of a group
+const topLevel = everything.get("nestedSprites", { depth: 1}) 
+
+// Return all descendants from a group.
+const entireTree = everything.get("nestedSprites") 
+
+// Returned object should have the same methods as a placed item
+
+const partialTree = entireTree.get("nested1") 
 
 // You can treat these new items as you would a placed group.
-    topLevel.setAlpha(0.3)
-    entireTree.setSize(2)
+topLevel.setAlpha(0.3)
+entireTree.setSize(2)
+partialTree.setSize(2)
+    
 ```
 
 
@@ -280,12 +291,15 @@ The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded it
 // Initialize a lazyLoad camera
 this.lazyCamera = this.P2P.cameras.createCamera(
   this.cameras.main,
-  ["lazyLoading"],
+  ["lazyLoad"],
   "simple_psd",
   {
-    lazyLoadingOptions: {
-      extendPreloadBounds: -30, // extend or contract the lazyLoad border that triggers loading.
-      debugBoundary: true, // show red outlines around all lazyLoad items
+    lazyLoad: {
+      extendPreloadBounds: -30, // pull lazyLoad boundary in to debug.
+      debug: {
+        shape: true, // outline lazyLoad items
+        label: true // 
+      }, 
     },
   }
 );
@@ -294,9 +308,9 @@ this.lazyCamera = this.P2P.cameras.createCamera(
 Now P2P is keeping track of where the camera is and whether there is any overlap with the location of sprites or tiles. If there is overlap, it will trigger a load sequence. When lazyLoad items load, they trigger loadProgress events, so you can listen for "lazyLoadStart", "lazyLoadProgress", "lazyLoadingComplete".
 
 ```js
-this.lazyCamera = this.P2P.cameras.createCamera(
+this.lazyCamera = this.P2P.createCamera(
   this.cameras.main,
-  ["lazyLoading"],
+  ["lazyLoad"],
   "simple_psd"
 );
 

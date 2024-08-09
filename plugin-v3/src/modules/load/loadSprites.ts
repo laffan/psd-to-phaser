@@ -13,7 +13,6 @@ export function loadSprites(
 
       const key = sprite.name;
       const filePath = `${basePath}/${sprite.filePath}`;
-    console.log("🚨", sprites )
 
       const loadHandler = () => {
         spritesToLoad--;
@@ -83,7 +82,6 @@ function loadImage(scene: Phaser.Scene, key: string, filePath: string, onProgres
   scene.load.once(`filecomplete-image-${key}`, () => {
     if (debug) {
       console.log(`Loaded image: ${key} from ${filePath}`);
-    console.log("👉", filePath )
 
     }
     onProgress();

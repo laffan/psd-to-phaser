@@ -5,7 +5,8 @@ import { placeTiles } from "./types/tiles";
 import { placeSprites } from "./types/sprites";
 import { placeZones } from "./types/zones";
 import { placePoints } from "./types/points";
-import  attachSpriteMethods  from '../shared/attachedMethods/spriteMethods';
+import { attachMethods } from "../shared/attachedMethods";
+import { findLayer } from "../shared/findLayer";
 
 import {
   checkIfLazyLoaded,
@@ -13,7 +14,6 @@ import {
 } from "../shared/lazyLoadUtils";
 
 export default function placeModule(plugin: PsdToPhaserPlugin) {
-  
   return function place(
     scene: Phaser.Scene,
     psdKey: string,
@@ -48,21 +48,12 @@ export default function placeModule(plugin: PsdToPhaserPlugin) {
       options
     );
 
-    attachSpriteMethods(plugin, placedObject);
+    attachMethods(plugin, placedObject);
 
     scene.events.emit("layerPlaced", layerPath);
 
     return placedObject;
   };
-}
-
-function findLayer(layers: any[], pathParts: string[]): any {
-  if (pathParts.length === 0) return layers;
-  const [current, ...rest] = pathParts;
-  const found = layers.find((layer: any) => layer.name === current);
-  if (!found) return null;
-  if (rest.length === 0) return found;
-  return findLayer(found.children || [], rest);
 }
 
 function placeLayer(
@@ -79,13 +70,16 @@ function placeLayer(
       Array.isArray(layer.children) &&
       (options.depth === undefined || options.depth > 0)
     ) {
+      const newGroup = scene.add.group(); 
+      newGroup.name = layer.name; 
+
       layer.children.forEach((child: any) => {
         const childObject = placeLayer(
           scene,
           child,
           plugin,
           tileSliceSize,
-          group,
+          newGroup,
           psdKey,
           {
             ...options,
@@ -93,10 +87,11 @@ function placeLayer(
           }
         );
         if (childObject instanceof Phaser.GameObjects.GameObject) {
-          group.add(childObject);
+          newGroup.add(childObject);
         }
       });
-      return group;
+      group.add(newGroup); // Add the new group to the parent group
+      return newGroup;
     }
     return group;
   } else {

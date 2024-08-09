@@ -23,6 +23,8 @@ function createPoint(scene: Phaser.Scene, point: any, plugin: PsdToPhaserPlugin)
 
   const pointObject = new Phaser.GameObjects.GameObject(scene, { x: point.x, y: point.y });
   pointObject.setData('pointData', point);
+  pointObject.setName(point.name);  // Add this line
+
   return pointObject;
 }
 
