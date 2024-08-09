@@ -108,8 +108,6 @@ this.P2P.placeAll(this, "psd_key", {
 });
 ```
 
-
-
 #### [placed].[spriteMethods]()
 
 Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
@@ -123,64 +121,45 @@ depthTest.setRotation(Math.PI / 4);
 // Set the placement when placing.
 ```
 
-
 #### [placed].remove()
 
 Any placed item comes with a remove method, which lets you search through the placed structure and destroy certain items.
 
 ```js
-    const everything = this.P2P.placeAll(this, "psd_key");
-    everything.remove("nestedSprites", { depth: 1}) // removes only immediate children
-    everything.remove("nestedSprites") // removes all descendants from this point
-    everything.remove() // removes the entire placed item
+const everything = this.P2P.placeAll(this, "psd_key");
+everything.remove("nestedSprites", { depth: 1 }); // removes only immediate children
+everything.remove("nestedSprites"); // removes all descendants from this point
+everything.remove(); // removes the entire placed item
 ```
-
-
-#### [placed].target()
-
-If you would like to control a portion of a placed group without making a new object, you can use the target() method.
-
-```js
-// Place everything
-  const everything = this.P2P.placeAll(this, "psd_key");
-
-// Directly set the alpha on a narrow portion of the placed group.
-everything.target("nestedSprites", { depth: 1}).setAlpha(0.1)
-
-// Create a link to the placed items.
-const nested = everything.target("nestedSprites") 
-nested.setAlpha(0.3) // sets alpha for only that portion of the placed layers.
-nested.remove(); // removes only that portion of the placed layers.
-    
-```
-
 
 #### [placed].copy()
 
-If you would like to duplicate a placed group - or a portion of a placed group - and assign it to a new variable, you can use the copy() method.
+If you would like to duplicate a placed group - or a portion of a placed group - and assign it to a new variable, you can use the copy() method. You can also deactivate the targeted items in the original, giving the impression that the original object is being affected.
 
 ```js
 // Place everything
-  const everything = this.P2P.placeAll(this, "psd_key");
+const everything = this.P2P.placeAll(this, "psd_key");
 
 // Return the top level children of a group
-const topLevel = everything.copy("nestedSprites", { depth: 1}) 
+const secondEverything = everything.copy();
 
 // Return all descendants from a group.
-const entireTree = everything.copy("nestedSprites") 
+const allNested = everything.copy("nestedSprites");
 
-// Returned object should have the same methods as a placed item
+// Return only immediate descendants from a group.
+const allNested = everything.copy("nestedSprites", { depth: 1 });
 
-const partialTree = entireTree.copy("nested1") 
+// Return only immediate descendants from a group and deactivate originals.
+const allNested = everything.copy("nestedSprites", {
+  depth: 1,
+  deactivateTarget: true,
+});
 
 // You can treat these new items as you would a placed group.
-topLevel.setAlpha(0.3)
-entireTree.setSize(2)
-partialTree.setSize(2)
-    
+topLevel.setAlpha(0.3);
+entireTree.setSize(2);
+partialTree.setSize(2);
 ```
-
-
 
 ### getTexture()
 
@@ -318,8 +297,8 @@ this.lazyCamera = this.P2P.cameras.createCamera(
       extendPreloadBounds: -30, // pull lazyLoad boundary in to debug.
       debug: {
         shape: true, // outline lazyLoad items
-        label: true // 
-      }, 
+        label: true, //
+      },
     },
   }
 );
