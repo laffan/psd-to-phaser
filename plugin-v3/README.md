@@ -135,23 +135,43 @@ Any placed item comes with a remove method, which lets you search through the pl
     everything.remove() // removes the entire placed item
 ```
 
-#### [placed].get()
 
-If you would like to assign parts of a placed group to a new variable, you can use the get() method.
+#### [placed].target()
+
+If you would like to control a portion of a placed group without making a new object, you can use the target() method.
+
+```js
+// Place everything
+  const everything = this.P2P.placeAll(this, "psd_key");
+
+// Directly set the alpha on a narrow portion of the placed group.
+everything.target("nestedSprites", { depth: 1}).setAlpha(0.1)
+
+// Create a link to the placed items.
+const nested = everything.target("nestedSprites") 
+nested.setAlpha(0.3) // sets alpha for only that portion of the placed layers.
+nested.remove(); // removes only that portion of the placed layers.
+    
+```
+
+
+#### [placed].copy()
+
+If you would like to duplicate a placed group - or a portion of a placed group - and assign it to a new variable, you can use the copy() method.
 
 ```js
 // Place everything
   const everything = this.P2P.placeAll(this, "psd_key");
 
 // Return the top level children of a group
-const topLevel = everything.get("nestedSprites", { depth: 1}) 
+const topLevel = everything.copy("nestedSprites", { depth: 1}) 
 
 // Return all descendants from a group.
-const entireTree = everything.get("nestedSprites") 
+const entireTree = everything.copy("nestedSprites") 
 
 // Returned object should have the same methods as a placed item
 
-const partialTree = entireTree.get("nested1") 
+const partialTree = entireTree.copy("nested1") 
 
 // You can treat these new items as you would a placed group.
 topLevel.setAlpha(0.3)
@@ -170,9 +190,9 @@ Note : When placing new items, remember the [depth gotchya](#depth--placing-your
 
 ```js
 // Get the texture of a spritesheet
-const spriteTex = this.P2P.getTexture("psd_key", "simpleSprite");
-const spritesheetTex = this.P2P.getTexture('psd_key', 'nested/aSpritesheet');
-const atlasTex = this.P2P.getTexture('psd_key', 'nested/anAtlas');
+const spriteTex = this.P2P.getTexture(this, "psd_key", "simpleSprite");
+const spritesheetTex = this.P2P.getTexture(this, "psd_key", 'nested/aSpritesheet');
+const atlasTex = this.P2P.getTexture(this, "psd_key", 'iAmAtlas');
 
 // Now you have access to just those textures and can use them however you please.
 // For example :

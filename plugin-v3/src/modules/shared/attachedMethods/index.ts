@@ -2,11 +2,13 @@
 
 import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
 import attachSpriteMethods from './spriteMethods';
-import { attachGetMethod } from './get';
 import { attachRemoveMethod } from './remove';
+// import { attachCopyMethod } from './copy';
+// import { attachTargetMethod } from './target';
 
 export function attachMethods(plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group): void {
   attachSpriteMethods(plugin, gameObject);
-  attachGetMethod(plugin, gameObject);
   attachRemoveMethod(plugin, gameObject);
+  // attachCopyMethod(plugin, gameObject);
+  // attachTargetMethod(plugin, gameObject);
 }
