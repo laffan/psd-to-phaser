@@ -118,48 +118,45 @@ const depthTest = this.P2P.place(this, "psd_key", "depthTest");
 depthTest.setAlpha(0.3);
 depthTest.setRotation(Math.PI / 4);
 
-// Set the placement when placing.
 ```
+
+
+#### [placed].target()
+
+If you would like to target a portion of a placed group - or a portion of a placed group - and assign it to a new variable, you can use the copy() method. You can also deactivate the targeted items in the original, giving the impression that the original object is being affected.
+
+```js
+// Place item
+const placedGroup = this.P2P.place(this, "psd_key", "placedGroup");
+
+// Use target to apply method to portion of target
+const lightened = placedGroup.target("iAmAtlas").setAlpha(0.3);
+
+// Chain several methods on target
+placedGroup.target("surround").setAlpha(0.3).setX(200); // chain methods
+
+// Assign target to a new variable and update it that way.
+const = L1Text = placedGroup.target("depthTest/Level1/Level1Text");
+L1Text.setAlpha(0.3)
+
+```
+
+**Note: At the moment, this does not work with placeAll(). However, if you nest the entire project in a group you can essentially get the same thing.**
+
 
 #### [placed].remove()
 
 Any placed item comes with a remove method, which lets you search through the placed structure and destroy certain items.
 
 ```js
-const everything = this.P2P.placeAll(this, "psd_key");
-everything.remove("nestedSprites", { depth: 1 }); // removes only immediate children
-everything.remove("nestedSprites"); // removes all descendants from this point
-everything.remove(); // removes the entire placed item
+const placedGroup = this.P2P.place(this, "psd_key", "placedGroup");
+
+placedGroup.remove("innerGroup", { depth: 1 }); // removes only immediate children
+placedGroup.remove("innerGroup"); // removes all descendants from this point
 ```
 
-#### [placed].copy()
+**Note: At the moment, this does not work with placeAll(). However, if you nest the entire project in a group you can essentially get the same thing.**
 
-If you would like to duplicate a placed group - or a portion of a placed group - and assign it to a new variable, you can use the copy() method. You can also deactivate the targeted items in the original, giving the impression that the original object is being affected.
-
-```js
-// Place everything
-const everything = this.P2P.placeAll(this, "psd_key");
-
-// Return the top level children of a group
-const secondEverything = everything.copy();
-
-// Return all descendants from a group.
-const allNested = everything.copy("nestedSprites");
-
-// Return only immediate descendants from a group.
-const allNested = everything.copy("nestedSprites", { depth: 1 });
-
-// Return only immediate descendants from a group and deactivate originals.
-const allNested = everything.copy("nestedSprites", {
-  depth: 1,
-  deactivateTarget: true,
-});
-
-// You can treat these new items as you would a placed group.
-topLevel.setAlpha(0.3);
-entireTree.setSize(2);
-partialTree.setSize(2);
-```
 
 ### getTexture()
 
@@ -170,8 +167,8 @@ Note : When placing new items, remember the [depth gotchya](#depth--placing-your
 ```js
 // Get the texture of a spritesheet
 const spriteTex = this.P2P.getTexture(this, "psd_key", "simpleSprite");
-const spritesheetTex = this.P2P.getTexture(this, "psd_key", 'nested/aSpritesheet');
-const atlasTex = this.P2P.getTexture(this, "psd_key", 'iAmAtlas');
+const spritesheetTex = this.P2P.getTexture(this, "psd_key", 'nested/sheet');
+const atlasTex = this.P2P.getTexture(this, "psd_key", 'anAtlas');
 
 // Now you have access to just those textures and can use them however you please.
 // For example :
@@ -188,7 +185,7 @@ this.spriteSheetParticles = this.add.particles(200, 30, spritesheetTex, {
 
 // Emit atlas frames
 this.atlasParticles = this.add.particles(200, 30, atlasTex, {
-  frame: ['pinkDot', 'greenDot']
+  frame: ['pinkDot', 'greenDot'],
   speed: 100,
   scale: { start: 1, end: 0 },
 });
@@ -288,7 +285,7 @@ The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded it
 
 ```js
 // Initialize a lazyLoad camera
-this.lazyCamera = this.P2P.cameras.createCamera(
+this.lazyCamera = this.P2P.createCamera(
   this.cameras.main,
   ["lazyLoad"],
   "simple_psd",
@@ -297,7 +294,8 @@ this.lazyCamera = this.P2P.cameras.createCamera(
       extendPreloadBounds: -30, // pull lazyLoad boundary in to debug.
       debug: {
         shape: true, // outline lazyLoad items
-        label: true, //
+        label: true, // label with filename 
+        console: true, // show file loading in console
       },
     },
   }
