@@ -139,6 +139,10 @@ placedGroup.target("surround").setAlpha(0.3).setX(200); // chain methods
 const = L1Text = placedGroup.target("depthTest/Level1/Level1Text");
 L1Text.setAlpha(0.3)
 
+// Get  the points which make up a placed Zone
+const zone = placedGroup.target("depthTest/zone1");
+const points = zone.getData('points');
+
 ```
 
 **Note: At the moment, this does not work with placeAll(). However, if you nest the entire project in a group you can essentially get the same thing.**
@@ -437,36 +441,6 @@ this.events.on("panToComplete", () => {
 
 ```
 
-### fadeIn / fadeOut()
-
-Fade a camera in or out. Pass in the target alpha and options. Defaults to 300ms fade.
-
-```js
-// Fade in
-this.myCamera.fade(100, {
-  speed: 300,
-});
-
-// Fade out.
-this.myCamera.fade(0);
-```
-
-Fade triggers events, so you can listen for "panOnStart", "panProgress" and "panOnComplete".
-
-```js
-
-this.events.on("fadeStart", (  ) => {
-  console.log(`fade has started`);
-});
-this.events.on("fadeProgress", ( value ) => {
-  console.log(`Ffade is ${value} percent complete.`);
-});
-
-this.events.on("fadeComplete", () => {
-  console.log("Fade has completed!"");
-});
-
-```
 
 ## Presets
 
@@ -480,14 +454,12 @@ Randomly fills a zone with a sprite or texture. You can pass in items directly f
 // Fill a zone with sprites.
 P2P.use.fillZone(this.myZone, this.mySprite);
 
-P2P.use.fillZone(this.myPlacedZone, this.mySpritesheet, {
+P2P.use.fillZone(this.myZone, this.mySpritesheet, {
   useFrames: [1, 3], // optionally use only these frames from the spritesheet or atlas
+  scaleRange: [0.8, 1.1], // optionally randomly scale items within these bounds.
+  tint: [0x15ae15, 0xdaaf3a, 0xda3a64], // optionally apply these tints to the placed items
 });
 
-P2P.use.fillZone(this.myZone, this.mySprite, {
-  tint: [0x15ae15, 0xdaaf3a, 0xda3a64], // optionally apply these tints to the placed items
-  scaleRange: [0.8, 1.1], // optionally randomly scale items within these bounds.
-});
 ```
 
 ### joystick( sprite, zone, key)
@@ -496,11 +468,11 @@ Joystick allows you to move combine any sprite and zone to create a draggable "j
 each joystick requires its own key.
 
 ```js
-//  aSprite is now draggable, bounded by myZone.
+//  mySprite is now draggable, bounded by myZone. Position is fixed on release.
 P2P.use.joystick(this.mySprite, this.myZone, "joystickA");
 
 P2P.use.joystick(this.mySprite, this.myZone, "joystickB", {
-  bounceBack: true, //  On release, aSprite now bounces back to original position.
+  bounceBack: true, //  On release, mySprite now bounces back to original position.
 });
 ```
 
@@ -508,14 +480,15 @@ Joystick fires events that you can use elsewhere in your project. You can parse 
 
 ```js
 this.events.on("joystickStart", (values) => {
-  console.log("Joystick started");
+  console.log(values); // { reference to joystick }
+  
 });
 this.events.on("joystickActive", (values) => {
-  console.log("Joystick active");
+  console.log(values); // { normalized values of movement }
 });
 
 this.events.on("joystickRelease", (values) => {
-  console.log("Joystick Released");
+  console.log(values); // { reference to joystick }
 });
 ```
 

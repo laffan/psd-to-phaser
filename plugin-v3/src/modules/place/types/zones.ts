@@ -10,7 +10,6 @@ export function placeZones(
 ): void {
   const zoneObject = createZone(scene, zoneData);
   if (zoneObject) {
-
     group.add(zoneObject);
     addDebugVisualization(scene, zoneData, group, plugin);
   }
@@ -24,15 +23,26 @@ function createZone(scene: Phaser.Scene, zone: any): Phaser.GameObjects.Zone | n
 
   const shape = createZoneShape(zone);
   let zoneObject: Phaser.GameObjects.Zone;
+  let points: Phaser.Geom.Point[];
 
   if (shape instanceof Phaser.Geom.Polygon) {
     const bounds = Phaser.Geom.Polygon.GetAABB(shape);
     zoneObject = scene.add.zone(bounds.x, bounds.y, bounds.width, bounds.height);
+    points = shape.points;
   } else {
     zoneObject = scene.add.zone(shape.x, shape.y, shape.width, shape.height);
+    points = [
+      new Phaser.Geom.Point(shape.x, shape.y),
+      new Phaser.Geom.Point(shape.x + shape.width, shape.y),
+      new Phaser.Geom.Point(shape.x + shape.width, shape.y + shape.height),
+      new Phaser.Geom.Point(shape.x, shape.y + shape.height)
+    ];
   }
 
   zoneObject.setName(zone.name || "unnamed_zone");
+
+  // Set the points array as a custom property
+  zoneObject.setData('points', points);
 
   // Set custom properties
   Object.keys(zone).forEach((key) => {
@@ -57,7 +67,6 @@ function createZoneShape(zone: any): Phaser.Geom.Polygon | Phaser.Geom.Rectangle
   console.error("Unable to create zone shape. Invalid zone data:", zone);
   return new Phaser.Geom.Rectangle(0, 0, 1, 1); // Return a default rectangle
 }
-
 function addDebugVisualization(
   scene: Phaser.Scene,
   zoneData: any,
