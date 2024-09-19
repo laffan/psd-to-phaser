@@ -401,21 +401,19 @@ this.myCamera = this.P2P.createCamera(this.camera, ['lazyLoading', 'draggable'],
 }
 ```
 
-## P2P Camera Functions
 
-Any P2P camera comes with a set of functions that are essentially presets that you can use to interact with
-the PSD features.
+
+## Presets
+
+P2P comes with a few preset functions built in that help you get started more quickly. These are stored in the 'use' class.
 
 ### panTo()
 
 Pass in an item or x/y and have the canvas pan to it.
 
 ```js
-// Pan to explicit X/Y
-this.myCamera.panTo([300, 200]);
-
 // Pan to item.
-this.myCamera.panTo(this.placedPoint, {
+this.P2P.use.panTo(this.cameras.main, this.placedPoint, {
   targetPositionY: "center", // "center", "top", "bottom"
   targetPositionZ: "center", // "center", "left", "right"
   targetOffset: [300, 100], // Adjust target with x/y
@@ -436,15 +434,11 @@ this.events.on("panToProgress", ( value ) => {
 });
 
 this.events.on("panToComplete", () => {
-  console.log("Pan has completed!"");
+  console.log("Pan has completed!");
 });
 
 ```
 
-
-## Presets
-
-P2P comes with a few preset functions built in that help you get started more quickly. These are stored in the 'use' class.
 
 ### fillZone( zone, sprite )
 
@@ -452,9 +446,9 @@ Randomly fills a zone with a sprite or texture. You can pass in items directly f
 
 ```js
 // Fill a zone with sprites.
-P2P.use.fillZone(this.myZone, this.mySprite);
+this.P2P.use.fillZone(this.myZone, this.mySprite);
 
-P2P.use.fillZone(this.myZone, this.mySpritesheet, {
+this.P2P.use.fillZone(this.myZone, this.mySpritesheet, {
   useFrames: [1, 3], // optionally use only these frames from the spritesheet or atlas
   scaleRange: [0.8, 1.1], // optionally randomly scale items within these bounds.
   tint: [0x15ae15, 0xdaaf3a, 0xda3a64], // optionally apply these tints to the placed items
@@ -469,9 +463,9 @@ each joystick requires its own key.
 
 ```js
 //  mySprite is now draggable, bounded by myZone. Position is fixed on release.
-P2P.use.joystick(this.mySprite, this.myZone, "joystickA");
+this.P2P.use.joystick(this.mySprite, this.myZone, "joystickA");
 
-P2P.use.joystick(this.mySprite, this.myZone, "joystickB", {
+this.P2P.use.joystick(this.mySprite, this.myZone, "joystickB", {
   bounceBack: true, //  On release, mySprite now bounces back to original position.
 });
 ```
@@ -506,21 +500,6 @@ In all cases, the values object has the same structure :
     }
 ```
 
-### panLink( sprite, pan, camera)
-
-Panlink is a simple convenience function that makes a sprite interactive and, when clicked, triggers a pan to that point. It's just creating a pan in the background, so you can control the pan with a panOptions parameter.
-
-```js
-P2P.use.panLink(this.mySprite, this.myTargetPoint, this.myTargetCamera, {
-  panOptions: {
-    targetPositionY: "center", // "center", "top", "bottom"
-    targetPositionZ: "center", // "center", "left", "right"
-    targetOffset: [300, 100], // Adjust target with x/y
-    speed: 300, // time in ms it takes to pan to point
-    easing: true, // turn easing on/off
-  },
-});
-```
 
 ## Gotchas
 

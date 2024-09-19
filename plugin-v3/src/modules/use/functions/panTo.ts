@@ -1,3 +1,4 @@
+
 import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
 
 export interface PanToOptions {
@@ -8,8 +9,8 @@ export interface PanToOptions {
   easing?: boolean | Phaser.Types.Math.EaseFunction;
 }
 
-export function panTo(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.Camera) {
-  return function(target: Phaser.GameObjects.GameObject | [number, number], options: PanToOptions = {}) {
+export function panTo(plugin: PsdToPhaserPlugin) {
+  return function(camera: Phaser.Cameras.Scene2D.Camera, target: Phaser.GameObjects.GameObject | [number, number], options: PanToOptions = {}) {
     const scene = camera.scene;
     const defaults: PanToOptions = {
       targetPositionY: 'center',
@@ -80,7 +81,7 @@ export function panTo(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.
     // Set up the pan animation
     const duration = config.speed!;
     let easingFunction: Phaser.Types.Math.EaseFunction = Phaser.Math.Easing.Linear;
-    
+
     if (config.easing === true) {
       easingFunction = Phaser.Math.Easing.Cubic.InOut;
     } else if (typeof config.easing === 'function') {
