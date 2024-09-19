@@ -508,12 +508,17 @@ this.P2P.use
   .joystick(joyStickA, joyZoneA, "joystickA",
   { bounceBack: true })
   .control( spriteToControl , { // options object
-    type: "speed" | "velocity" | "unit", // control speed, velocity or jump a certain number of units
-    force : 2, // force multiplier if using physics
-    maxSpeed: 300, // speed if using speed
-    pixels: 100,// if type = "unit", this is the number of pixels moved in a particular direction
+    // speed = standard set position at a particular rate (use maxSpeed option)
+    // velocity = apply velocity to a physics object (use force option)
+    // until = move sprite a specific number of pixels (use pixels and repeatRate options)
+    // tracked = 1-to-1 tracking of joystick with an optional multiplier (use multiplier option )
+    type: "speed" | "velocity" | "unit" | "tracked", 
+    force : 2, // force multiplier if using "velocity" option
+    multiplier : 1.3, // position multiplier if using "tracked" option
+    maxSpeed: 300, // speed if using "speed" option
+    pixels: 100,// pixels moved  per repeat if using "unit" option.
+    repeatRate: 300 // ms between repetitions if using "unit" option.
     directionLock: 4 | 8 | false // 4 = lock to x/y, 8 = x/y + diagonal, false = no direction lock )
-    repeatRate: 300 // if type = "unit" this is how long before it jumps again (-0 for once-per-joystick-use)
 });
 
 

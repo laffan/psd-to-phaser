@@ -254,14 +254,17 @@ export function joystick(plugin: PsdToPhaserPlugin) {
               break;
             case "unit":
               const currentTime = scene.time.now;
-              if (
-                currentTime - lastMoveTime >=
-                (controlOptions.repeatRate || 0)
-              ) {
-                const pixels = controlOptions.pixels || 100;
-                spriteToControl.x += x * pixels;
-                spriteToControl.y += y * pixels;
-                lastMoveTime = currentTime;
+              const repeatRate = controlOptions.repeatRate || 0;
+              const pixels = controlOptions.pixels || 100;
+              const threshold = 0.2;
+
+              if (Math.abs(x) > threshold || Math.abs(y) > threshold) {
+                if (lastMoveTime === 0 || currentTime - lastMoveTime >= repeatRate) {
+                  const angle = Math.atan2(y, x);
+                  spriteToControl.x += Math.round(Math.cos(angle) * pixels);
+                  spriteToControl.y += Math.round(Math.sin(angle) * pixels);
+                  lastMoveTime = currentTime;
+                }
               }
               break;
             case "tracked":
@@ -278,11 +281,15 @@ export function joystick(plugin: PsdToPhaserPlugin) {
 
         const onJoystickActive = (values: any) => {
           if (values[key]) {
-            if (controlOptions.type === 'tracked') {
+            if (controlOptions.type === "tracked") {
               const position = values[key].position;
               moveSprite(position.x, position.y, 0);
             } else {
               velocity.set(values[key].normalized.x, values[key].normalized.y);
+              // Trigger immediate move on first joystick activation
+              if (lastMoveTime === 0) {
+                moveSprite(velocity.x, velocity.y, 0);
+              }
             }
           }
         };
@@ -290,13 +297,20 @@ export function joystick(plugin: PsdToPhaserPlugin) {
         const onJoystickRelease = (values: any) => {
           if (values[key]) {
             velocity.reset();
-            if (controlOptions.type === 'velocity') {
+            lastMoveTime = 0; // Reset lastMoveTime on release
+            if (controlOptions.type === "velocity") {
               const body = spriteToControl.body as Phaser.Physics.Arcade.Body;
               if (body) {
                 body.setVelocity(0, 0);
               }
-            } else if (controlOptions.type === 'tracked' && options.bounceBack) {
-              spriteToControl.setPosition(spriteStartPosition.x, spriteStartPosition.y);
+            } else if (
+              controlOptions.type === "tracked" &&
+              options.bounceBack
+            ) {
+              spriteToControl.setPosition(
+                spriteStartPosition.x,
+                spriteStartPosition.y
+              );
             }
           }
         };
