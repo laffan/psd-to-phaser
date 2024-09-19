@@ -94,20 +94,6 @@ this.myItem = this.P2P.place(
 );
 ```
 
-### placeAll()
-
-Place all items at once.
-
-```js
-// Place all layers in your scene.
-this.P2P.placeAll(this, "psd_key");
-
-// Place only top level layers.
-this.P2P.placeAll(this, "psd_key", {
-  depth: 1,
-});
-```
-
 #### [placed].[spriteMethods]()
 
 Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
@@ -145,8 +131,6 @@ const points = zone.getData('points');
 
 ```
 
-**Note: At the moment, this does not work with placeAll(). However, if you nest the entire project in a group you can essentially get the same thing.**
-
 
 #### [placed].remove()
 
@@ -158,8 +142,6 @@ const placedGroup = this.P2P.place(this, "psd_key", "placedGroup");
 placedGroup.remove("innerGroup", { depth: 1 }); // removes only immediate children
 placedGroup.remove("innerGroup"); // removes all descendants from this point
 ```
-
-**Note: At the moment, this does not work with placeAll(). However, if you nest the entire project in a group you can essentially get the same thing.**
 
 
 ### getTexture()

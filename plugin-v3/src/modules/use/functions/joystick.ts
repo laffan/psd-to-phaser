@@ -4,29 +4,28 @@ interface JoystickOptions {
   bounceBack?: boolean;
   springStrength?: number;
   joystickRadius?: number;
-  throttleMS?: number;
+}
+
+interface TargetedObject {
+  setX: (x: number) => void;
+  setY: (y: number) => void;
+  x: number;
+  y: number;
+  setInteractive: () => void;
+  disableInteractive: () => void;
 }
 
 export function joystick(plugin: PsdToPhaserPlugin) {
   return function(
-    joystickPath: string,
-    zonePath: string,
+    joystickObject: TargetedObject,
+    zoneObject: Phaser.GameObjects.Zone,
     key: string,
     options: JoystickOptions = {}
   ) {
-    const scene = plugin.scene;
+    const scene = zoneObject.scene;
     const bounceBack = options.bounceBack || false;
     const springStrength = options.springStrength || 0.5;
-    const joystickRadius = options.joystickRadius || 50;
-    const throttleMS = options.throttleMS || 50;
-
-    const joystickObject = plugin.get(scene, joystickPath);
-    const zoneObject = plugin.get(scene, zonePath);
-
-    if (!joystickObject || !zoneObject) {
-      console.error(`Joystick or zone not found for paths: ${joystickPath}, ${zonePath}`);
-      return;
-    }
+    const joystickRadius = options.joystickRadius || 50; // Default radius
 
     const startPosition = { x: joystickObject.x, y: joystickObject.y };
     const zoneShape = zoneObject.getData('points') as Phaser.Geom.Point[];
@@ -45,19 +44,8 @@ export function joystick(plugin: PsdToPhaserPlugin) {
     scene.input.setDraggable(joystickObject);
 
     let dragTween: Phaser.Tweens.Tween | null = null;
-    let lastUpdateTime = 0;
 
-    const throttle = (func: Function) => {
-      return (...args: any[]) => {
-        const now = Date.now();
-        if (now - lastUpdateTime >= throttleMS) {
-          lastUpdateTime = now;
-          func(...args);
-        }
-      };
-    };
-
-    const clampToZone = throttle((x: number, y: number) => {
+    const clampToZone = (x: number, y: number) => {
       const center = getPolygonCenter(zoneBounds as Phaser.Geom.Polygon);
       const vector = new Phaser.Math.Vector2(x - center.x, y - center.y);
       const length = vector.length();
@@ -82,15 +70,15 @@ export function joystick(plugin: PsdToPhaserPlugin) {
           y: Phaser.Math.Clamp(clampedPoint.y, (zoneBounds as Phaser.Geom.Rectangle).top, (zoneBounds as Phaser.Geom.Rectangle).bottom)
         };
       }
-    });
+    };
 
-    const getNormalizedPosition = throttle((x: number, y: number) => {
+    const getNormalizedPosition = (x: number, y: number) => {
       const center = getPolygonCenter(zoneBounds as Phaser.Geom.Polygon);
       return {
         x: (x - center.x) / joystickRadius,
         y: (y - center.y) / joystickRadius
       };
-    });
+    };
 
     // Set up drag events
     scene.input.on('dragstart', (pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.GameObject) => {
@@ -103,7 +91,8 @@ export function joystick(plugin: PsdToPhaserPlugin) {
     scene.input.on('drag', (pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.GameObject, dragX: number, dragY: number) => {
       if (gameObject === joystickObject) {
         const { x: newX, y: newY } = clampToZone(dragX, dragY);
-        joystickObject.setPosition(newX, newY);
+        joystickObject.setX(newX);
+        joystickObject.setY(newY);
 
         const change = {
           x: newX - startPosition.x,
@@ -149,9 +138,6 @@ export function joystick(plugin: PsdToPhaserPlugin) {
 }
 
 // Utility functions (getClosestPointOnPolygon, getClosestPointOnLine, getPolygonCenter) remain the same
-
-// Utility functions (getClosestPointOnPolygon, getClosestPointOnLine, getPolygonCenter) remain the same
-
 
 function getClosestPointOnPolygon(polygon: Phaser.Geom.Polygon, x: number, y: number): Phaser.Geom.Point {
   let closestPoint = new Phaser.Geom.Point();
