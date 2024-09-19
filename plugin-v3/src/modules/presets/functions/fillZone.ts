@@ -1,7 +1,7 @@
 import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
 
 interface FillZoneOptions {
-  useFrames?: number[];
+  useFrames?: number[] | string[];
   scaleRange?: [number, number];
   tint?: number[];
   minInstances?: number;
@@ -11,7 +11,7 @@ interface FillZoneOptions {
 export function fillZone(plugin: PsdToPhaserPlugin) {
   return function(
     zone: Phaser.GameObjects.Zone,
-    sprite: Phaser.GameObjects.Sprite | Phaser.Textures.Texture,
+    sprite: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group,
     options: FillZoneOptions = {}
   ) {
     const scene = zone.scene;
@@ -30,8 +30,39 @@ export function fillZone(plugin: PsdToPhaserPlugin) {
     const polygon = new Phaser.Geom.Polygon(points);
     const bounds = Phaser.Geom.Polygon.GetAABB(polygon);
 
-    const texture = (sprite instanceof Phaser.GameObjects.Sprite) ? sprite.texture : sprite;
-    const frames = options.useFrames || (texture.frameTotal > 1 ? Array.from({length: texture.frameTotal}, (_, i) => i) : [0]);
+    let spriteKey: string;
+    let frames: (number | string)[];
+
+    if (sprite instanceof Phaser.GameObjects.Group) {
+      // If it's a group, use the first child's texture
+      const firstChild = sprite.getChildren()[0] as Phaser.GameObjects.Sprite;
+      if (!firstChild) {
+        console.error('Group is empty');
+        return;
+      }
+      spriteKey = firstChild.texture.key;
+      frames = options.useFrames || [firstChild.frame.name];
+    } else {
+      spriteKey = sprite.texture.key;
+      frames = options.useFrames || [sprite.frame.name];
+    }
+
+    const texture = scene.textures.get(spriteKey);
+    if (!texture) {
+      console.error(`Texture not found: ${spriteKey}`);
+      return;
+    }
+
+    if (!frames || frames.length === 0) {
+      const frameNames = texture.getFrameNames();
+      if (frameNames.length > 0) {
+        // It's an atlas or spritesheet with named frames
+        frames = frameNames;
+      } else {
+        // It's a spritesheet with numbered frames
+        frames = Array.from({length: texture.frameTotal}, (_, i) => i);
+      }
+    }
 
     const group = scene.add.group();
 
@@ -50,7 +81,7 @@ export function fillZone(plugin: PsdToPhaserPlugin) {
 
       if (Phaser.Geom.Polygon.Contains(polygon, x, y)) {
         const frame = Phaser.Math.RND.pick(frames);
-        const fillerSprite = scene.add.sprite(x, y, texture, frame);
+        const fillerSprite = scene.add.sprite(x, y, spriteKey, frame);
 
         if (options.scaleRange) {
           const scale = Phaser.Math.FloatBetween(options.scaleRange[0], options.scaleRange[1]);
