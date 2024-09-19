@@ -452,6 +452,22 @@ this.P2P.use.joystick(this.mySprite, this.myZone, "joystickB", {
 });
 ```
 
+You can even use mutiple joysticks at once, so long as you have the number of pointers set:
+
+```js
+const joyZoneA = everything.target("joystickA/joyZone");
+const joyStickA = everything.target("joystickA/joyBtn");
+
+const joyZoneB = everything.target("joystickB/joyZone");
+const joyStickB = everything.target("joystickB/joyBtn");
+
+this.input.addPointer(2);
+
+this.P2P.use.joystick(joyStickA, joyZoneA, "joystickA", { bounceBack: true });
+this.P2P.use.joystick(joyStickB, joyZoneB, "joystickB", { bounceBack: true });
+
+```
+
 Joystick fires events that you can use elsewhere in your project. You can parse the returned values using the keys.
 
 ```js
@@ -481,6 +497,24 @@ In all cases, the values object has the same structure :
       },
     }
 ```
+
+### joystick.control()
+
+Joystick comes with some preset control options, which you can use just by chaining the `control` keyword on to the end
+
+
+```js
+this.P2P.use
+  .joystick(joyStickA, joyZoneA, "joystickA",
+  { bounceBack: true })
+  .control( spriteToControl , { // options object
+    type: "speed" | "velocity" | "unit", // control speed, velocity or jump a certain number of units
+    force : 2, // force multiplier if using physics
+    maxSpeed: 300, // speed if using speed
+    pixels: 100,// if type = "unit", this is the number of pixels moved in a particular direction
+    directionLock: 4 | 8 | false // 4 = lock to x/y, 8 = x/y + diagonal, false = no direction lock )
+    repeatRate: 300 // if type = "unit" this is how long before it jumps again (-0 for once-per-joystick-use)
+});
 
 
 ## Gotchas
