@@ -279,7 +279,7 @@ At the moment, there are three feature cameras : `lazyLoad`, `draggable` and `ov
 
 This camera works in conjunction with the `lazyLoad` attribute, which you can set to true on any sprite or tile layer. Sprite or tile layers that have been given the `lazyLoad` attribute will not loaded during load() but later, when they enter the camera. This gives you the ability to load assets only when they're needed, potentially keeping load times much (much) smaller.
 
-**Note:** There are some tradeoffs to using `lazyLoad`. The biggest difference is that you can't manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they'll just show up when needed.
+**Note:**  : Currently does _not_ work with multiple cameras. Also, there are some tradeoffs to using `lazyLoad`. The biggest difference is that you can't manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they'll just show up when needed.
 
 The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence.
 
@@ -369,28 +369,6 @@ this.events.on("draggableActive", () => {
 this.events.on("draggableComplete", () => {
   console.log(`Drag has completed.`);
 });
-```
-
-### Overlay
-
-Overlay cameras can be used to place certain items above others, like UI or framing. They take control of items that have been placed in the scene and keep them in a single position. You can add these items during initialiation or useing the add() method afterwards.
-
-```js
-// Initialize an empty overlay camera.
-this.overlayCam = this.P2P.createCamera(this.camera, ["overlay"]);
-
-// Initialize an overlay camera with items.
-this.overlayCam = this.P2P.createCamera(this.camera, ["overlay"], {
-  overlayOptions: {
-    contents: [this.spriteGroup, this.tileSet],
-  },
-});
-
-// Add items from your scene to the overlay camera
-this.overlayCam.add([this.spriteGroup, this.tileSet]);
-
-// Removing items normally removes them form your overlay camera.
-this.spriteGroup.remove();
 ```
 
 ### Combined
