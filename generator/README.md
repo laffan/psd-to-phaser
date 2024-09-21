@@ -144,6 +144,7 @@ Convert group in to a simple spritesheet. Child layers are cropped and centered 
 
 `S | groupName | spritesheet |`
 
+**Note : Because the generate spritesheet is making frames of equal size, spritesheets composed of different sized sprites will shift when placed in Phaser.  If placement position is important in a case like this, use atlas instead.**
 
 ### Tile Types
 At the moment, tiles only support one type.
