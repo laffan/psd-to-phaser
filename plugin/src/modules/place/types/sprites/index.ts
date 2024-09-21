@@ -41,7 +41,7 @@ export function placeSprites(
     if (spriteObject) {
       group.add(spriteObject);
       if (spriteData.alpha !== undefined) spriteObject.setAlpha(spriteData.alpha);
-      if (spriteData.visible !== undefined) spriteObject.setVisible(spriteData.visible);
+      if (spriteData.hidden !== undefined) spriteObject.setVisible(false);
       spriteObject.setDepth(spriteData.initialDepth || 0);
       addDebugVisualization(scene, spriteData, group, plugin);
     } else {
