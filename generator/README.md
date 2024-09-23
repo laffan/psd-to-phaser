@@ -1,10 +1,16 @@
 # Generator
 
-The generator processes Photoshop (PSD) files in to optimized assets and an accompanying "data.json" file that describes how the assets appeared in the original document. 
+The generator processes the layers of a `.psd` file in to a folder of optimized assets and an accompanying "data.json" file that describes how the assets appeared in the original document. 
 
 ## Installation
 
-Ensure you have the following Python libraries installed:
+If you have `pip` installed, you can use this command:
+
+```bash
+pip install psd-tools Pillow pypng
+```
+
+To install the following Python libraries:
 
 - [psd-tools](https://github.com/psd-tools/psd-tools)
 - [Pillow (PIL)](https://pillow.readthedocs.io/en/stable/)
@@ -12,19 +18,15 @@ Ensure you have the following Python libraries installed:
 
 You can install them using the following pip command:
 
+For the PNG optimization, you'll also need to install [pngquant](https://pngquant.org), which, if you use `brew`, can be installed with the following command : 
+
 ```bash
-pip install psd-tools Pillow pypng
+brew install pngquant
 ```
-
-For the PNG optimization, you'll also need to install:
-
-- [pngquant](https://pngquant.org) 
-
-(Can typically be installed using a package manager like brew).
 
 ## Configuration
 
-The `config.json` file controls the behavior of the script. Here's an example structure with explanations:
+The `config.json` file controls the behavior of the tool. Here's what you'll see, along with with explanations:
 
 ```json
 {

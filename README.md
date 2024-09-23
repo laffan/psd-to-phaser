@@ -8,7 +8,7 @@ This repo is composed of three parts:
 
 ### 1. Generator
 
-The generator uses psd_tools to break up a PSD, generate a JSON file from its layer data and then output a series of optimized assets.  It depends on a naming convention that you can read more about in the [README](./generator/README.md).
+The generator uses psd_tools to break up a PSD, generate a JSON file from its layer data and then output a series of optimized assets.  It depends on a naming convention that you can read more about in the [README](./generator/README.md). (As a standalone tool, this could be useful to just about anyone who uses psds to create assets.)
 
 ### 2. Plugin
 
