@@ -10,17 +10,17 @@ Ensure you have the following Python libraries installed:
 - [Pillow (PIL)](https://pillow.readthedocs.io/en/stable/)
 - [pypng](https://pypi.org/project/pypng/)
 
-You can install them using pip:
+You can install them using the following pip command:
 
 ```bash
 pip install psd-tools Pillow pypng
 ```
 
-For the optional PNG optimization, you'll need to install:
+For the PNG optimization, you'll also need to install:
 
 - [pngquant](https://pngquant.org) 
 
-Can typically be installed using a package manager (e.g., apt, brew).
+(Can typically be installed using a package manager like brew).
 
 ## Configuration
 
@@ -29,29 +29,16 @@ The `config.json` file controls the behavior of the script. Here's an example st
 ```json
 {
   // output_dir : Where the generated files go.
-  "output_dir": "assets", 
+  "output_dir": "../demos/1_introduction/public/assets/", 
   // psd_files : An array of psd files to be processed each time you run the script.
   "psd_files": [ 
-    "../demos/psds/sensible.psd",
-    "../demos/psds/simple.psd"
+    "../demos/1_introduction.psd",
   ],
   // tile_slice_size : For layers in the "tiles" group, how big should the slices be?
   "tile_slice_size": 500, 
 
   // tile_scaled_versions : Resize tiles to any number of sizes.
   "tile_scaled_versions": [250], 
-
-  // captureLayerProps : Optionally capture certain layer properties.
-  "captureLayerProps": {  
-  // alpha : capture the alpha value of the layer.
-  // NOTE: This affects image output
-  //         a 'true' value will output a 100% opaque layer 
-  //         a 'false' value  will output the translucent png.
-    "alpha": false,  
-    // blend_mode : capture blend mode of each layer 
-    // NOTE : Ignores "NORMAL" or "PASSTHROUGH"
-    "blend_mode": false 
-  },
 
   // generateOnSave : Runs generator when any one of the PSDs is saved.
   "generateOnSave": true, 
@@ -71,8 +58,8 @@ The `config.json` file controls the behavior of the script. Here's an example st
 Once you have everything as you like it, just run
 
    ```bash
-   # For mac users it might be python3
-   python generator/main.py 
+   # Might be python3, depending on your setup
+   python main.py 
    ```
 
 #### Generate on save
@@ -98,21 +85,31 @@ Let's go through each piece of information.
 
 Categories tell the processor how to treat the layer. There are five categories, which you pass in using the first character: 
 
-#### [P]oints 
-Point layers will be represented in the JSON as an XY point. The point will register at the _center_ of the layer content. For example, a layer named `P | StartPos` would output as a point with the name "StartPos".
+- **[G]roup :**  Groups are are just the category you give to groups that you'd like to be read as such.  (If you wanted them to be read as a flattened image, you'd use S, see below.) Groups can be nested to any depth  and be given [attributes](#attributes). (Even the magic ones, like [lazyLoad](../plugin/README.md#lazyload).)
 
-#### [Z]ones 
-Zone layers will be represented as a series of points that bound an area. For vector shapes, the bounding box as well as the points of a path will be recorded. For raster layers only the bounding box will be recorded. For example, a vector layer named `Z | Boundary` would output as a series of points with the name "Boundary".
+- **[P]oints :**  Point layers will be represented in the JSON as an XY point. Because you need to see them somehow, you'll probably want to have some visual representation of the point in your PSD, but take note : **the point will register at the _center_ of the layer content**. This being the case, I've found that Xs make good point markers.
 
-#### [S]prites 
-Sprites can be either groups or individual layers and will be output as a PNG.  There's a lot to say bout sprites. The default behavior is to just output the image, but sprites can also have [special types](#sprite-types). For example, a layer named `S | Tree` would output a PNG of that layer and be saved in the JSON under the name "Tree". 
+- **[Z]ones -** Zone layers will be represented as a series of points that bound an area. For vector shapes, the bounding box as well as the points of a path will be recorded. For raster layers only the bounding box will be recorded. For example, a vector layer named `Z | Boundary` would output as a series of points with the name "Boundary".
 
-#### [T]iles 
-Tiles can be either groups or individual layers and will also output an image, but but tiles go a step further: they are diced up according to the `tile_slice_size` you set in config.json.  You can also pass in an array of pixel-sizes in to `tile_scaled_versions` (if you'd like to support zooming, for example) which will generate versions of each tile at that size. Tiles support the [jpg type](#tile-types)
+- **[S]prites -** Sprites are output as a PNG.  Sprites that are partially off the canvas will be output in their entirity. Sprites can either be image layers or layer groups. In the latter case, they'll just be flattened and treated as image layers.  There's a lot to say about sprites. The default behavior is to just output the image, but sprites can also have [special types](#sprite-types). 
+
+- **[T]iles -** Tiles can be either groups or individual layers and will also output an image, but but tiles go a step further: they are diced up according to the `tile_slice_size` you set in config.json.  You can also pass in an array of pixel-sizes in to `tile_scaled_versions` (if you'd like to support zooming, for example) which will generate versions of each tile at that size. Tiles support the [jpg type](#tile-types) and are generally designed to be lazyloaded, but that's up to you.
 
 ### name (required)
 
-The layer name can be whatever you want it to be, but be warned : **layer names are used to create files, so if you have two layers with the same name they will only produce one file.** This can actually be seen as a feature - it permits you to have multiple instances of the same sprite with different positions and attributes, but it could also confuse some folks. I also  recommend avoiding special characters in layer names and using camel case or underscores might make your life easier later on. 
+The layer name can be whatever you want it to be, but be warned : **layer names are used to create files, so if you have two layers with the same name they will only produce one file.** This can actually be seen as a feature - it permits you to have multiple instances of the same sprite with different positions and attributes, but it could also confuse some folks. I also recommend avoiding special characters in layer names. Using camel case or underscores will make your life easier later on. 
+
+So, with those two requirements, here are a some valid layer names.
+
+```js
+S | mySprite
+P | myPoint
+Z | myZone
+G | myGroup
+T | myTiles
+```
+
+But that's too easy ... let's complicate things a bit.
 
 ### type (optional)
 
@@ -130,7 +127,7 @@ Sprites and tile categories support different types. Here's a quick breakdown of
 ### Sprite Types
 
 #### animation
- Converts the layers in the group in to an animation spritesheet. No cropping occours so the elments of the animation are correctly placed relative to one another. The layers must all have integers for names (ie. 001, 002, 003).  Child layer files are not saved and child attributes lost. 
+ Converts the layers in the group in to an animation spritesheet. No cropping occours so the elments of the animation are correctly placed relative to one another. The layers must all have integers for names (ie. 001, 002, 003).  Child layer files are not saved and child attributes lost. This is how you'd name an animation:
 
 `S | groupName | animation |`
 
@@ -160,7 +157,9 @@ All layers regardless of type support attributes. They are passed in as a comma-
 
 `S | layername | attribute1:value1, attribute2:value2`
 
-The attribute name cannot include spaces or special characters.  The attribute value can be a string, integers, booleans or arrays.  Strings passed in without a colon are understood to be true booleans.
+The attribute name cannot include spaces or special characters.  The attribute value can be a string, integers, booleans or arrays.  
+
+Strings passed in without a colon are understood to be true booleans.
 
 For example, if you have a layer with the following name :
 
@@ -174,7 +173,7 @@ it should output the following JSON :
   "name": "enemy_spawn",
   "category" : "point",
   "x": 100,  // position of layer always stored
-  "y": 200,  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  "y": 200,  // ditto
   "level": 5,
   "isPrivate": true,
   "style": "fancy",
