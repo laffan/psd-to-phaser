@@ -8,13 +8,13 @@ This repo is composed of three parts:
 
 ### 1. Generator 
 
-The generator uses psd_tools to break up a PSD, generate a JSON file from its layer data and then output a series of optimized assets. Requires the use of a naming convention for your layer names. As a standalone tool, this could be useful to just about anyone who uses psds to create assets.
+If you've named your layers properly, the generator turns the layers of a psd in to a series of optimized assets, along with a sensibly formatted JSON file. It's smart enough to output sprites, spritesheets, atlases, tiles and even animations! (As a standalone tool, this could be useful to just about anyone who uses psds to create assets.)
 
 Learn more in the [📄 Generator README](./generator/README.md).
 
 ### 2. Plugin 
 
-The PSD-to-Phaser plugin parses the JSON from the generator and provides a series of helper functions to display and manipulate the layers in your Phaser project. It also has some nifty extras like [lazyLoading](/plugin/README.md#lazyload) and a [build-your-own-joystick](/plugin/README.md#joystick-sprite-zone-key) preset. 
+The PSD-to-Phaser plugin parses the JSON from the generator and provides a series of helper functions to display and manipulate the psd in your Phaser project. It also has some nifty extras like [lazyLoading](/plugin/README.md#lazyload) and a [build-your-own-joystick](/plugin/README.md#joystick-sprite-zone-key) preset. 
 
 Learn more in the [📄 Plugin README](./plugin/README.md).
 
