@@ -1,22 +1,26 @@
 # PSD to Phaser 
 
-### Automatically generate assets from the layers of a .psd file and parse them in Phaser.  
+### ✨ Generate assets from the layers of a .psd file and parse them in Phaser. 🎉
 
 The `psd` filetype is a common export option for most raster art applications these days.  This tool, inspired by [Tiled](https://www.mapeditor.org/) and powered by [psd_tools](https://pypi.org/project/psd-tools/), gives the users of these applications a way to easily translate their work in to an interactive space, powered by [a top notch gaming engine](https://phaser.io/).
 
 This repo is composed of three parts: 
 
-### 1. Generator
+### 1. Generator 
 
-The generator uses psd_tools to break up a PSD, generate a JSON file from its layer data and then output a series of optimized assets.  It depends on a naming convention that you can read more about in the [README](./generator/README.md). (As a standalone tool, this could be useful to just about anyone who uses psds to create assets.)
+The generator uses psd_tools to break up a PSD, generate a JSON file from its layer data and then output a series of optimized assets. Requires the use of a naming convention for your layer names. As a standalone tool, this could be useful to just about anyone who uses psds to create assets.
 
-### 2. Plugin
+Learn more in the [📄 Generator README](./generator/README.md).
 
-The (Phaser) plugin parses the JSON that the generator creates and provides a series of helper functions to display and manipulate the layers in your phaser project. It also has some nifty extras like lazyLoading and a build-your-own-joystick preset. Read more in the [README](./plugin/README.md).
+### 2. Plugin 
+
+The PSD-to-Phaser plugin parses the JSON from the generator and provides a series of helper functions to display and manipulate the layers in your Phaser project. It also has some nifty extras like [lazyLoading](/plugin/README.md#lazyload) and a [build-your-own-joystick](/plugin/README.md#joystick-sprite-zone-key) preset. 
+
+Learn more in the [📄 Plugin README](./plugin/README.md).
 
 ### 3. Demos
 
-The demos are a few simple examples of what is possible with this tool.  At the moment, there are two : 
+The demos give a very high-level look at what is possible with this tool.  At the moment, there are two : 
 
 1. [Introduction](/demos/1_introduction/) - The absolute bare-bones to get you up and running.
 
