@@ -1,6 +1,6 @@
 # PSD to Phaser 
 
-Automatically generate assets and data from PSD layers before parsing them in Phaser.  
+### Automatically generate assets from the layers of a .psd file and parse them in Phaser.  
 
 The `psd` filetype is a common export option for most raster art applications these days.  This tool, inspired by [Tiled](https://www.mapeditor.org/) and powered by [psd_tools](https://pypi.org/project/psd-tools/), gives the users of these applications a way to easily translate their work in to an interactive space, powered by [a top notch gaming engine](https://phaser.io/).
 
