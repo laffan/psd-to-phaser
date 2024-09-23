@@ -1,4 +1,4 @@
-# PSD to JSON Platformer Example
+# 1. Introduction
 
 An example of how to use PSDtoJSON in a real-world phaser project.  
 

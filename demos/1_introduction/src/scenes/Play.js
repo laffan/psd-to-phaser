@@ -8,13 +8,12 @@ export class PlayScene extends Scene {
   create() {
     // Place the root group
     const psd = this.P2P.place(this, "psd_key", "root");
+    // (That's it! It's there!)
 
-    // 🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸
-    // First, let's make all the blobs draggable.
+    // 🌸 1. Let's make all the blobs draggable.
 
     // Target the "blobs" group
     const blobs = psd.target("blobs");
-    console.log(blobs);
 
     // Loop through the blobs and make each one draggable
     blobs.children.entries.forEach((blob) => {
@@ -26,8 +25,7 @@ export class PlayScene extends Scene {
       });
     });
 
-    // 🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸
-    // Now, let's use the texture from a hidden layer to create an emitter.
+    // 🌼 2. Now, let's use the texture from a hidden layer to create an emitter.
 
     // Get the x & y of our emit point.
     const { x, y } = psd.target("emitPoint");
@@ -45,7 +43,7 @@ export class PlayScene extends Scene {
       angle: { min: -20, max: 20 }, 
       gravityY: 100,
       frequency: 100,
-    });
+    }).setDepth(3);
   }
 
   update() {}
