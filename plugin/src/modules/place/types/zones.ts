@@ -11,7 +11,12 @@ export function placeZones(
   const zoneObject = createZone(scene, zoneData);
   if (zoneObject) {
     group.add(zoneObject);
-    addDebugVisualization(scene, zoneData, group, plugin);
+    
+    // Create a separate debug group
+    const debugGroup = scene.add.group();
+    addDebugVisualization(scene, zoneData, debugGroup, plugin);
+    // Add the debug group as a child of the main group, but don't include it in the group's children array
+    (group as any).debugGroup = debugGroup;
   }
   resolve();
 }
@@ -87,6 +92,7 @@ function addDebugVisualization(
     }
     
     graphics.setDepth(debugDepth);
+    (graphics as any).isDebugObject = true;
     group.add(graphics);
   }
 
@@ -108,6 +114,7 @@ function addDebugVisualization(
     });
     text.setOrigin(0.5);
     text.setDepth(debugDepth);
+    (text as any).isDebugObject = true;
     group.add(text);
   }
 }

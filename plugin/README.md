@@ -528,24 +528,14 @@ this.P2P.use
 
 Because the plugin is maintaining layer order with setDepth() it is very likely that new items will be hidden behind something. When placing something of your own, make sure you set its depth to something higher than the number of layers you're bringing in from the PSD.
 
-## TODO
 
-### Finish
-
-- [ ] panToPoint() demo
-- [ ] updateAnimation() needs to be refactored to work with new placement
-
-### Bugs
-
-- [ ] StorageManager/addToGroup() throws an error for nested lazyLad functions
-
-### New Features
+### To Do
 
 - [ ] Support more than one PSD per scene PsdToPhaserPlugin wrapper.
 
 ## Development
 
-When developing, run : `npm run watch` to build plugin on save.
+Want to make develop the plugin locally?  Run : `npm run watch` in this folder to build plugin on save.
 
 To link plugin to your project locally, run `npm link` in this folder, and then `npm link psd-to-phaser-plugin` in the project you'd like to use it in.
 

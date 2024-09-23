@@ -27,9 +27,15 @@ export function placeTiles(
     }
   }
 
-  addDebugVisualization(scene, tileData, tileSliceSize, group, plugin);
+  // Create a separate debug group
+  const debugGroup = scene.add.group();
+  addDebugVisualization(scene, tileData, tileSliceSize, debugGroup, plugin);
+  // Add the debug group as a child of the main group, but don't include it in the group's children array
+  (group as any).debugGroup = debugGroup;
+
   resolve();
 }
+
 
 export function placeSingleTile(
   scene: Phaser.Scene,
@@ -71,6 +77,7 @@ function addDebugVisualization(
     graphics.setDepth(debugDepth);
     graphics.lineStyle(2, 0xff0000, 1);
     graphics.strokeRect(tileData.x, tileData.y, tileData.columns * tileSliceSize, tileData.rows * tileSliceSize);
+    (graphics as any).isDebugObject = true;
     group.add(graphics);
   }
 
@@ -81,6 +88,7 @@ function addDebugVisualization(
       backgroundColor: '#ffffff'
     });
     text.setDepth(debugDepth);
+    (text as any).isDebugObject = true;
     group.add(text);
   }
 }

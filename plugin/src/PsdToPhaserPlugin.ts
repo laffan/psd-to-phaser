@@ -40,6 +40,8 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
     super(pluginManager);
     this.options = {};
 
+    console.log("🔴")
+    
     this.load = loadModule(this);
     this.place = placeModule(this);
     this.getTexture = getTextureModule(this);

@@ -43,7 +43,12 @@ export function placeSprites(
       if (spriteData.alpha !== undefined) spriteObject.setAlpha(spriteData.alpha);
       if (spriteData.hidden !== undefined) spriteObject.setVisible(false);
       spriteObject.setDepth(spriteData.initialDepth || 0);
-      addDebugVisualization(scene, spriteData, group, plugin);
+      
+      // Create a separate debug group
+      const debugGroup = scene.add.group();
+      addDebugVisualization(scene, spriteData, debugGroup, plugin);
+      // Add the debug group as a child of the main group, but don't include it in the group's children array
+      (group as any).debugGroup = debugGroup;
     } else {
       console.error(`Failed to place sprite: ${spriteData.name}`);
     }
@@ -53,6 +58,7 @@ export function placeSprites(
 
   resolve();
 }
+
 
 function addDebugVisualization(
   scene: Phaser.Scene,
@@ -67,6 +73,7 @@ function addDebugVisualization(
     graphics.setDepth(debugDepth);
     graphics.lineStyle(2, 0x00ff00, 1);
     graphics.strokeRect(spriteData.x, spriteData.y, spriteData.width, spriteData.height);
+    (graphics as any).isDebugObject = true;
     group.add(graphics);
   }
 
@@ -77,6 +84,7 @@ function addDebugVisualization(
       backgroundColor: '#ffffff'
     });
     text.setDepth(debugDepth);
+    (text as any).isDebugObject = true;
     group.add(text);
   }
 }

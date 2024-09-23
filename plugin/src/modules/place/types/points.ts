@@ -11,7 +11,12 @@ export function placePoints(
   const pointObject = createPoint(scene, pointData, plugin);
   if (pointObject) {
     group.add(pointObject);
-    addDebugVisualization(scene, pointData, group, plugin);
+    
+    // Create a separate debug group
+    const debugGroup = scene.add.group();
+    addDebugVisualization(scene, pointData, debugGroup, plugin);
+    // Add the debug group as a child of the main group, but don't include it in the group's children array
+    (group as any).debugGroup = debugGroup;
   }
   resolve();
 }
@@ -47,6 +52,7 @@ function addDebugVisualization(
     const circle = scene.add.circle(pointData.x, pointData.y, 5, 0xff0000);
     circle.setStrokeStyle(2, 0xff0000);
     circle.setDepth(debugDepth);
+    (circle as any).isDebugObject = true;
     group.add(circle);
   }
 
@@ -58,6 +64,7 @@ function addDebugVisualization(
     });
     text.setOrigin(0.5, 1);
     text.setDepth(debugDepth);
+    (text as any).isDebugObject = true;
     group.add(text);
   }
 }

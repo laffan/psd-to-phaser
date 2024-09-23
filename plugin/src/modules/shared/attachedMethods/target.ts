@@ -9,13 +9,19 @@ export function createTargetMethod(plugin: PsdToPhaserPlugin) {
     }
     const pathParts = path.split('/');
     const maxDepth = options.depth !== undefined ? options.depth : Infinity;
+    
     function searchInGroup(group: Phaser.GameObjects.Group, currentPath: string[], currentDepth: number): Phaser.GameObjects.GameObject | Phaser.GameObjects.Group | null {
       if (currentDepth > maxDepth || currentPath.length === 0) {
         return null;
       }
       const [current, ...rest] = currentPath;
 
-      for (const child of group.getChildren()) {
+      // Filter out all debug objects
+      const filteredChildren = group.getChildren().filter(child => 
+        !(child as any).isDebugObject
+      );
+
+      for (const child of filteredChildren) {
         if (child.name === current) {
           if (rest.length === 0) {
             return child;
@@ -25,14 +31,15 @@ export function createTargetMethod(plugin: PsdToPhaserPlugin) {
         }
       }
       // If we haven't found a match, search in all child groups
-      for (const child of group.getChildren()) {
+      for (const child of filteredChildren) {
         if (child instanceof Phaser.GameObjects.Group) {
           const result = searchInGroup(child, currentPath, currentDepth + 1);
-      if (result) return result;
+          if (result) return result;
         }
       }
       return null;
     }
+
     let result: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group | null = null;
     if (this instanceof Phaser.GameObjects.Group) {
       result = searchInGroup(this, pathParts, 0);
@@ -47,6 +54,8 @@ export function createTargetMethod(plugin: PsdToPhaserPlugin) {
     return result;
   };
 }
+
+
 export function attachTargetMethod(plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group): void {
   (gameObject as any).target = createTargetMethod(plugin);
 }
