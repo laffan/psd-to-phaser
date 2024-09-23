@@ -1,11 +1,11 @@
 {
-  "output_dir": "../demos/1_introduction/public/assets/",
+  "output_dir": "../demos/2_platformer/public/assets/",
   "psd_files": [
-    "../demos/1_introduction.psd"
+    "../demos/2_platformer.psd"
   ],
   "tile_slice_size": 150,
   "tile_scaled_versions": [100],
-  "generateOnSave": false,
+  "generateOnSave": true,
   "pngQualityRange": {
     "low": 85,
     "high": 90
