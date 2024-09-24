@@ -8,7 +8,7 @@ This repo is composed of three parts:
 
 ### 1. Generator 
 
-If you've named your layers properly, the generator turns the layers of a psd in to a series of optimized assets, along with a sensibly formatted JSON file. It's smart enough to output sprites, spritesheets, atlases, tiles and even animations! (As a standalone tool, this could be useful to just about anyone who uses psds to create assets.)
+If you've named your layers properly, the generator turns them in to a series of optimized assets, along with a sensibly formatted JSON file. It's smart enough to output sprites, spritesheets, atlases, tiles and even animations! (As a standalone tool, this could be useful to just about anyone who uses psds to create assets, regardless of where they're headed.)
 
 Learn more in the [📄 Generator README](./generator/README.md).
 
@@ -24,7 +24,7 @@ The demos give a very high-level look at what is possible with this tool.  At th
 
 1. [Introduction](/demos/1_introduction/) - The absolute bare-bones to get you up and running.
 
-2. [Platformer](/demos/2_platformer/) - A simple platformer that you can use as a template for your own projects.
+2. [Platformer](/demos/2_platformer/) - A simple platformer that you can use as a template for your own projects. (Could be a nearly no-code way to make a game with just Procreate.)
 
 I'll be adding to this list as I use the tool more myself.
 
