@@ -88,8 +88,6 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   getData(key: string): any {
-    if (this.isDebugEnabled("console")) {
-    }
     return this.psdData[key];
   }
 

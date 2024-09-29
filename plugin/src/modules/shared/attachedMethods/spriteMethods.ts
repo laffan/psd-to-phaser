@@ -8,6 +8,7 @@ type MethodName = string;
 const methodsToAttach: MethodName[] = [  'setAlpha',
   'setAngle',
   'setActive',
+  'setAlpha',
   'setBlendMode',
   'setDepth',
   'setDisplaySize',
