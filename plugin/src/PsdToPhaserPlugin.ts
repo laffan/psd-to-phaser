@@ -29,8 +29,15 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
   public load: ReturnType<typeof loadModule>;
   public place: ReturnType<typeof placeModule>;
   public getTexture: ReturnType<typeof getTextureModule>;
-  public createCamera: typeof createCamera;
   public use: ReturnType<typeof useModule>;
+
+  public createCamera: (
+    camera: Phaser.Cameras.Scene2D.Camera,
+    features: string[],
+    psdKey: string,
+    options?: CameraOptions
+  ) => ReturnType<typeof createCamera>;
+
 
   // public get: ReturnType<typeof getModule>;
   // public cameras: ReturnType<typeof camerasModule>;
@@ -40,8 +47,8 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
     super(pluginManager);
     this.options = {};
 
-    console.log("🔴")
-    
+    console.log("🔴");
+
     this.load = loadModule(this);
     this.place = placeModule(this);
     this.getTexture = getTextureModule(this);

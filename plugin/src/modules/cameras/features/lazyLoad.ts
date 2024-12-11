@@ -176,8 +176,12 @@ export function LazyLoadCamera(
     if (options.debug?.console) {
       console.log(`LazyLoad: Object loaded ${key}`);
     }
+
+    // Create a group to hold the loaded objects
+    const itemGroup = scene.add.group();
+
     if (data.category === "sprite") {
-      placeSprites(scene, data, plugin, scene.children, () => {}, psdKey);
+      placeSprites(scene, data, plugin, itemGroup, () => {}, psdKey);
     } else if (data.category === "tile" || data.category === "tileset") {
       placeSingleTile(
         scene,
@@ -190,7 +194,7 @@ export function LazyLoadCamera(
           col: data.col,
           row: data.row,
         },
-        scene.children as Phaser.GameObjects.Group
+        itemGroup
       );
     }
 

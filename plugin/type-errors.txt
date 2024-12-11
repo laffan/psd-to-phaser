@@ -1,0 +1,128 @@
+src/modules/cameras/create.ts:20:72 - error TS2345: Argument of type 'boolean | LazyLoadOptions | undefined' is not assignable to parameter of type 'LazyLoadOptions | undefined'.
+  Type 'false' has no properties in common with type 'LazyLoadOptions'.
+
+20   Object.assign(enhancedCamera, LazyLoadCamera(plugin, camera, psdKey, options.lazyLoad));
+                                                                          ~~~~~~~~~~~~~~~~
+src/modules/cameras/features/lazyLoad.ts:180:41 - error TS2345: Argument of type 'DisplayList' is not assignable to parameter of type 'Group'.
+  Type 'DisplayList' is missing the following properties from type 'Group': children, isParent, type, classType, and 66 more.
+
+180       placeSprites(scene, data, plugin, scene.children, () => {}, psdKey);
+                                            ~~~~~~~~~~~~~~
+src/modules/cameras/features/lazyLoad.ts:193:9 - error TS2352: Conversion of type 'DisplayList' to type 'Group' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'DisplayList' is missing the following properties from type 'Group': children, isParent, type, classType, and 66 more.
+
+193         scene.children as Phaser.GameObjects.Group
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/modules/cameras/features/parallax.ts:31:16 - error TS2339: Property 'x' does not exist on type 'GameObject'.
+
+31           item.x -= cameraMovement.x * (layer.speed - 1);
+                  ~
+src/modules/cameras/features/parallax.ts:32:16 - error TS2339: Property 'y' does not exist on type 'GameObject'.
+
+32           item.y -= cameraMovement.y * (layer.speed - 1);
+                  ~
+src/modules/cameras/features/parallax.ts:35:19 - error TS2339: Property 'x' does not exist on type 'GameObject'.
+
+35             child.x -= cameraMovement.x * (layer.speed - 1);
+                     ~
+src/modules/cameras/features/parallax.ts:36:19 - error TS2339: Property 'y' does not exist on type 'GameObject'.
+
+36             child.y -= cameraMovement.y * (layer.speed - 1);
+                     ~
+src/modules/load/loadItems.ts:64:98 - error TS2554: Expected 5 arguments, but got 6.
+
+64     loadSprites(scene, data.sprites, basePath, updateProgress, plugin.isDebugEnabled('console'), remainingAssets);
+                                                                                                    ~~~~~~~~~~~~~~~
+src/modules/load/loadSprites.ts:45:5 - error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+
+45     atlasData.frames[frameName] = {
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/modules/place/index.ts:93:17 - error TS2345: Argument of type 'Group' is not assignable to parameter of type 'GameObject'.
+  Type 'Group' is missing the following properties from type 'GameObject': displayList, state, parentContainer, tabIndex, and 25 more.
+
+93       group.add(newGroup); // Add the new group to the parent group
+                   ~~~~~~~~
+src/modules/place/index.ts:115:7 - error TS2322: Type 'undefined' is not assignable to type 'GameObject | Group'.
+
+115       return;
+          ~~~~~~
+src/modules/place/index.ts:121:11 - error TS2322: Type 'void' is not assignable to type 'GameObject | Group | null'.
+
+121           placedObject = placeTiles(
+              ~~~~~~~~~~~~
+src/modules/place/index.ts:132:11 - error TS2322: Type 'void' is not assignable to type 'GameObject | Group | null'.
+
+132           placedObject = placeSprites(
+              ~~~~~~~~~~~~
+src/modules/place/index.ts:142:11 - error TS2322: Type 'void' is not assignable to type 'GameObject | Group | null'.
+
+142           placedObject = placeZones(
+              ~~~~~~~~~~~~
+src/modules/place/index.ts:152:11 - error TS2322: Type 'void' is not assignable to type 'GameObject | Group | null'.
+
+152           placedObject = placePoints(
+              ~~~~~~~~~~~~
+src/modules/place/types/points.ts:34:15 - error TS2339: Property 'x' does not exist on type 'GameObject'.
+
+34   pointObject.x = point.x;
+                 ~
+src/modules/place/types/points.ts:35:15 - error TS2339: Property 'y' does not exist on type 'GameObject'.
+
+35   pointObject.y = point.y;
+                 ~
+src/modules/place/types/sprites/index.ts:42:17 - error TS2345: Argument of type 'Group | Sprite' is not assignable to parameter of type 'GameObject'.
+  Type 'Group' is missing the following properties from type 'GameObject': displayList, state, parentContainer, tabIndex, and 25 more.
+
+42       group.add(spriteObject);
+                   ~~~~~~~~~~~~
+src/modules/place/types/tiles.ts:90:33 - error TS2339: Property 'x' does not exist on type 'GameObject'.
+
+90         if (deltaX !== 0) child.x += deltaX;
+                                   ~
+src/modules/place/types/tiles.ts:91:33 - error TS2339: Property 'y' does not exist on type 'GameObject'.
+
+91         if (deltaY !== 0) child.y += deltaY;
+                                   ~
+src/modules/place/types/tiles.ts:171:33 - error TS7031: Binding element 'method' implicitly has an 'any' type.
+
+171   pendingMethodCalls.forEach(({ method, args }) => {
+                                    ~~~~~~
+src/modules/place/types/tiles.ts:171:41 - error TS7031: Binding element 'args' implicitly has an 'any' type.
+
+171   pendingMethodCalls.forEach(({ method, args }) => {
+                                            ~~~~
+src/modules/shared/attachedMethods/spriteMethods.ts:49:16 - error TS2339: Property 'remove' does not exist on type 'PsdToPhaserPlugin'.
+
+49         plugin.remove(gameObject, options);
+                  ~~~~~~
+src/modules/shared/debugVisualizer.ts:1:1 - error TS6133: 'DebugOptions' is declared but its value is never read.
+
+1 import { DebugOptions } from '../../PsdToPhaserPlugin';
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/modules/use/functions/panTo.ts:9:40 - error TS2694: Namespace 'Phaser.Types.Math' has no exported member 'EaseFunction'.
+
+9   easing?: boolean | Phaser.Types.Math.EaseFunction;
+                                         ~~~~~~~~~~~~
+src/modules/use/functions/panTo.ts:31:24 - error TS2339: Property 'x' does not exist on type 'GameObject'.
+
+31       targetX = target.x;
+                          ~
+src/modules/use/functions/panTo.ts:32:24 - error TS2339: Property 'y' does not exist on type 'GameObject'.
+
+32       targetY = target.y;
+                          ~
+src/modules/use/functions/panTo.ts:79:11 - error TS6133: 'distance' is declared but its value is never read.
+
+79     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+             ~~~~~~~~
+src/modules/use/functions/panTo.ts:83:43 - error TS2694: Namespace 'Phaser.Types.Math' has no exported member 'EaseFunction'.
+
+83     let easingFunction: Phaser.Types.Math.EaseFunction = Phaser.Math.Easing.Linear;
+                                             ~~~~~~~~~~~~
+src/PsdToPhaserPlugin.ts:49:5 - error TS2322: Type '(camera: Phaser.Cameras.Scene2D.Camera, features: string[], psdKey: string, options?: CameraOptions) => any' is not assignable to type '(plugin: PsdToPhaserPlugin, camera: Camera, features: string[], psdKey: string, options?: CameraOptions) => any'.
+  Types of parameters 'camera' and 'plugin' are incompatible.
+    Type 'PsdToPhaserPlugin' is missing the following properties from type 'Camera': inputEnabled, fadeEffect, flashEffect, shakeEffect, and 118 more.
+
+49     this.createCamera = (
+       ~~~~~~~~~~~~~~~~~

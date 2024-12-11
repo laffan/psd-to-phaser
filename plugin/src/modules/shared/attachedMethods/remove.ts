@@ -2,7 +2,7 @@
 
 import PsdToPhaserPlugin from "../../../PsdToPhaserPlugin";
 
-export function createRemoveMethod(plugin: PsdToPhaserPlugin) {
+export function createRemoveMethod(_plugin: PsdToPhaserPlugin) {
   return function remove(
     this: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group,
     pathOrOptions?: string | { depth?: number },

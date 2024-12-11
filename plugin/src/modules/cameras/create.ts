@@ -17,10 +17,16 @@ export function createCamera(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.S
   }
 
   if (features.includes('lazyLoad')) {
-  Object.assign(enhancedCamera, LazyLoadCamera(plugin, camera, psdKey, options.lazyLoad));
+    // Convert boolean to LazyLoadOptions, using empty object as default
+    const lazyLoadOptions: LazyLoadOptions = typeof options.lazyLoad === 'boolean' 
+      ? options.lazyLoad ? {} : {} 
+      : options.lazyLoad || {};     
+      
+    Object.assign(enhancedCamera, LazyLoadCamera(plugin, camera, psdKey, lazyLoadOptions));
   }
-  
-
 
   return enhancedCamera;
 }
+
+  
+

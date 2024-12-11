@@ -70,8 +70,8 @@ function placeLayer(
       Array.isArray(layer.children) &&
       (options.depth === undefined || options.depth > 0)
     ) {
-      const newGroup = scene.add.group(); 
-      newGroup.name = layer.name; 
+      const newGroup = scene.add.group();
+      newGroup.name = layer.name;
 
       layer.children.forEach((child: any) => {
         const childObject = placeLayer(
@@ -90,17 +90,15 @@ function placeLayer(
           newGroup.add(childObject);
         }
       });
-      group.add(newGroup); // Add the new group to the parent group
+      group.add(newGroup as any);
       return newGroup;
     }
     return group;
   } else {
-    let placedObject:
-      | Phaser.GameObjects.GameObject
-      | Phaser.GameObjects.Group
-      | null = null;
+    if (layer.category === "group") {
+      return group;
+    }
 
-    // Check if the layer is lazy loaded
     const isLazyLoaded = checkIfLazyLoaded(plugin, psdKey, layer);
 
     if (isLazyLoaded) {
@@ -112,60 +110,33 @@ function placeLayer(
       if (debugShape) {
         group.add(debugShape);
       }
-      return;
+      return group;
     }
 
-    if (!isLazyLoaded) {
-      switch (layer.category) {
-        case "tileset":
-          placedObject = placeTiles(
-            scene,
-            layer,
-            plugin,
-            tileSliceSize,
-            group,
-            () => {},
-            psdKey
-          );
-          break;
-        case "sprite":
-          placedObject = placeSprites(
-            scene,
-            layer,
-            plugin,
-            group,
-            () => {},
-            psdKey
-          );
-          break;
-        case "zone":
-          placedObject = placeZones(
-            scene,
-            layer,
-            plugin,
-            group,
-            () => {},
-            psdKey
-          );
-          break;
-        case "point":
-          placedObject = placePoints(
-            scene,
-            layer,
-            plugin,
-            group,
-            () => {},
-            psdKey
-          );
-          break;
-        default:
-          console.error(`Unknown layer category: ${layer.category}`);
-      }
-    } else {
-      // Create a placeholder for lazy loaded objects
-      placedObject = createLazyLoadPlaceholder(scene, layer, plugin);
+    switch (layer.category) {
+      case "tileset":
+        placeTiles(
+          scene,
+          layer,
+          plugin,
+          tileSliceSize,
+          group,
+          () => {},
+          psdKey
+        );
+        return group;
+      case "sprite":
+        placeSprites(scene, layer, plugin, group, () => {}, psdKey);
+        return group;
+      case "zone":
+        placeZones(scene, layer, plugin, group, () => {}, psdKey);
+        return group;
+      case "point":
+        placePoints(scene, layer, plugin, group, () => {}, psdKey);
+        return group;
+      default:
+        console.error(`Unknown layer category: ${layer.category}`);
+        return group;
     }
-
-    return placedObject || group;
   }
 }

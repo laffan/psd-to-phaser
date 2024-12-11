@@ -1,4 +1,3 @@
-import { DebugOptions } from '../../PsdToPhaserPlugin';
 import { getDebugOptions } from './sharedUtils';
 
 export function createDebugShape(scene: Phaser.Scene, type: string, x: number, y: number, options: any = {}): Phaser.GameObjects.GameObject | null {

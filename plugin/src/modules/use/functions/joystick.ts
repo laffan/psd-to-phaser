@@ -21,7 +21,7 @@ interface TargetedObject extends Phaser.GameObjects.Sprite {
   height: number;
 }
 
-export function joystick(plugin: PsdToPhaserPlugin) {
+export function joystick(_plugin: PsdToPhaserPlugin) {
   return function (
     joystickObject: TargetedObject,
     zoneObject: Phaser.GameObjects.Zone,
@@ -315,7 +315,7 @@ export function joystick(plugin: PsdToPhaserPlugin) {
           }
         };
 
-        const onUpdate = (time: number, delta: number) => {
+        const onUpdate = (_time: number, delta: number) => {
           if (
             controlOptions.type !== "tracked" &&
             (velocity.x !== 0 || velocity.y !== 0)

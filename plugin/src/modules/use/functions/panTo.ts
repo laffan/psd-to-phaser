@@ -6,10 +6,10 @@ export interface PanToOptions {
   targetPositionX?: 'center' | 'left' | 'right';
   targetOffset?: [number, number];
   speed?: number;
-  easing?: boolean | Phaser.Types.Math.EaseFunction;
+  easing?: boolean;
 }
 
-export function panTo(plugin: PsdToPhaserPlugin) {
+export function panTo(_plugin: PsdToPhaserPlugin) {
   return function(camera: Phaser.Cameras.Scene2D.Camera, target: Phaser.GameObjects.GameObject | [number, number], options: PanToOptions = {}) {
     const scene = camera.scene;
     const defaults: PanToOptions = {
@@ -28,8 +28,8 @@ export function panTo(plugin: PsdToPhaserPlugin) {
     if (Array.isArray(target)) {
       [targetX, targetY] = target;
     } else {
-      targetX = target.x;
-      targetY = target.y;
+      targetX = (target as any).x;
+      targetY = (target as any).y;
       targetWidth = (target as any).width || 0;
       targetHeight = (target as any).height || 0;
     }
@@ -75,12 +75,12 @@ export function panTo(plugin: PsdToPhaserPlugin) {
 
     // Calculate the distance to pan
     const distanceX = scrollX - camera.scrollX;
-    const distanceY = scrollY - camera.scrollY;
-    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    // const distanceY = scrollY - camera.scrollY;
+    // const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
     // Set up the pan animation
     const duration = config.speed!;
-    let easingFunction: Phaser.Types.Math.EaseFunction = Phaser.Math.Easing.Linear;
+    let easingFunction = Phaser.Math.Easing.Linear;
 
     if (config.easing === true) {
       easingFunction = Phaser.Math.Easing.Cubic.InOut;

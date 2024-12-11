@@ -1,5 +1,8 @@
-import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
-import { checkIfLazyLoaded, createLazyLoadPlaceholder } from '../../shared/lazyLoadUtils';
+import PsdToPhaserPlugin from "../../../PsdToPhaserPlugin";
+import {
+  checkIfLazyLoaded,
+  createLazyLoadPlaceholder,
+} from "../../shared/lazyLoadUtils";
 
 export function placeTiles(
   scene: Phaser.Scene,
@@ -14,15 +17,21 @@ export function placeTiles(
   tileContainer.setName(tileData.name);
 
   // Store the original tile data for lazy loading
-  tileContainer.setData('tileData', tileData);
-  tileContainer.setData('tileSliceSize', tileSliceSize);
-  tileContainer.setData('psdKey', psdKey);
+  tileContainer.setData("tileData", tileData);
+  tileContainer.setData("tileSliceSize", tileSliceSize);
+  tileContainer.setData("psdKey", psdKey);
 
   const methodsToOverride = [
-    'setX', 'setY', 'setPosition', 'setBlendMode', 'setAlpha', 'setDepth', 'setMask'
+    "setX",
+    "setY",
+    "setPosition",
+    "setBlendMode",
+    "setAlpha",
+    "setDepth",
+    "setMask",
   ];
 
-  methodsToOverride.forEach(method => {
+  methodsToOverride.forEach((method) => {
     overrideContainerMethod(tileContainer, method);
   });
 
@@ -58,15 +67,19 @@ export function placeTilesInContainer(
       const y = row * tileSliceSize;
       const key = `${tileData.name}_tile_${col}_${row}`;
 
-      const tile = placeSingleTile(scene, {
-        x,
-        y,
-        key,
-        initialDepth: tileData.initialDepth,
-        tilesetName: tileData.name,
-        col,
-        row
-      }, container);
+      const tile = placeSingleTile(
+        scene,
+        {
+          x,
+          y,
+          key,
+          initialDepth: tileData.initialDepth,
+          tilesetName: tileData.name,
+          col,
+          row,
+        },
+        container
+      );
 
       if (tile) {
         container.add(tile);
@@ -75,34 +88,46 @@ export function placeTilesInContainer(
   }
 }
 
-function overrideContainerMethod(container: Phaser.GameObjects.Container, method: string): void {
-  const originalMethod = (Phaser.GameObjects.Container.prototype as any)[method];
-  (container as any)[method] = function(...args: any[]) {
+function overrideContainerMethod(
+  container: Phaser.GameObjects.Container,
+  method: string
+): void {
+  const originalMethod = (Phaser.GameObjects.Container.prototype as any)[
+    method
+  ];
+  (container as any)[method] = function (...args: any[]) {
     const result = originalMethod.apply(this, args);
-    
+
     // Special handling for position-related methods
-    if (['setX', 'setY', 'setPosition'].includes(method)) {
-      const deltaX = (method === 'setX' || method === 'setPosition') ? args[0] - this.x : 0;
-      const deltaY = (method === 'setY') ? args[0] - this.y : 
-                     (method === 'setPosition') ? args[1] - this.y : 0;
-      
-      this.each((child: Phaser.GameObjects.GameObject) => {
-        if (deltaX !== 0) child.x += deltaX;
-        if (deltaY !== 0) child.y += deltaY;
-      });
+    if (["setX", "setY", "setPosition"].includes(method)) {
+      const deltaX =
+        method === "setX" || method === "setPosition" ? args[0] - this.x : 0;
+      const deltaY =
+        method === "setY"
+          ? args[0] - this.y
+          : method === "setPosition"
+          ? args[1] - this.y
+          : 0;
+
+      this.each(
+        (child: Phaser.GameObjects.GameObject & { x: number; y: number }) => {
+          if (deltaX !== 0) child.x += deltaX;
+          if (deltaY !== 0) child.y += deltaY;
+        }
+      );
     } else {
       // For non-position methods, simply apply the method to all children
       this.each((child: Phaser.GameObjects.GameObject) => {
-        if (typeof (child as any)[method] === 'function') {
+        if (typeof (child as any)[method] === "function") {
           (child as any)[method](...args);
         }
       });
     }
 
     // Store the method call for lazy loading
-    const methodCalls = this.getData('pendingMethodCalls') || [];
+    const methodCalls = this.getData("pendingMethodCalls") || [];
     methodCalls.push({ method, args });
-    this.setData('pendingMethodCalls', methodCalls);
+    this.setData("pendingMethodCalls", methodCalls);
 
     return result;
   };
@@ -111,13 +136,13 @@ function overrideContainerMethod(container: Phaser.GameObjects.Container, method
 export function placeSingleTile(
   scene: Phaser.Scene,
   tileData: {
-    x: number,
-    y: number,
-    key: string,
-    initialDepth: number,
-    tilesetName: string,
-    col: number,
-    row: number
+    x: number;
+    y: number;
+    key: string;
+    initialDepth: number;
+    tilesetName: string;
+    col: number;
+    row: number;
   },
   parent: Phaser.GameObjects.Container | Phaser.GameObjects.Group
 ): Phaser.GameObjects.Image | null {
@@ -128,7 +153,9 @@ export function placeSingleTile(
     if (parent instanceof Phaser.GameObjects.Group) {
       parent.add(tile);
     }
-    console.log(`Placed tile: ${tileData.key} at (${tileData.x}, ${tileData.y})`);
+    console.log(
+      `Placed tile: ${tileData.key} at (${tileData.x}, ${tileData.y})`
+    );
     return tile;
   } else {
     console.warn(`Texture not found for tile: ${tileData.key}`);
@@ -145,20 +172,25 @@ function addDebugVisualization(
 ): void {
   const debugDepth = 1000;
 
-  if (plugin.isDebugEnabled('shape')) {
+  if (plugin.isDebugEnabled("shape")) {
     const graphics = scene.add.graphics();
     graphics.setDepth(debugDepth);
     graphics.lineStyle(2, 0xff0000, 1);
-    graphics.strokeRect(tileData.x, tileData.y, tileData.columns * tileSliceSize, tileData.rows * tileSliceSize);
+    graphics.strokeRect(
+      tileData.x,
+      tileData.y,
+      tileData.columns * tileSliceSize,
+      tileData.rows * tileSliceSize
+    );
     (graphics as any).isDebugObject = true;
     group.add(graphics);
   }
 
-  if (plugin.isDebugEnabled('label')) {
-    const text = scene.add.text(tileData.x, tileData.y - 20, tileData.name, { 
-      fontSize: '16px', 
-      color: '#ff0000',
-      backgroundColor: '#ffffff'
+  if (plugin.isDebugEnabled("label")) {
+    const text = scene.add.text(tileData.x, tileData.y - 20, tileData.name, {
+      fontSize: "16px",
+      color: "#ff0000",
+      backgroundColor: "#ffffff",
     });
     text.setDepth(debugDepth);
     (text as any).isDebugObject = true;
@@ -166,12 +198,16 @@ function addDebugVisualization(
   }
 }
 
+interface PendingMethodCall {
+  method: string;
+  args: any[];
+}
 export function applyPendingMethodCalls(container: Phaser.GameObjects.Container): void {
-  const pendingMethodCalls = container.getData('pendingMethodCalls') || [];
-  pendingMethodCalls.forEach(({ method, args }) => {
-    if (typeof (container as any)[method] === 'function') {
+  const pendingMethodCalls = container.getData("pendingMethodCalls") || [];
+  pendingMethodCalls.forEach(({ method, args }: PendingMethodCall) => {
+    if (typeof (container as any)[method] === "function") {
       (container as any)[method](...args);
     }
   });
-  container.setData('pendingMethodCalls', []);
+  container.setData("pendingMethodCalls", []);
 }

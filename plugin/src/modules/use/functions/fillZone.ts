@@ -8,7 +8,7 @@ interface FillZoneOptions {
   maxInstances?: number;
 }
 
-export function fillZone(plugin: PsdToPhaserPlugin) {
+export function fillZone(_plugin: PsdToPhaserPlugin) {
   return function(
     zone: Phaser.GameObjects.Zone,
     sprite: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group,

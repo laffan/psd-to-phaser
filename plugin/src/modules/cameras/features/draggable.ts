@@ -9,7 +9,7 @@ export interface DraggableOptions {
   minSpeed?: number;
 }
 
-export function DraggableCamera(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.Camera, options: DraggableOptions = {}) {
+export function DraggableCamera(_plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.Camera, options: DraggableOptions = {}) {
   const scene = camera.scene;
   let isDragging = false;
   let lastPointer = new Phaser.Math.Vector2();

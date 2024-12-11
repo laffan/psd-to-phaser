@@ -61,7 +61,7 @@ export function loadItems(scene: Phaser.Scene, key: string, data: any, plugin: P
 
   // Load sprites
   if (data.sprites && data.sprites.length > 0) {
-    loadSprites(scene, data.sprites, basePath, updateProgress, plugin.isDebugEnabled('console'), remainingAssets);
+    loadSprites(scene, data.sprites, basePath, updateProgress, plugin.isDebugEnabled('console'));
   }
 
   if (!scene.load.isLoading()) {

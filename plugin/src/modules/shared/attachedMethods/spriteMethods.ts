@@ -42,18 +42,18 @@ export function attachGroupMethods(plugin: PsdToPhaserPlugin, group: Phaser.Game
   });
 }
 
-export function attachIndividualMethods(plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject): void {
+export function attachIndividualMethods(_plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject): void {
   methodsToAttach.forEach(methodName => {
     if (methodName === 'remove') {
-      (gameObject as any)[methodName] = (options: { depth?: number } = {}) => {
-        plugin.remove(gameObject, options);
+      (gameObject as any)[methodName] = (_options: { depth?: number } = {}) => {
+        gameObject.removedFromScene()
       };
     }
   });
 }
 
 
-export function createGroupMethod(plugin: PsdToPhaserPlugin, methodName: MethodName) {
+export function createGroupMethod(_plugin: PsdToPhaserPlugin, methodName: MethodName) {
   return function(this: Phaser.GameObjects.Group, ...args: any[]) {
     const options = typeof args[args.length - 1] === 'object' && !Array.isArray(args[args.length - 1]) ? args.pop() : {};
     const depth = options.depth !== undefined ? options.depth : Infinity;

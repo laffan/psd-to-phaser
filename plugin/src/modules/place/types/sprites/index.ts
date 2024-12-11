@@ -1,9 +1,9 @@
-import PsdToPhaserPlugin from '../../../../PsdToPhaserPlugin';
-import { placeDefaultSprite } from './default';
-import { placeSpritesheet } from './spritesheet';
-import { placeAtlas } from './atlas';
-import { placeAnimation } from './animation';
-import { createLazyLoadPlaceholder } from '../../../shared/lazyLoadUtils';
+import PsdToPhaserPlugin from "../../../../PsdToPhaserPlugin";
+import { placeDefaultSprite } from "./default";
+import { placeSpritesheet } from "./spritesheet";
+import { placeAtlas } from "./atlas";
+import { placeAnimation } from "./animation";
+import { createLazyLoadPlaceholder } from "../../../shared/lazyLoadUtils";
 
 export function placeSprites(
   scene: Phaser.Scene,
@@ -21,16 +21,19 @@ export function placeSprites(
   }
 
   if (scene.textures.exists(spriteData.name)) {
-    let spriteObject: Phaser.GameObjects.Sprite | Phaser.GameObjects.Group | null = null;
+    let spriteObject:
+      | Phaser.GameObjects.Sprite
+      | Phaser.GameObjects.Group
+      | null = null;
 
     switch (spriteData.type) {
-      case 'spritesheet':
+      case "spritesheet":
         spriteObject = placeSpritesheet(scene, spriteData, plugin, psdKey);
         break;
-      case 'atlas':
+      case "atlas":
         spriteObject = placeAtlas(scene, spriteData, plugin, psdKey);
         break;
-      case 'animation':
+      case "animation":
         spriteObject = placeAnimation(scene, spriteData, plugin, psdKey);
         break;
       default:
@@ -39,11 +42,18 @@ export function placeSprites(
     }
 
     if (spriteObject) {
-      group.add(spriteObject);
-      if (spriteData.alpha !== undefined) spriteObject.setAlpha(spriteData.alpha);
+      if (spriteObject instanceof Phaser.GameObjects.Group) {
+        spriteObject.getChildren().forEach((child) => {
+          group.add(child);
+        });
+      } else {
+        group.add(spriteObject);
+      }
+      if (spriteData.alpha !== undefined)
+        spriteObject.setAlpha(spriteData.alpha);
       if (spriteData.hidden !== undefined) spriteObject.setVisible(false);
       spriteObject.setDepth(spriteData.initialDepth || 0);
-      
+
       // Create a separate debug group
       const debugGroup = scene.add.group();
       addDebugVisualization(scene, spriteData, debugGroup, plugin);
@@ -59,7 +69,6 @@ export function placeSprites(
   resolve();
 }
 
-
 function addDebugVisualization(
   scene: Phaser.Scene,
   spriteData: any,
@@ -68,21 +77,31 @@ function addDebugVisualization(
 ): void {
   const debugDepth = 1000;
 
-  if (plugin.isDebugEnabled('shape')) {
+  if (plugin.isDebugEnabled("shape")) {
     const graphics = scene.add.graphics();
     graphics.setDepth(debugDepth);
     graphics.lineStyle(2, 0x00ff00, 1);
-    graphics.strokeRect(spriteData.x, spriteData.y, spriteData.width, spriteData.height);
+    graphics.strokeRect(
+      spriteData.x,
+      spriteData.y,
+      spriteData.width,
+      spriteData.height
+    );
     (graphics as any).isDebugObject = true;
     group.add(graphics);
   }
 
-  if (plugin.isDebugEnabled('label')) {
-    const text = scene.add.text(spriteData.x, spriteData.y - 20, spriteData.name, {
-      fontSize: '16px',
-      color: '#00ff00',
-      backgroundColor: '#ffffff'
-    });
+  if (plugin.isDebugEnabled("label")) {
+    const text = scene.add.text(
+      spriteData.x,
+      spriteData.y - 20,
+      spriteData.name,
+      {
+        fontSize: "16px",
+        color: "#00ff00",
+        backgroundColor: "#ffffff",
+      }
+    );
     text.setDepth(debugDepth);
     (text as any).isDebugObject = true;
     group.add(text);

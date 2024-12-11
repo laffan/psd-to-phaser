@@ -6,7 +6,7 @@ export function placePoints(
   plugin: PsdToPhaserPlugin,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
-  psdKey: string
+  _psdKey: string
 ): void {
   const pointObject = createPoint(scene, pointData, plugin);
   if (pointObject) {
@@ -24,21 +24,19 @@ export function placePoints(
 function createPoint(
   scene: Phaser.Scene,
   point: any,
-  plugin: PsdToPhaserPlugin
-): Phaser.GameObjects.GameObject | null {
+  _plugin: PsdToPhaserPlugin
+): Phaser.GameObjects.Container | null {
   if (point.children) {
-    return null; // Don't create a visual representation for groups
+    return null; 
   }
 
-  const pointObject = new Phaser.GameObjects.GameObject(scene, "point");
-  pointObject.x = point.x;
-  pointObject.y = point.y;
-
+  const pointObject = scene.add.container(point.x, point.y);
   pointObject.setData("pointData", point);
-  pointObject.setName(point.name); // Add this line
+  pointObject.setName(point.name);
 
   return pointObject;
 }
+
 
 function addDebugVisualization(
   scene: Phaser.Scene,
