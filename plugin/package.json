@@ -1,7 +1,7 @@
 {
   "name": "psd-to-phaser-plugin",
-  "git-repository": "https://github.com/laffan/psd-to-phaser",
-  "keywords": ["psd", "Phaser", "generate", "game dev", "tool"],
+  "homepage": "https://github.com/laffan/psd-to-phaser",
+  "keywords": ["psd to phaser", "psd", "Phaser", "generate", "game dev", "tool"],
   "version": "1.0.0",
   "author": "Nate Laffan",
   "type": "module",

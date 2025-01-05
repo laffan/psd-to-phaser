@@ -1,6 +1,6 @@
 # PSD to Phaser Plugin
 
-PsdToPhaser's plugin is a bunch of convenience functions to get PSD to Phaser's output file up and running in your phaser project more quickly.
+PsdToPhaser's plugin is a bunch of convenience functions to get the manifest produced by [PSD to Phaser](https://github.com/laffan/psd-to-phaser) up and running in your [Phaser](https://phaser.io/) project.
 
 ### Initializing
 
