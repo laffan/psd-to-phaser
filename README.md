@@ -18,15 +18,11 @@ The PSD-to-Phaser plugin parses the JSON manifest created by the generator and p
 
 Learn more in the [📄 Plugin README](./plugin/README.md).
 
-### 3. Demos
+### 3. Example
 
-The demos give a very high-level look at what is possible with this tool.  At the moment, there are two :
+The [example project](/example/README.md) is about as bare-bones as it gets. Demonstrates basic loading and particles.  I'll be adding more examples soon. 
 
-1. [Introduction](/demos/1_introduction/) - The absolute bare-bones to get you up and running.
-
-2. [Platformer](/demos/2_platformer/) - A simple platformer that you can use as a template for your own projects. (Could be a nearly no-code way to make a game with just Procreate.)
-
-I'll be adding to this list as I use the tool more myself.
+[⭐️ Click here to see it running on codesandbox.io](https://codesandbox.io/p/github/laffan/psd-to-phaser-example-1/).
 
 
 ## Credits / Authorship
