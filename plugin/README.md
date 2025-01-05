@@ -34,7 +34,7 @@ new Phaser.Game({
 });
 ```
 
-## Rebuilding the PSD.
+## Loading and Placing Layers
 
 ### load()
 
@@ -188,7 +188,7 @@ this.atlasParticles.setDepth(100);
 
 ## Sprite Types
 
-In the PSD, each layer can be given a type, which tells the tool what kind of image to create and how it should be represented in the JSON. For more information on how to properly name these in the PSD, check out the [Generator README](./../../generator/README.md).
+In the PSD, each layer can be given a type, which tells the tool what kind of image to create and how it should be represented in the JSON. For more information on how to properly name these in the PSD, check out the [Generator README](https://github.com/laffan/psd-to-phaser/generator/README.md).
 
 ### Type : Animation
 
@@ -520,7 +520,7 @@ this.P2P.use
     repeatRate: 300 // ms between repetitions if using "unit" option.
     directionLock: 4 | 8 | false // 4 = lock to x/y, 8 = x/y + diagonal, false = no direction lock )
 });
-
+```
 
 ## Gotchas
 
