@@ -1,9 +1,9 @@
 {
-  "output_dir": "../demos/2_platformer/public/assets/",
+  "output_dir": "../demo_projects/1_introduction/site/public/assets/",
   "psd_files": [
-    "../demos/2_platformer.psd"
+    "../demo_projects/1_introduction/introduction.psd"
   ],
-  "tile_slice_size": 150,
+  "tile_slice_size": 500,
   "tile_scaled_versions": [100],
   "generateOnSave": true,
   "pngQualityRange": {
