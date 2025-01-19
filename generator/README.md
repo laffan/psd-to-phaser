@@ -2,7 +2,7 @@
 
 The generator processes the layers of a `.psd` file in to a folder of optimized assets and an accompanying "data.json" file that describes how the assets appeared in the original document. 
 
-**Note for Windows users : The generator has only been tested using WSL (Windows Subsystem for Linux). If you don't already use WSL, you can [learn more here](https://learn.microsoft.com/en-us/windows/wsl/install).**
+**Note for Windows users : The generator has only been tested using WSL (Windows Subsystem for Linux). If you don't already use WSL you can [learn more here](https://learn.microsoft.com/en-us/windows/wsl/install).**
 
 ## Installation
 

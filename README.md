@@ -1,8 +1,8 @@
 # PSD to Phaser
 
-### ✨ Automatically generate assets from a .psd file and parse them in Phaser. 👾
+### ✨ Automatically generate assets from a psd file and parse them in Phaser. 👾
 
-This pair of tools, inspired by [Tiled](https://www.mapeditor.org/), uses a .psd file to [generate](#1-generator) optimized assets and a JSON manifest. This manifest can then be used by anything that parses JSON, but is particularly well suited to the [custom Phaser plugin](#2-plugin), which re-compiles the PSD using a single line of code. 
+psd-to-phaser is a pair of tools, inspired by [Tiled](https://www.mapeditor.org/), which uses a psd file to [generate](#1-generator) optimized assets and a JSON manifest. The manifest can then be used by anything that parses JSON, but is particularly well suited to the [custom Phaser plugin](#2-plugin), which re-compiles the PSD using a single line of code. 
 
 A little more on each one of the tools:
 

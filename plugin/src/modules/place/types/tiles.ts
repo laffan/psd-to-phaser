@@ -153,9 +153,9 @@ export function placeSingleTile(
     if (parent instanceof Phaser.GameObjects.Group) {
       parent.add(tile);
     }
-    console.log(
-      `Placed tile: ${tileData.key} at (${tileData.x}, ${tileData.y})`
-    );
+    // console.log(
+    //   `Placed tile: ${tileData.key} at (${tileData.x}, ${tileData.y})`
+    // );
     return tile;
   } else {
     console.warn(`Texture not found for tile: ${tileData.key}`);
