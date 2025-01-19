@@ -2,7 +2,7 @@
 
 ### ✨ Automatically generate assets from a psd file and parse them in Phaser. 👾
 
-psd-to-phaser is a pair of tools work together to reconstruct an optimized PSD inside phaser. The first tool is the [generator](#1-generator), which outputs the layers according to your specification and then optimizes them. It then creates a JSON manifest that is read by the second tool, [a custom Phaser plugin](#2-plugin), which does the work of rebuilding everything inside Phaser. (The plugin makes this particularly convenient, but the manifest is just a series of paths and positions, so it could easily be used by anything that parses JSON.)
+psd-to-phaser is a pair of tools that work together to reconstruct a PSD inside Phaser. The first tool is the [generator](#1-generator), which outputs the layers as individually optimized files.  The generator then creates a JSON manifest that is read by the second tool, [a custom Phaser plugin](#2-plugin). The plugin reads the JSON, loads the files and then does the work of rebuilding everything inside Phaser. (While the plugin makes this particularly convenient, the manifest is just a series of paths and positions, so it could easily be used by anything that parses JSON.)
 
 This has been tested on MacOS and Windows, but should work just fine for Linux users as well.
 
