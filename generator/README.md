@@ -38,7 +38,7 @@ sudo apt install pngquant -y
 
 The `config.json` file controls the behavior of the tool. Here's what you'll see, along with with explanations:
 
-```json
+```js
 {
   // output_dir : Where the generated files go.
   "output_dir": "../demos/1_introduction/public/assets/", 
