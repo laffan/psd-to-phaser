@@ -180,7 +180,7 @@ For example, if you have a layer with the following name :
 
 it should output the following JSON :
 
-```json
+```js
 {
   "name": "enemy_spawn",
   "category" : "point",
