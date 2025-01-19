@@ -1,7 +1,7 @@
 {
-  "output_dir": "../demo_projects/1_introduction/site/public/assets/",
+  "output_dir": "../examples/site/public/assets/",
   "psd_files": [
-    "../demo_projects/1_introduction/introduction.psd"
+    "../examples/introduction.psd"
   ],
   "tile_slice_size": 500,
   "tile_scaled_versions": [100],

@@ -2,6 +2,8 @@
 
 The generator processes the layers of a `.psd` file in to a folder of optimized assets and an accompanying "data.json" file that describes how the assets appeared in the original document. 
 
+Note: At the moment Windows users will need to run everything through WSL (Windows Subsystem for Linux). 
+
 ## Installation
 
 If you have `pip` installed, you can use this command:
@@ -18,10 +20,18 @@ To install the following Python libraries:
 
 You can install them using the following pip command:
 
-For the PNG optimization, you'll also need to install [pngquant](https://pngquant.org), which, if you use `brew`, can be installed with the following command : 
+For the PNG optimization, you'll also need to install [pngquant](https://pngquant.org).
+
+For macOS users who use `brew` : 
 
 ```bash
 brew install pngquant
+```
+
+For Linux or Windows/WSL users:
+
+```bash
+sudo apt install pngquant -y
 ```
 
 ## Configuration
@@ -60,7 +70,7 @@ The `config.json` file controls the behavior of the tool. Here's what you'll see
 Once you have everything as you like it, just run
 
    ```bash
-   # Might be python3, depending on your setup
+   # Mac/WSL users will likely execute using python3 instead
    python main.py 
    ```
 

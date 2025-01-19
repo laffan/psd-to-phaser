@@ -18,11 +18,12 @@ The PSD-to-Phaser plugin parses the JSON manifest created by the generator and p
 
 Learn more in the [📄 Plugin README](./plugin/README.md).
 
-### 3. Example
+### Example
 
 The [example project](/example/README.md) is about as bare-bones as it gets. Demonstrates basic loading and particles.  I'll be adding more examples soon. 
 
 [⭐️ Click here to see it running on codesandbox.io](https://codesandbox.io/p/github/laffan/psd-to-phaser-example-1/).
+
 
 
 ## Credits / Authorship
