@@ -60,6 +60,25 @@ this.events.once(
 );
 ```
 
+
+#### getData("psd_key")
+
+The `getData()` method returns the base path, where the data has been saved (`basePath`), the JSON manifest in its entirity (`original`), the initially loaded items (`initialLoad`) and finally any items that are being lazy loaded (`lazyLoad`).
+
+```js
+
+    // Save all PSD data to a variable
+    const psdData = this.P2P.getData("psd_key");
+
+    // "basePath" is where the PSD data is stored.
+    const psdPath = psdData.basePath;
+
+    // "original" is the entire JSON blob. 
+    const psdWidth = psdData.original.width;
+```
+
+
+
 ### place()
 
 If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional "options" object allows you to limit the recursion ("depth") and set debugging options ("debug").
@@ -93,6 +112,9 @@ this.myItem = this.P2P.place(
   }
 );
 ```
+
+
+
 
 #### [placed].[spriteMethods]()
 
