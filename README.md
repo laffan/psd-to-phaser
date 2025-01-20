@@ -11,19 +11,19 @@ psd-to-phaser is a pair of tools that work together to reconstruct a PSD inside 
 
 A little more on the individual tools :
 
-### 1. Generator
+## The Generator
 
 Using a simple [layer-naming system](/generator/README.md#layer-naming), the generator uses  [psd_tools](https://pypi.org/project/psd-tools/) and [Pillow](https://pypi.org/project/pillow/) to crawl the layer structure and turn your PSD in to a series of optimized assets. It's smart enough to output sprites, sprite sheets, atlases, tiles and even animations! 
 
 **👉 Learn more in the [Generator README](./generator/README.md).**
 
-### 2. Plugin
+## The Plugin
 
 The PSD-to-Phaser plugin parses the JSON manifest created by the generator and provides a series of helper functions to display, target and manipulate the layers of your PSD in Phaser. It also has some nifty extras like [lazyLoading](/plugin/README.md#lazyload) and a a few presets that I thought might be useful ([parallax](/plugin/README.md#parallax) and [build-your-own-joystick](/plugin/README.md#joystick-sprite-zone-key) being my favorites.)
 
 **👉  Learn more in the [Plugin README](./plugin/README.md).**
 
-### Example
+## Examples
 
 The [example project](/example/README.md) is about as bare-bones as it gets. Demonstrates basic loading and particles.  I'll be adding more examples soon. 
 
