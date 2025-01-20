@@ -25,7 +25,7 @@ export interface PluginOptions {
 export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
   private psdData: Record<string, any> = {};
   public options: PluginOptions;
-
+  
   public load: ReturnType<typeof loadModule>;
   public place: ReturnType<typeof placeModule>;
   public getTexture: ReturnType<typeof getTextureModule>;
@@ -47,8 +47,10 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
     super(pluginManager);
     this.options = {};
 
-    console.log("🔴");
-
+console.log(
+  "%c✨ PSD-to-Phaser v1.0.3 ✨",
+  "background: black; color: white; padding: 1px 3px; border-radius: 2px;"
+);
     this.load = loadModule(this);
     this.place = placeModule(this);
     this.getTexture = getTextureModule(this);

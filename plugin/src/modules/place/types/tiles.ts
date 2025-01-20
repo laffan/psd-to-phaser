@@ -20,7 +20,8 @@ export function placeTiles(
   tileContainer.setData("tileData", tileData);
   tileContainer.setData("tileSliceSize", tileSliceSize);
   tileContainer.setData("psdKey", psdKey);
-
+  tileContainer.setDepth(tileData.initialDepth)
+  
   const methodsToOverride = [
     "setX",
     "setY",
@@ -149,7 +150,6 @@ export function placeSingleTile(
   if (scene.textures.exists(tileData.key)) {
     const tile = scene.add.image(tileData.x, tileData.y, tileData.key);
     tile.setOrigin(0, 0);
-    tile.setDepth(tileData.initialDepth || 0);
     if (parent instanceof Phaser.GameObjects.Group) {
       parent.add(tile);
     }

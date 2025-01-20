@@ -159,7 +159,7 @@ Convert group in to a simple spritesheet. Child layers are cropped and centered 
 At the moment, tiles only support one type.
 
 #### jpg
-Tiles are by default PNGs, but "jpg" tile groups will be exported as JPGs. 
+Tiles are by default transparent PNGs, but "jpg" tile groups will be exported as JPGs. 
 
 `S | groupName | jpg |`
 
