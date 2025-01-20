@@ -413,7 +413,6 @@ P2P comes with a few preset functions built in that help you get started more qu
 
 ### parallax()
 
-=
 Make any placed object move at a different speed than the camera scroll, creating a parallax effect.
 
 ```js
