@@ -6,29 +6,27 @@ The generator processes the layers of a `.psd` file in to a folder of optimized 
 
 ## Installation
 
-If you have `pip` installed, you can use this command:
+For the generator to work, you'll need to install some python libraries and [pngquant](https://pngquant.org).
+
+If you have `pip` installed, you can use this command for the python libraries:
 
 ```bash
 pip install psd-tools Pillow pypng
 ```
 
-To install the following Python libraries:
+This will install the following: 
 
 - [psd-tools](https://github.com/psd-tools/psd-tools)
 - [Pillow (PIL)](https://pillow.readthedocs.io/en/stable/)
 - [pypng](https://pypi.org/project/pypng/)
 
-You can install them using the following pip command:
-
-For the PNG optimization, you'll also need to install [pngquant](https://pngquant.org).
-
-For macOS users who use `brew` : 
+For pngquant, macOS users who use `brew`, can do the following: 
 
 ```bash
 brew install pngquant
 ```
 
-For Linux or Windows/WSL users:
+Or, if you're using Linux or Windows/WSL:
 
 ```bash
 sudo apt install pngquant -y
@@ -41,10 +39,10 @@ The `config.json` file controls the behavior of the tool. Here's what you'll see
 ```js
 {
   // output_dir : Where the generated files go.
-  "output_dir": "../demos/1_introduction/public/assets/", 
+  "output_dir": "../examples/introduction/site/public/assets/", 
   // psd_files : An array of psd files to be processed each time you run the script.
   "psd_files": [ 
-    "../demos/1_introduction.psd",
+    "../examples/introduction/introduction.psd",
   ],
   // tile_slice_size : For layers in the "tiles" group, how big should the slices be?
   "tile_slice_size": 500, 
