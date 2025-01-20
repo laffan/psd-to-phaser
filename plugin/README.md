@@ -411,6 +411,25 @@ this.myCamera = this.P2P.createCamera(this.camera, ['lazyLoading', 'draggable'],
 
 P2P comes with a few preset functions built in that help you get started more quickly. These are stored in the 'use' class.
 
+### parallax()
+
+=
+Make any placed object move at a different speed than the camera scroll, creating a parallax effect.
+
+```js
+const psd = this.P2P.place(this, 'psd_key', 'root');
+
+const distantItem = psd.target('distant');
+
+this.P2P.use.parallax({
+  target: distantItem,
+  scrollFactor: 0.25
+});
+
+```
+
+This defaults to the main camera, but accepts a `camera` parameter, allowing you can pass in a different target camera.
+
 ### panTo()
 
 Pass in an item or x/y and have the canvas pan to it.

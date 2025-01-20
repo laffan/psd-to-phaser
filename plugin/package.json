@@ -9,7 +9,7 @@
     "game dev",
     "tool"
   ],
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "Nate Laffan",
   "type": "module",
   "main": "./dist/psd-to-phaser-plugin.umd.js",
