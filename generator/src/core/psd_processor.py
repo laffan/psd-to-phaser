@@ -63,15 +63,14 @@ class PSDProcessor:
                 'y': y1,
                 'width': x2 - x1,
                 'height': y2 - y1,
-                'initialDepth': self.depth_counter
-            }
+                'initialDepth': self.depth_counter,
+                'attributes': [
+                    {key: value}
+                    for key, value in parsed_layer.items()
+                    if key not in ['name', 'category']
+                ]}
 
             self.depth_counter += 1
-
-            # Add all other attributes directly to layer_info
-            for key, value in parsed_layer.items():
-                if key not in ['name', 'category']:
-                    layer_info[key] = value
 
             if layer_info['category'] == 'point':
                 # For points, adjust to the center of the layer
