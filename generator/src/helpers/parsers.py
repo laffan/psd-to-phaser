@@ -123,7 +123,7 @@ def parse_attribute_string(attr_string):
         return None
 
     attributes = {}
-    for item in re.split(r',\s*(?=[^:]+:)', attr_string):
+    for item in re.split(r',\s*(?![^:]*\])', attr_string):
         item = item.strip()
         if ':' in item:
             key, value = map(str.strip, item.split(':', 1))
@@ -131,7 +131,7 @@ def parse_attribute_string(attr_string):
                 parsed_value = parse_value(value)
                 if parsed_value is not None:
                     attributes[key] = parsed_value
-        elif item:
+        elif item:  # Standalone attribute (boolean)
             attributes[item] = True
 
     return attributes if attributes else None

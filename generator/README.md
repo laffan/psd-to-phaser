@@ -184,14 +184,17 @@ it should output the following JSON :
   "category" : "point",
   "x": 100,  // position of layer always stored
   "y": 200,  // ditto
-  "level": 5,
-  "isPrivate": true,
-  "style": "fancy",
-  "targets": [
-    "pandas",
-    "dogs",
-    "Bob"
-  ],}
+  "attributes": {
+      "level": 5,
+      "isPrivate": true,
+      "style": "fancy",
+      "targets": [
+        "pandas",
+        "dogs",
+        "Bob"
+      ],
+    }
+  }
 ```
 
 

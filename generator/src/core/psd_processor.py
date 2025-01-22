@@ -64,12 +64,17 @@ class PSDProcessor:
                 'width': x2 - x1,
                 'height': y2 - y1,
                 'initialDepth': self.depth_counter,
-                'attributes': [
-                    {key: value}
+                'attributes': {
+                    key: value
                     for key, value in parsed_layer.items()
-                    if key not in ['name', 'category']
-                ]}
+                    if key not in ['name', 'category', 'type']
+                }}
 
+            # If 'type' exists in parsed_layer, add it to the top level
+            if 'type' in parsed_layer:
+                layer_info['type'] = parsed_layer['type']
+                
+                                
             self.depth_counter += 1
 
             if layer_info['category'] == 'point':
