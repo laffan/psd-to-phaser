@@ -1,20 +1,21 @@
 import PsdToPhaserPlugin from "../../../PsdToPhaserPlugin";
+import { attachAttributes } from "../../shared/attachAttributes";
 
 export function placePoints(
   scene: Phaser.Scene,
-  pointData: any,
+  layer: any,
   plugin: PsdToPhaserPlugin,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
   _psdKey: string
 ): void {
-  const pointObject = createPoint(scene, pointData, plugin);
+  const pointObject = createPoint(scene, layer, plugin);
   if (pointObject) {
     group.add(pointObject);
     
     // Create a separate debug group
     const debugGroup = scene.add.group();
-    addDebugVisualization(scene, pointData, debugGroup, plugin);
+    addDebugVisualization(scene, layer, debugGroup, plugin);
     // Add the debug group as a child of the main group, but don't include it in the group's children array
     (group as any).debugGroup = debugGroup;
   }
@@ -23,16 +24,17 @@ export function placePoints(
 
 function createPoint(
   scene: Phaser.Scene,
-  point: any,
+  layer: any,
   _plugin: PsdToPhaserPlugin
 ): Phaser.GameObjects.Container | null {
-  if (point.children) {
+  if (layer.children) {
     return null; 
   }
 
-  const pointObject = scene.add.container(point.x, point.y);
-  pointObject.setData("pointData", point);
-  pointObject.setName(point.name);
+  const pointObject = scene.add.container(layer.x, layer.y);
+  pointObject.setData("pointData", layer);
+  pointObject.setName(layer.name);
+  attachAttributes( layer, pointObject)
 
   return pointObject;
 }
@@ -40,14 +42,14 @@ function createPoint(
 
 function addDebugVisualization(
   scene: Phaser.Scene,
-  pointData: any,
+  layer: any,
   group: Phaser.GameObjects.Group,
   plugin: PsdToPhaserPlugin
 ): void {
   const debugDepth = 1000;
 
   if (plugin.isDebugEnabled("shape")) {
-    const circle = scene.add.circle(pointData.x, pointData.y, 5, 0xff0000);
+    const circle = scene.add.circle(layer.x, layer.y, 5, 0xff0000);
     circle.setStrokeStyle(2, 0xff0000);
     circle.setDepth(debugDepth);
     (circle as any).isDebugObject = true;
@@ -55,7 +57,7 @@ function addDebugVisualization(
   }
 
   if (plugin.isDebugEnabled("label")) {
-    const text = scene.add.text(pointData.x, pointData.y - 20, pointData.name, {
+    const text = scene.add.text(layer.x, layer.y - 20, layer.name, {
       fontSize: "16px",
       color: "#ff0000",
       backgroundColor: "#ffffff",

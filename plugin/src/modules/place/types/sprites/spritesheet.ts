@@ -1,38 +1,39 @@
 import PsdToPhaserPlugin from "../../../../PsdToPhaserPlugin";
+import { attachAttributes } from "../../../shared/attachAttributes";
 
 export function placeSpritesheet(
   scene: Phaser.Scene,
-  sprite: any,
+  layer: any,
   plugin: PsdToPhaserPlugin,
   psdKey: string
 ): Phaser.GameObjects.Group {
   const group = scene.add.group();
-  group.name = sprite.name;
+  group.name = layer.name;
 
-  if (scene.textures.exists(sprite.name)) {
-    const texture = scene.textures.get(sprite.name);
+  if (scene.textures.exists(layer.name)) {
+    const texture = scene.textures.get(layer.name);
     const textureFrames = texture.getFrameNames();
 
     // Create a mapping of instance names to frame indices
     const frameMapping: Record<string, number> = Object.keys(
-      sprite.frames
+      layer.frames
     ).reduce((map, key, index) => {
       map[key] = index;
       return map;
     }, {} as Record<string, number>);
 
-    if (sprite.instances && Array.isArray(sprite.instances)) {
-      sprite.instances.forEach((instance: any, index: number) => {
+    if (layer.instances && Array.isArray(layer.instances)) {
+      layer.instances.forEach((instance: any, index: number) => {
         const { name, x, y } = instance;
         const frameIndex = frameMapping[name];
 
         if (frameIndex !== undefined && frameIndex < textureFrames.length) {
           const frameName = textureFrames[frameIndex];
-          const spriteObject = scene.add.sprite(x, y, sprite.name, frameName);
+          const spriteObject = scene.add.sprite(x, y, layer.name, frameName);
           spriteObject.setName(name);
           spriteObject.setOrigin(0, 0);
           group.add(spriteObject);
-          spriteObject.setDepth(sprite.initialDepth || 0);
+          spriteObject.setDepth(layer.initialDepth || 0);
 
           if (plugin.isDebugEnabled("console")) {
             console.log(
@@ -41,17 +42,19 @@ export function placeSpritesheet(
           }
         } else {
           console.warn(
-            `Frame for "${name}" not found in spritesheet "${sprite.name}"`
+            `Frame for "${name}" not found in spritesheet "${layer.name}"`
           );
         }
       });
     }
   } else {
     console.error(
-      `Texture "${sprite.name}" not found. Make sure the spritesheet is loaded correctly.`
+      `Texture "${layer.name}" not found. Make sure the spritesheet is loaded correctly.`
     );
   }
 
-  group.setDepth(sprite.initialDepth || 0);
+  group.setDepth(layer.initialDepth || 0);
+  attachAttributes( layer, group)
+  
   return group;
 }

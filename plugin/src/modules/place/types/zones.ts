@@ -1,20 +1,21 @@
 import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
+import { attachAttributes } from '../../shared/attachAttributes';
 
 export function placeZones(
   scene: Phaser.Scene,
-  zoneData: any,
+  layer: any,
   plugin: PsdToPhaserPlugin,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
   psdKey: string
 ): void {
-  const zoneObject = createZone(scene, zoneData);
+  const zoneObject = createZone(scene, layer);
   if (zoneObject) {
     group.add(zoneObject);
     
     // Create a separate debug group
     const debugGroup = scene.add.group();
-    addDebugVisualization(scene, zoneData, debugGroup, plugin);
+    addDebugVisualization(scene, layer, debugGroup, plugin);
     // Add the debug group as a child of the main group, but don't include it in the group's children array
     (group as any).debugGroup = debugGroup;
   }
@@ -45,6 +46,7 @@ function createZone(scene: Phaser.Scene, zone: any): Phaser.GameObjects.Zone | n
   }
 
   zoneObject.setName(zone.name || "unnamed_zone");
+  attachAttributes( zone, zoneObject)
 
   // Set the points array as a custom property
   zoneObject.setData('points', points);

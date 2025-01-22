@@ -4,24 +4,28 @@ import {
   createLazyLoadPlaceholder,
 } from "../../shared/lazyLoadUtils";
 
+import { attachAttributes } from "../../shared/attachAttributes";
+
 export function placeTiles(
   scene: Phaser.Scene,
-  tileData: any,
+  layer: any,
   plugin: PsdToPhaserPlugin,
   tileSliceSize: number,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
   psdKey: string
 ): void {
-  const tileContainer = scene.add.container(tileData.x, tileData.y);
-  tileContainer.setName(tileData.name);
+  const tileContainer = scene.add.container(layer.x, layer.y);
+  tileContainer.setName(layer.name);
 
   // Store the original tile data for lazy loading
-  tileContainer.setData("tileData", tileData);
+  tileContainer.setData("tileData", layer);
   tileContainer.setData("tileSliceSize", tileSliceSize);
   tileContainer.setData("psdKey", psdKey);
-  tileContainer.setDepth(tileData.initialDepth)
+  tileContainer.setDepth(layer.initialDepth)
+    attachAttributes( layer, tileContainer)
   
+
   const methodsToOverride = [
     "setX",
     "setY",
@@ -36,20 +40,20 @@ export function placeTiles(
     overrideContainerMethod(tileContainer, method);
   });
 
-  const isLazyLoaded = checkIfLazyLoaded(plugin, psdKey, tileData);
+  const isLazyLoaded = checkIfLazyLoaded(plugin, psdKey, layer);
 
   if (isLazyLoaded) {
-    const placeholder = createLazyLoadPlaceholder(scene, tileData, plugin);
+    const placeholder = createLazyLoadPlaceholder(scene, layer, plugin);
     if (placeholder) tileContainer.add(placeholder);
   } else {
-    placeTilesInContainer(scene, tileContainer, tileData, tileSliceSize);
+    placeTilesInContainer(scene, tileContainer, layer, tileSliceSize);
   }
 
   group.add(tileContainer);
 
   // Create a separate debug group
   const debugGroup = scene.add.group();
-  addDebugVisualization(scene, tileData, tileSliceSize, debugGroup, plugin);
+  addDebugVisualization(scene, layer, tileSliceSize, debugGroup, plugin);
   // Add the debug group as a child of the main group, but don't include it in the group's children array
   (group as any).debugGroup = debugGroup;
 
@@ -59,14 +63,14 @@ export function placeTiles(
 export function placeTilesInContainer(
   scene: Phaser.Scene,
   container: Phaser.GameObjects.Container,
-  tileData: any,
+  layer: any,
   tileSliceSize: number
 ): void {
-  for (let col = 0; col < tileData.columns; col++) {
-    for (let row = 0; row < tileData.rows; row++) {
+  for (let col = 0; col < layer.columns; col++) {
+    for (let row = 0; row < layer.rows; row++) {
       const x = col * tileSliceSize;
       const y = row * tileSliceSize;
-      const key = `${tileData.name}_tile_${col}_${row}`;
+      const key = `${layer.name}_tile_${col}_${row}`;
 
       const tile = placeSingleTile(
         scene,
@@ -74,8 +78,8 @@ export function placeTilesInContainer(
           x,
           y,
           key,
-          initialDepth: tileData.initialDepth,
-          tilesetName: tileData.name,
+          initialDepth: layer.initialDepth,
+          tilesetName: layer.name,
           col,
           row,
         },

@@ -289,7 +289,7 @@ This camera works in conjunction with the `lazyLoad` attribute, which you can se
 
 **Note:**  : Currently does _not_ work with multiple cameras. Also, there are some tradeoffs to using `lazyLoad`. The biggest difference is that you can't manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they'll just show up when needed.
 
-The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence.
+The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence. If you do not use a lazyLoad camera and your PSD contains lazyLoad items you will get lots of "Texture not found" errors.
 
 ```js
 // Initialize a lazyLoad camera

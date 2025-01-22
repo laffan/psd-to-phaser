@@ -1,8 +1,6 @@
-import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
-
 export interface ParallaxOptions {
   camera?: Phaser.Cameras.Scene2D.Camera | string;
-  target: Phaser.GameObjects.GameObject;
+  target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image; // Use a specific type
   scrollFactor?: number;
 }
 
@@ -35,7 +33,6 @@ export function parallax(_plugin: PsdToPhaserPlugin) {
       }
 
     } else if (cameraOrName instanceof Phaser.Cameras.Scene2D.Camera) {
-      // b) If we got an actual camera object
       camera = cameraOrName;
       scene = camera.scene;
 

@@ -1,38 +1,39 @@
 import PsdToPhaserPlugin from '../../../../PsdToPhaserPlugin';
-
+import { attachAttributes } from '../../../shared/attachAttributes';
 export function placeAtlas(
   scene: Phaser.Scene,
-  sprite: any,
+  layer: any,
   plugin: PsdToPhaserPlugin,
   psdKey: string
 ): Phaser.GameObjects.Group {
   const group = scene.add.group();
-  group.name = sprite.name;
+  group.name = layer.name;
 
-  if (scene.textures.exists(sprite.name)) {
-    const texture = scene.textures.get(sprite.name);
+  if (scene.textures.exists(layer.name)) {
+    const texture = scene.textures.get(layer.name);
     const frames = texture.getFrameNames();
 
-    if (sprite.instances && Array.isArray(sprite.instances)) {
-      sprite.instances.forEach((instance: any) => {
+    if (layer.instances && Array.isArray(layer.instances)) {
+      layer.instances.forEach((instance: any) => {
         const { name, x, y } = instance;
         if (frames.includes(name)) {
-          const spriteObject = scene.add.sprite(x, y, sprite.name, name);
+          const spriteObject = scene.add.sprite(x, y, layer.name, name);
           spriteObject.setName(name);
           spriteObject.setOrigin(0, 0);
           group.add(spriteObject);
-          spriteObject.setDepth(sprite.initialDepth || 0);
+          spriteObject.setDepth(layer.initialDepth || 0);
 
         } else {
-          console.warn(`Frame "${name}" not found in atlas "${sprite.name}"`);
+          console.warn(`Frame "${name}" not found in atlas "${layer.name}"`);
         }
       });
     }
   } else {
-    console.error(`Texture "${sprite.name}" not found. Make sure the atlas is loaded correctly.`);
+    console.error(`Texture "${layer.name}" not found. Make sure the atlas is loaded correctly.`);
   }
 
-  group.setDepth(sprite.initialDepth || 0);
+  group.setDepth(layer.initialDepth || 0);
+  // attachAttributes( layer, group)
 
   return group;
 }

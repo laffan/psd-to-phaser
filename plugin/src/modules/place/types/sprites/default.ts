@@ -1,18 +1,21 @@
 import PsdToPhaserPlugin from '../../../../PsdToPhaserPlugin';
+import { attachAttributes } from '../../../shared/attachAttributes';
 
 export function placeDefaultSprite(
   scene: Phaser.Scene,
-  sprite: any,
+  layer: any,
   plugin: PsdToPhaserPlugin,
   psdKey: string
 ): Phaser.GameObjects.Sprite {
-  const gameObject = scene.add.sprite(sprite.x, sprite.y, sprite.name);
-  gameObject.setName(sprite.name);
+  const gameObject = scene.add.sprite(layer.x, layer.y, layer.name);
+  gameObject.setName(layer.name);
   gameObject.setOrigin(0, 0);
-  gameObject.setDepth(sprite.initialDepth || 0);
+  gameObject.setDepth(layer.initialDepth || 0);
 
-  if (sprite.frame !== undefined) {
-    gameObject.setFrame(sprite.frame);
+  attachAttributes( layer, gameObject)
+
+  if (layer.frame !== undefined) {
+    gameObject.setFrame(layer.frame);
   }
 
   return gameObject;
