@@ -1,0 +1,260 @@
+{
+  "name": "1_introduction",
+  "width": 803,
+  "height": 560,
+  "tile_slice_size": 150,
+  "tile_scaled_versions": [
+    100
+  ],
+  "layers": [
+    {
+      "name": "root",
+      "category": "group",
+      "x": -1,
+      "y": -1,
+      "width": 805,
+      "height": 562,
+      "initialDepth": 12,
+      "children": [
+        {
+          "name": "emitPoint",
+          "category": "point",
+          "x": 680.5,
+          "y": 108.0,
+          "initialDepth": 11,
+          "width": 21,
+          "height": 22
+        },
+        {
+          "name": "blobs",
+          "category": "group",
+          "x": 72,
+          "y": 42,
+          "width": 658,
+          "height": 316,
+          "initialDepth": 10,
+          "children": [
+            {
+              "name": "looped",
+              "category": "sprite",
+              "x": 441,
+              "y": 62,
+              "width": 97,
+              "height": 92,
+              "filePath": "sprites/looped.png",
+              "initialDepth": 9
+            },
+            {
+              "name": "moldy",
+              "category": "sprite",
+              "x": 282,
+              "y": 242,
+              "width": 70,
+              "height": 77,
+              "filePath": "sprites/moldy.png",
+              "initialDepth": 8
+            },
+            {
+              "name": "bushy",
+              "category": "sprite",
+              "x": 625,
+              "y": 56,
+              "width": 105,
+              "height": 103,
+              "filePath": "sprites/bushy.png",
+              "initialDepth": 7
+            },
+            {
+              "name": "lined",
+              "category": "sprite",
+              "x": 72,
+              "y": 200,
+              "width": 90,
+              "height": 158,
+              "filePath": "sprites/lined.png",
+              "initialDepth": 6
+            },
+            {
+              "name": "hairy",
+              "category": "sprite",
+              "x": 260,
+              "y": 42,
+              "width": 117,
+              "height": 141,
+              "filePath": "sprites/hairy.png",
+              "initialDepth": 5
+            }
+          ]
+        },
+        {
+          "name": "seeds",
+          "category": "sprite",
+          "x": 615,
+          "y": 381,
+          "width": 168,
+          "height": 157,
+          "type": "spritesheet",
+          "hidden": true,
+          "filePath": "sprites/seeds.png",
+          "frame_width": 86,
+          "frame_height": 51,
+          "frame_count": 6,
+          "columns": 3,
+          "rows": 2,
+          "instances": [
+            {
+              "name": "pinkdotted",
+              "x": 668,
+              "y": 489
+            },
+            {
+              "name": "rainbow",
+              "x": 730,
+              "y": 480
+            },
+            {
+              "name": "orange",
+              "x": 620,
+              "y": 504
+            },
+            {
+              "name": "bluemagenta",
+              "x": 644,
+              "y": 447
+            },
+            {
+              "name": "pinkyellow",
+              "x": 680,
+              "y": 381
+            },
+            {
+              "name": "red",
+              "x": 615,
+              "y": 393
+            }
+          ],
+          "frames": {
+            "pinkdotted": {
+              "x": 0,
+              "y": 0,
+              "width": 31,
+              "height": 45
+            },
+            "rainbow": {
+              "x": 86,
+              "y": 0,
+              "width": 53,
+              "height": 48
+            },
+            "orange": {
+              "x": 172,
+              "y": 0,
+              "width": 34,
+              "height": 34
+            },
+            "bluemagenta": {
+              "x": 0,
+              "y": 51,
+              "width": 86,
+              "height": 33
+            },
+            "pinkyellow": {
+              "x": 86,
+              "y": 51,
+              "width": 78,
+              "height": 51
+            },
+            "red": {
+              "x": 172,
+              "y": 51,
+              "width": 44,
+              "height": 36
+            }
+          },
+          "initialDepth": 4
+        },
+        {
+          "name": "threeLetters",
+          "category": "sprite",
+          "x": 82,
+          "y": 44,
+          "width": 660,
+          "height": 461,
+          "type": "atlas",
+          "filePath": "sprites/threeLetters.png",
+          "instances": [
+            {
+              "name": "P2",
+              "x": 82,
+              "y": 44
+            },
+            {
+              "name": "2",
+              "x": 260,
+              "y": 412
+            },
+            {
+              "name": "P1",
+              "x": 651,
+              "y": 239
+            }
+          ],
+          "frames": {
+            "P2": {
+              "x": 0,
+              "y": 0,
+              "width": 64,
+              "height": 115
+            },
+            "2": {
+              "x": 64,
+              "y": 0,
+              "width": 84,
+              "height": 93
+            },
+            "P1": {
+              "x": 148,
+              "y": 0,
+              "width": 91,
+              "height": 86
+            }
+          },
+          "initialDepth": 3
+        },
+        {
+          "name": "pinkStem",
+          "category": "sprite",
+          "x": 441,
+          "y": 308,
+          "width": 122,
+          "height": 200,
+          "filePath": "sprites/pinkStem.png",
+          "initialDepth": 2
+        },
+        {
+          "name": "grid",
+          "category": "sprite",
+          "x": 14,
+          "y": 13,
+          "width": 775,
+          "height": 537,
+          "filePath": "sprites/grid.png",
+          "initialDepth": 1,
+          "alpha": 0.6
+        },
+        {
+          "name": "background",
+          "category": "tileset",
+          "x": -1,
+          "y": -1,
+          "width": 805,
+          "height": 562,
+          "columns": 6,
+          "rows": 4,
+          "filetype": "png",
+          "initialDepth": 0
+        }
+      ]
+    }
+  ]
+}
