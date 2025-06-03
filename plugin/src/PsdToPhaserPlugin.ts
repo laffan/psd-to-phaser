@@ -47,7 +47,7 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
     this.options = {};
 
 console.log(
-  "%c✨ PSD-to-Phaser v1.0.5 ✨",
+  "%c✨ PSD-to-Phaser v1.0.6 ✨",
   "background: black; color: white; padding: 1px 3px; border-radius: 2px;"
 );
     this.load = loadModule(this);
