@@ -9,7 +9,7 @@ export interface CameraOptions {
   lazyLoad?: boolean | LazyLoadOptions;
 }
 
-export function createCamera(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.Camera, features: string[], psdKey: string, options: CameraOptions = {}) {
+export function createCamera(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.Camera, features: string[], options: CameraOptions = {}) {
   const enhancedCamera: any = camera;
 
   if (features.includes('draggable')) {
@@ -20,9 +20,9 @@ export function createCamera(plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.S
     // Convert boolean to LazyLoadOptions, using empty object as default
     const lazyLoadOptions: LazyLoadOptions = typeof options.lazyLoad === 'boolean' 
       ? options.lazyLoad ? {} : {} 
-      : options.lazyLoad || {};     
+      : options.lazyLoad || {};
       
-    Object.assign(enhancedCamera, LazyLoadCamera(plugin, camera, psdKey, lazyLoadOptions));
+    Object.assign(enhancedCamera, LazyLoadCamera(plugin, camera, lazyLoadOptions));
   }
 
   return enhancedCamera;

@@ -34,7 +34,6 @@ export default class PsdToPhaserPlugin extends Phaser.Plugins.BasePlugin {
   public createCamera: (
     camera: Phaser.Cameras.Scene2D.Camera,
     features: string[],
-    psdKey: string,
     options?: CameraOptions
   ) => ReturnType<typeof createCamera>;
 
@@ -58,9 +57,8 @@ console.log(
     this.createCamera = (
       camera: Phaser.Cameras.Scene2D.Camera,
       features: string[],
-      psdKey: string,
       options?: CameraOptions
-    ) => createCamera(this, camera, features, psdKey, options);
+    ) => createCamera(this, camera, features, options);
 
     // Initialize scene property
     // this.scene = pluginManager.scene;

@@ -273,15 +273,19 @@ this.P2P.place(this, "psd_key", "pickups/deepNestPoints", {
 
 P2P has a few camera functions that help optimize your project and get you started with some basic interaction styles.
 
-You can add these functions to any camera by passing it in to the `createCamera` function like so :
+You can add these functions to any camera by passing it in to the `createCamera` function. The basic syntax is:
 
 ```js
-this.myCamera = this.P2P.createCamera(this.camera);
+this.P2P.createCamera(camera, features, options?)
 ```
 
-Just doing this gives you access to the functions, but doesn't actually do anything. To get functionality working off the bat, pass in one or more of the camera features as an array.
+- **camera**: The Phaser camera to enhance (usually `this.cameras.main`)
+- **features**: Array of feature names (`['draggable']`, `['lazyLoad']`, etc.)
+- **options**: Optional configuration object for the features
 
-At the moment, there are three feature cameras : `lazyLoad`, `draggable` and `overlay`.
+At the moment, there are camera features: `lazyLoad` and `draggable`.
+
+**Camera features default to applying to all PSDs.** For `lazyLoad`, you can specify which PSDs to target using the `targetKeys` option.
 
 ### LazyLoad
 
@@ -292,41 +296,41 @@ This camera works in conjunction with the `lazyLoad` attribute, which you can se
 The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence. If you do not use a lazyLoad camera and your PSD contains lazyLoad items you will get lots of "Texture not found" errors.
 
 ```js
-// Initialize a lazyLoad camera
-this.lazyCamera = this.P2P.createCamera(
-  this.cameras.main,
-  ["lazyLoad"],
-  "simple_psd",
-  {
-    lazyLoad: {
-      extendPreloadBounds: -30, // pull lazyLoad boundary in to debug.
-      debug: {
-        shape: true, // outline lazyLoad items
-        label: true, // label with filename 
-        console: true, // show file loading in console
-      },
+// Initialize a lazyLoad camera (applies to all PSDs by default)
+this.lazyCamera = this.P2P.createCamera(this.cameras.main, ["lazyLoad"], {
+  lazyLoad: {
+    extendPreloadBounds: -30, // pull lazyLoad boundary in to debug
+    debug: {
+      shape: true, // outline lazyLoad items
+      label: true, // label with filename 
+      console: true, // show file loading in console
     },
-  }
-);
+  },
+});
+
+// Target specific PSDs only
+this.lazyCamera = this.P2P.createCamera(this.cameras.main, ["lazyLoad"], {
+  lazyLoad: {
+    targetKeys: ["psd_01", "psd_02"], // only lazy load these PSDs
+    debug: { console: true },
+  },
+});
 ```
 
 Now P2P is keeping track of where the camera is and whether there is any overlap with the location of sprites or tiles. If there is overlap, it will trigger a load sequence. When lazyLoad items load, they trigger loadProgress events, so you can listen for "lazyLoadStart", "lazyLoadProgress", "lazyLoadingComplete".
 
 ```js
-this.lazyCamera = this.P2P.createCamera(
-  this.cameras.main,
-  ["lazyLoad"],
-  "simple_psd"
-);
+// Simple lazyLoad camera for all PSDs
+this.lazyCamera = this.P2P.createCamera(this.cameras.main, ["lazyLoad"]);
 
 this.events.on("lazyLoadStart", (progress, currentlyLoading) => {
   console.log(`Loading is ${progress} complete.`);
-  console.log(currentlyLoading); // Array of items currently loading.
+  console.log(currentlyLoading); // Array of items currently loading
 });
 
 this.events.on("lazyLoadProgress", (progress, currentlyLoading) => {
   console.log(`Loading is ${progress} complete.`);
-  console.log(currentlyLoading); // Array of items currently loading.
+  console.log(currentlyLoading); // Array of items currently loading
 });
 
 this.events.on("lazyLoadingComplete", () => {
@@ -339,20 +343,18 @@ this.events.on("lazyLoadingComplete", () => {
 The draggable camera lets you click and drag around the canvas. That's about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.
 
 ```js
-// Initialize a draggable camera.
-this.dragCam = this.P2P.createCamera(this.camera, ['draggable']);
+// Initialize a draggable camera (no psdKey needed)
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable']);
 
 // Initialize a draggable camera with options
-this.dragCam = this.P2P.createCamera(this.camera, ['draggable']
-      {
-        draggable: {
-          useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
-          easeDragging: true,
-          friction: 0.95,
-          minSpeed: 0.1,
-        },
-      }
-  )
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
+  draggable: {
+    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+    easeDragging: true,
+    friction: 0.95,
+    minSpeed: 0.1,
+  },
+});
 ```
 
 Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.
@@ -360,18 +362,14 @@ Just like the lazyLoad feature, you can create the camera with defaults and set 
 Dragging triggers events, so you can listen for "dragOnStart", "isDragging" and "dragOnComplete".
 
 ```js
-this.dragCam = this.P2P.createCamera(
-  this.cameras.main,
-  ["draggable"],
-  "simple_psd"
-);
+this.dragCam = this.P2P.createCamera(this.cameras.main, ["draggable"]);
 
 this.events.on("draggableStart", () => {
   console.log(`Drag has begun.`);
 });
 
 this.events.on("draggableActive", () => {
-  console.log(`Drag has begun.`);
+  console.log(`Drag is active.`);
 });
 
 this.events.on("draggableComplete", () => {
@@ -384,25 +382,34 @@ this.events.on("draggableComplete", () => {
 And of course you can combine functions to create a supercamera.
 
 ```js
-this.myCamera = this.P2P.createCamera(this.camera, ['lazyLoading', 'draggable'], {
-  debug: {
-    label: true, // Plase camera name in upper left hand corner of view
-    shape: false, // draw a boundary around the camera view
-    console: true // output camera info.
-  },
-  lazyLoadingOptions: {
+// Combined camera with both lazyLoad and draggable features (applies to all PSDs)
+this.myCamera = this.P2P.createCamera(this.cameras.main, ['lazyLoad', 'draggable'], {
+  lazyLoad: {
     extendPreloadBounds: 10, // extend/contract trigger bounds beyond camera
     debug: {
-      shape: true // draw a shape around the lazyLoad trigger
+      shape: true, // draw a shape around the lazyLoad trigger
+      label: true, // show labels for lazy load items
+      console: true // output lazy load info
     }
   },
-  draggableOptions: {
-    useBounds: { x, y, width, height }, //set boundary of drag
+  draggable: {
+    useBounds: { x: 0, y: 0, width: 1000, height: 1000 }, // set boundary of drag
     easeDragging: true, // use eased dragging
     friction: 0.95, // friction of ease
-    minSpeed: 0.1 // min   }
-   }
-}
+    minSpeed: 0.1 // minimum speed threshold
+  }
+});
+
+// Combined camera targeting specific PSDs
+this.myCamera = this.P2P.createCamera(this.cameras.main, ['lazyLoad', 'draggable'], {
+  lazyLoad: {
+    targetKeys: ["background_psd", "foreground_psd"], // only these PSDs
+    debug: { console: true }
+  },
+  draggable: {
+    easeDragging: true
+  }
+});
 ```
 
 

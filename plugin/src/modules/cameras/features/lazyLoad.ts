@@ -6,6 +6,7 @@ import { placeSprites } from "../../place/types/sprites";
 import { placeSingleTile } from "../../place/types/tiles";
 
 export interface LazyLoadOptions {
+  targetKeys?: string[]; // Specific PSD keys to target, defaults to all PSDs
   extendPreloadBounds?: number;
   checkInterval?: number;
   debug?: {
@@ -18,13 +19,46 @@ export interface LazyLoadOptions {
 export function LazyLoadCamera(
   plugin: PsdToPhaserPlugin,
   camera: Phaser.Cameras.Scene2D.Camera,
-  psdKey: string,
   options: LazyLoadOptions = {}
 ) {
   const scene = camera.scene;
-  const psdData = plugin.getData(psdKey);
-  if (!psdData || !psdData.lazyLoad) {
-    console.error(`No lazy load data found for key: ${psdKey}`);
+  
+  // Determine which PSDs to target
+  const targetKeys = options.targetKeys || getAllPsdKeys(plugin);
+  
+  if (targetKeys.length === 0) {
+    console.warn('No PSDs found for lazy loading');
+    return {};
+  }
+  
+  // Collect lazy load data from all target PSDs
+  const allLazyLoadData: any[] = [];
+  const psdDataMap: Record<string, any> = {};
+  
+  targetKeys.forEach(psdKey => {
+    const psdData = plugin.getData(psdKey);
+    if (psdData && psdData.lazyLoad) {
+      psdDataMap[psdKey] = psdData;
+      // Add psdKey to each lazy load item for tracking
+      if (psdData.lazyLoad.sprites) {
+        psdData.lazyLoad.sprites.forEach((sprite: any) => {
+          allLazyLoadData.push({ ...sprite, _psdKey: psdKey });
+        });
+      }
+      if (psdData.lazyLoad.tiles) {
+        psdData.lazyLoad.tiles.forEach((tileset: any) => {
+          tileToLazyObjects(tileset, psdData.original.tile_slice_size).forEach((tile: any) => {
+            allLazyLoadData.push({ ...tile, _psdKey: psdKey });
+          });
+        });
+      }
+    }
+  });
+  
+  if (allLazyLoadData.length === 0) {
+    if (options.debug?.console) {
+      console.log('No lazy load items found in target PSDs:', targetKeys);
+    }
     return {};
   }
 
@@ -66,12 +100,8 @@ export function LazyLoadCamera(
       return { boundary, data: { ...obj, loaded: false } };
     };
 
-    lazyLoadObjects = [
-      ...(psdData.lazyLoad.sprites || []).map(createObject),
-      ...(psdData.lazyLoad.tiles || []).flatMap((tileset: any) =>
-        tileToLazyObjects(tileset).map(createObject)
-      ),
-    ];
+    // Use the collected lazy load data from all target PSDs
+    lazyLoadObjects = allLazyLoadData.map(createObject);
 
     if (options.debug?.shape) {
       lazyLoadObjects.forEach((obj) => obj.boundary.setVisible(true));
@@ -148,9 +178,10 @@ export function LazyLoadCamera(
   function loadObject({ data }: { data: any }) {
     const key = getObjectKey(data);
     objectsBeingLoaded.add(key);
+    const itemPsdKey = data._psdKey;
 
     if (options.debug?.console) {
-      console.log(`LazyLoad: Loading object ${key}`);
+      console.log(`LazyLoad: Loading object ${key} from PSD ${itemPsdKey}`);
     }
     // Format the data for loadItems
     const formattedData = {
@@ -159,7 +190,7 @@ export function LazyLoadCamera(
         data.category === "tile" || data.category === "tileset" ? [data] : [],
     };
 
-    loadItems(scene, psdKey, formattedData, plugin);
+    loadItems(scene, itemPsdKey, formattedData, plugin);
 
     scene.load.once("complete", () => {
       onObjectLoaded(data);
@@ -181,7 +212,7 @@ export function LazyLoadCamera(
     const itemGroup = scene.add.group();
 
     if (data.category === "sprite") {
-      placeSprites(scene, data, plugin, itemGroup, () => {}, psdKey);
+      placeSprites(scene, data, plugin, itemGroup, () => {}, data._psdKey);
     } else if (data.category === "tile" || data.category === "tileset") {
       placeSingleTile(
         scene,
@@ -219,9 +250,8 @@ export function LazyLoadCamera(
     updateDebugGraphics();
   }
 
-  function tileToLazyObjects(tileset: any) {
+  function tileToLazyObjects(tileset: any, tileSliceSize: number) {
     const objects = [];
-    const tileSliceSize = psdData.original.tile_slice_size;
     for (let col = 0; col < tileset.columns; col++) {
       for (let row = 0; row < tileset.rows; row++) {
         objects.push({
@@ -273,4 +303,10 @@ export function LazyLoadCamera(
       }
     },
   };
+}
+
+function getAllPsdKeys(plugin: PsdToPhaserPlugin): string[] {
+  // Access the private psdData property to get all keys
+  const psdData = (plugin as any).psdData;
+  return Object.keys(psdData || {});
 }
