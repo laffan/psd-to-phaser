@@ -219,7 +219,7 @@ Animations automatically play when placed. However, you can override the default
 1. Layer naming : In the PSD itself, the attributes of the layer name itself can control animation properties. If you pass valid animation parameters, they will be merged in when instantiating the animation.
 
 ```
-bounce | animation | frameRate: 5, yoyo: true
+S | bounce | animation | frameRate: 5, yoyo: true
 ```
 
 2. Instantiation : When instantiating the sprite, you can also pass in animation parameters, so the same thing could be acheived like so :
