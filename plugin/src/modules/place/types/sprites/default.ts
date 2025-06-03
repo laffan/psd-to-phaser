@@ -5,9 +5,10 @@ export function placeDefaultSprite(
   scene: Phaser.Scene,
   layer: any,
   plugin: PsdToPhaserPlugin,
-  psdKey: string
+  psdKey: string,
+  textureKey?: string
 ): Phaser.GameObjects.Sprite {
-  const gameObject = scene.add.sprite(layer.x, layer.y, layer.name);
+  const gameObject = scene.add.sprite(layer.x, layer.y, textureKey || layer.name);
   gameObject.setName(layer.name);
   gameObject.setOrigin(0, 0);
   gameObject.setDepth(layer.initialDepth || 0);

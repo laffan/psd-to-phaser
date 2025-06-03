@@ -1,5 +1,6 @@
 import PsdToPhaserPlugin from '../../PsdToPhaserPlugin';
 import { processJSON } from './processJSON';
+import { loadMultiple, MultiplePsdConfig } from './loadMultiple';
 
 export default function loadModule(plugin: PsdToPhaserPlugin) {
   return {
@@ -25,6 +26,7 @@ export default function loadModule(plugin: PsdToPhaserPlugin) {
       if (!scene.load.isLoading()) {
         scene.load.start();
       }
-    }
+    },
+    loadMultiple: loadMultiple(plugin) as (scene: Phaser.Scene, configs: MultiplePsdConfig[]) => void
   };
 }

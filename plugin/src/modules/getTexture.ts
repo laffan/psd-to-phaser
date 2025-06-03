@@ -20,7 +20,9 @@ export default function getTextureModule(plugin: PsdToPhaserPlugin) {
       return null;
     }
 
-    const textureKey = spriteData.name;
+    // Check if this PSD was loaded via loadMultiple and use namespaced texture key
+    const isMultiplePsd = psdData.isMultiplePsd || false;
+    const textureKey = isMultiplePsd ? `${psdKey}_${spriteData.name}` : spriteData.name;
 
     // Check if the texture is already loaded
     if (scene.textures.exists(textureKey)) {

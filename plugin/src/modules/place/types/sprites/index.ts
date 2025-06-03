@@ -20,7 +20,11 @@ export function placeSprites(
     return;
   }
 
-  if (scene.textures.exists(spriteData.name)) {
+  // Check if this PSD was loaded via loadMultiple and use namespaced texture key
+  const plugin_data = plugin.getData(psdKey);
+  const textureKey = plugin_data?.isMultiplePsd ? `${psdKey}_${spriteData.name}` : spriteData.name;
+  
+  if (scene.textures.exists(textureKey)) {
     let spriteObject:
       | Phaser.GameObjects.Sprite
       | Phaser.GameObjects.Group
@@ -28,16 +32,16 @@ export function placeSprites(
 
     switch (spriteData.type) {
       case "spritesheet":
-        spriteObject = placeSpritesheet(scene, spriteData, plugin, psdKey);
+        spriteObject = placeSpritesheet(scene, spriteData, plugin, psdKey, textureKey);
         break;
       case "atlas":
-        spriteObject = placeAtlas(scene, spriteData, plugin, psdKey);
+        spriteObject = placeAtlas(scene, spriteData, plugin, psdKey, textureKey);
         break;
       case "animation":
-        spriteObject = placeAnimation(scene, spriteData, plugin, psdKey);
+        spriteObject = placeAnimation(scene, spriteData, plugin, psdKey, textureKey);
         break;
       default:
-        spriteObject = placeDefaultSprite(scene, spriteData, plugin, psdKey);
+        spriteObject = placeDefaultSprite(scene, spriteData, plugin, psdKey, textureKey);
         break;
     }
 
@@ -63,7 +67,7 @@ export function placeSprites(
       console.error(`Failed to place sprite: ${spriteData.name}`);
     }
   } else {
-    console.warn(`Texture not found for sprite: ${spriteData.name}`);
+    console.warn(`Texture not found for sprite: ${spriteData.name} (looking for texture key: ${textureKey})`);
   }
 
   resolve();

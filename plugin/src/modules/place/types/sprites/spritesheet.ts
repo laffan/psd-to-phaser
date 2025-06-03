@@ -5,13 +5,15 @@ export function placeSpritesheet(
   scene: Phaser.Scene,
   layer: any,
   plugin: PsdToPhaserPlugin,
-  psdKey: string
+  psdKey: string,
+  textureKey?: string
 ): Phaser.GameObjects.Group {
   const group = scene.add.group();
   group.name = layer.name;
 
-  if (scene.textures.exists(layer.name)) {
-    const texture = scene.textures.get(layer.name);
+  const actualTextureKey = textureKey || layer.name;
+  if (scene.textures.exists(actualTextureKey)) {
+    const texture = scene.textures.get(actualTextureKey);
     const textureFrames = texture.getFrameNames();
 
     // Create a mapping of instance names to frame indices
@@ -29,7 +31,7 @@ export function placeSpritesheet(
 
         if (frameIndex !== undefined && frameIndex < textureFrames.length) {
           const frameName = textureFrames[frameIndex];
-          const spriteObject = scene.add.sprite(x, y, layer.name, frameName);
+          const spriteObject = scene.add.sprite(x, y, actualTextureKey, frameName);
           spriteObject.setName(name);
           spriteObject.setOrigin(0, 0);
           group.add(spriteObject);
@@ -42,14 +44,14 @@ export function placeSpritesheet(
           }
         } else {
           console.warn(
-            `Frame for "${name}" not found in spritesheet "${layer.name}"`
+            `Frame for "${name}" not found in spritesheet "${actualTextureKey}"`
           );
         }
       });
     }
   } else {
     console.error(
-      `Texture "${layer.name}" not found. Make sure the spritesheet is loaded correctly.`
+      `Texture "${actualTextureKey}" not found. Make sure the spritesheet is loaded correctly.`
     );
   }
 

@@ -1,3 +1,5 @@
+import PsdToPhaserPlugin from '../../../PsdToPhaserPlugin';
+
 export interface ParallaxOptions {
   camera?: Phaser.Cameras.Scene2D.Camera | string;
   target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image; // Use a specific type

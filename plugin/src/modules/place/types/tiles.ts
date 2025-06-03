@@ -46,7 +46,10 @@ export function placeTiles(
     const placeholder = createLazyLoadPlaceholder(scene, layer, plugin);
     if (placeholder) tileContainer.add(placeholder);
   } else {
-    placeTilesInContainer(scene, tileContainer, layer, tileSliceSize);
+    // Check if this PSD was loaded via loadMultiple for tile key namespacing
+    const pluginData = plugin.getData(psdKey);
+    const useNamespacedKeys = pluginData?.isMultiplePsd || false;
+    placeTilesInContainer(scene, tileContainer, layer, tileSliceSize, useNamespacedKeys, psdKey);
   }
 
   group.add(tileContainer);
@@ -64,13 +67,16 @@ export function placeTilesInContainer(
   scene: Phaser.Scene,
   container: Phaser.GameObjects.Container,
   layer: any,
-  tileSliceSize: number
+  tileSliceSize: number,
+  useNamespacedKeys: boolean = false,
+  psdKey?: string
 ): void {
   for (let col = 0; col < layer.columns; col++) {
     for (let row = 0; row < layer.rows; row++) {
       const x = col * tileSliceSize;
       const y = row * tileSliceSize;
-      const key = `${layer.name}_tile_${col}_${row}`;
+      const tilesetName = useNamespacedKeys && psdKey ? `${psdKey}_${layer.name}` : layer.name;
+      const key = `${tilesetName}_tile_${col}_${row}`;
 
       const tile = placeSingleTile(
         scene,
@@ -79,7 +85,7 @@ export function placeTilesInContainer(
           y,
           key,
           initialDepth: layer.initialDepth,
-          tilesetName: layer.name,
+          tilesetName,
           col,
           row,
         },
