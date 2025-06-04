@@ -97,21 +97,12 @@ If you're placing a layer group, all of the descendants will be placed by defaul
 
 ```js
 // Place a top level layer
-this.myTiles = this.P2P.place(
-  this,
-  "psd_key"
-  "tileSetName",
-);
+const psd = this.P2P.place(this, "psd_key", "root");
 
-// Place a nested item
-this.mySprite = this.P2P.place(
-  this,
-  "psd_key"
-  "groupName/spriteName",
-);
+const sprite = this.P2P.place(this, "psd_key", "root/spiteName");
 
 // Place all the children of a nested group with some optional overrides
-this.myItem = this.P2P.place(
+const item = this.P2P.place(
   this,
   "psd_key"
   "groupName/nestedGroup",
