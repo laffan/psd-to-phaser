@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "phaser": "^3.87.0",
-    "psd-to-phaser-plugin": "^1.0.3",
+    "psd-to-phaser": "file:../../..",
     "ua-parser-js": "^2.0.0",
     "webfontloader": "^1.6.28"
   }

@@ -1,6 +1,6 @@
 // src/main.js
 import Phaser from "phaser";
-import PsdToPhaserPlugin from "psd-to-phaser-plugin";
+import PsdToPhaser from "psd-to-phaser";
 import { LoadScene } from "./scenes/Load";
 import { PlayScene } from "./scenes/Play";
 
@@ -26,7 +26,7 @@ const gameConfig = {
     global: [
       {
         key: "PsdToPhaserPlugin",
-        plugin: PsdToPhaserPlugin,
+        plugin: PsdToPhaser,
         start: true,
         mapping: "P2P",
         data: {
