@@ -2,13 +2,15 @@
 
 import PsdToPhaserPlugin from '../../PsdToPhaser';
 import { loadItems } from './loadItems'; // Renamed from loadAssetsFromJSON
+import { LoadOptions } from './index';
 
 export function processJSON(
   scene: Phaser.Scene,
   key: string,
   data: any,
   psdFolderPath: string,
-  plugin: PsdToPhaserPlugin
+  plugin: PsdToPhaserPlugin,
+  options?: LoadOptions
 ): void {
   if (!data || !Array.isArray(data.layers)) {
     console.error(`Invalid or missing layers data for key: ${key}`);
@@ -34,7 +36,7 @@ export function processJSON(
     }
   };
 
-  processLayersRecursively(data.layers, processedData, false);
+  processLayersRecursively(data.layers, processedData, false, options?.lazyLoad);
 
   plugin.setData(key, processedData);
 
@@ -45,10 +47,22 @@ export function processJSON(
   loadItems(scene, key, processedData.initialLoad, plugin);
 }
 
-function processLayersRecursively(layers: any[], processedData: any, parentLazyLoad: boolean) {
+function processLayersRecursively(layers: any[], processedData: any, parentLazyLoad: boolean, lazyLoadOption?: boolean | string[]) {
   
   layers.forEach((layer: any) => {
-    const isLazyLoad = parentLazyLoad || layer.lazyLoad === true;
+    let isLazyLoad = parentLazyLoad || layer.lazyLoad === true;
+    
+    // Apply lazyLoad option from load() parameters
+    if (lazyLoadOption !== undefined) {
+      if (lazyLoadOption === true) {
+        // Set all layers to lazyLoad
+        isLazyLoad = true;
+      } else if (Array.isArray(lazyLoadOption) && lazyLoadOption.includes(layer.name)) {
+        // Set specific layers to lazyLoad
+        isLazyLoad = true;
+      }
+    }
+    
     const targetArray = isLazyLoad ? processedData.lazyLoad : processedData.initialLoad;
 
     switch (layer.category) {
@@ -65,9 +79,9 @@ function processLayersRecursively(layers: any[], processedData: any, parentLazyL
         targetArray.points.push(layer);
         break;
       case 'group':
-        targetArray.groups.push(layer); // Add this line
+        targetArray.groups.push(layer);
         if (Array.isArray(layer.children)) {
-          processLayersRecursively(layer.children, processedData, isLazyLoad);
+          processLayersRecursively(layer.children, processedData, isLazyLoad, lazyLoadOption);
         }
         break;
     }

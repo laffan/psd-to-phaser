@@ -5,10 +5,6 @@ import getTextureModule from "./modules/getTexture";
 import { createCamera, CameraOptions } from "./modules/cameras/create";
 import useModule from "./modules/use"; // Updated import
 
-// import getModule from './modules/get';
-// import camerasModule from './modules/cameras/create';
-// import useModule from './modules/use';
-
 export interface DebugOptions {
   shape?: boolean;
   label?: boolean;
@@ -17,7 +13,6 @@ export interface DebugOptions {
 
 export interface PluginOptions {
   debug?: boolean | DebugOptions;
-  lazyLoadAll?: boolean;
   applyAlphaAll?: boolean;
   applyBlendModesAll?: boolean;
 }
@@ -38,16 +33,12 @@ export default class PsdToPhaser extends Phaser.Plugins.BasePlugin {
   ) => ReturnType<typeof createCamera>;
 
 
-  // public get: ReturnType<typeof getModule>;
-  // public cameras: ReturnType<typeof camerasModule>;
-  // public use: ReturnType<typeof useModule>;
-
   constructor(pluginManager: Phaser.Plugins.PluginManager) {
     super(pluginManager);
     this.options = {};
 
 console.log(
-  "%c✨ PSD-to-Phaser v1.0.6 ✨",
+  "%c✨ PSD-to-Phaser v0.0.3 ✨",
   "background: black; color: white; padding: 1px 3px; border-radius: 2px;"
 );
     this.load = loadModule(this);
@@ -60,17 +51,11 @@ console.log(
       options?: CameraOptions
     ) => createCamera(this, camera, features, options);
 
-    // Initialize scene property
-    // this.scene = pluginManager.scene;
-    // this.get = getModule(this);
-    // this.cameras = camerasModule(this);
-    // this.use = useModule(this);
   }
 
   init(options: PluginOptions = {}): void {
     this.options = {
       debug: false,
-      lazyLoadAll: false,
       applyAlphaAll: false,
       applyBlendModesAll: false,
       ...options,

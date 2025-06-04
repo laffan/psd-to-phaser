@@ -9,6 +9,7 @@ export interface MultiplePsdConfig {
     x: number;
     y: number;
   };
+  lazyLoad?: boolean | string[];
 }
 
 export function loadMultiple(plugin: PsdToPhaserPlugin) {
@@ -31,7 +32,7 @@ export function loadMultiple(plugin: PsdToPhaserPlugin) {
         scene.load.once(`filecomplete-json-${tempKey}`, (_key: string, _type: string, data: any) => {
           if (data) {
             // Count assets in this PSD
-            const assetCount = countAssetsInData(data);
+            const assetCount = countAssetsInData(data, config.lazyLoad);
             totalAssetCount += assetCount;
             
             // Store the data temporarily for processing
@@ -89,7 +90,7 @@ export function loadMultiple(plugin: PsdToPhaserPlugin) {
         };
 
         // Process layers recursively (keep original layer names in data structure)
-        processLayersRecursively(offsetData.layers, processedData, false);
+        processLayersRecursively(offsetData.layers, processedData, false, config.lazyLoad);
         
         plugin.setData(config.key, processedData);
         
@@ -163,12 +164,25 @@ function applyPositionOffset(data: any, offset: { x: number; y: number }): any {
   return offsetData;
 }
 
-function countAssetsInData(data: any): number {
+function countAssetsInData(data: any, lazyLoadOption?: boolean | string[]): number {
   let assetCount = 0;
   
-  function countLayersRecursively(layers: any[]) {
+  function countLayersRecursively(layers: any[], parentLazyLoad: boolean = false) {
     layers.forEach(layer => {
-      if (!layer.lazyLoad) {
+      let isLazyLoad = parentLazyLoad || layer.lazyLoad === true;
+      
+      // Apply lazyLoad option from loadMultiple parameters
+      if (lazyLoadOption !== undefined) {
+        if (lazyLoadOption === true) {
+          // Set all layers to lazyLoad
+          isLazyLoad = true;
+        } else if (Array.isArray(lazyLoadOption) && lazyLoadOption.includes(layer.name)) {
+          // Set specific layers to lazyLoad
+          isLazyLoad = true;
+        }
+      }
+      
+      if (!isLazyLoad) {
         switch (layer.category) {
           case 'tileset':
             assetCount += (layer.columns || 1) * (layer.rows || 1);
@@ -186,7 +200,7 @@ function countAssetsInData(data: any): number {
       }
       
       if (layer.children && Array.isArray(layer.children)) {
-        countLayersRecursively(layer.children);
+        countLayersRecursively(layer.children, isLazyLoad);
       }
     });
   }
@@ -417,9 +431,21 @@ function loadSingleTileWithNamespace(
   }
 }
 
-function processLayersRecursively(layers: any[], processedData: any, parentLazyLoad: boolean) {
+function processLayersRecursively(layers: any[], processedData: any, parentLazyLoad: boolean, lazyLoadOption?: boolean | string[]) {
   layers.forEach((layer: any) => {
-    const isLazyLoad = parentLazyLoad || layer.lazyLoad === true;
+    let isLazyLoad = parentLazyLoad || layer.lazyLoad === true;
+    
+    // Apply lazyLoad option from loadMultiple parameters
+    if (lazyLoadOption !== undefined) {
+      if (lazyLoadOption === true) {
+        // Set all layers to lazyLoad
+        isLazyLoad = true;
+      } else if (Array.isArray(lazyLoadOption) && lazyLoadOption.includes(layer.name)) {
+        // Set specific layers to lazyLoad
+        isLazyLoad = true;
+      }
+    }
+    
     const targetArray = isLazyLoad ? processedData.lazyLoad : processedData.initialLoad;
 
     switch (layer.category) {
@@ -438,7 +464,7 @@ function processLayersRecursively(layers: any[], processedData: any, parentLazyL
       case 'group':
         targetArray.groups.push(layer);
         if (Array.isArray(layer.children)) {
-          processLayersRecursively(layer.children, processedData, isLazyLoad);
+          processLayersRecursively(layer.children, processedData, isLazyLoad, lazyLoadOption);
         }
         break;
     }
