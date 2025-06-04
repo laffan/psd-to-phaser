@@ -1,5 +1,5 @@
 {
-  "name": "psd-to-phaser-demo-1",
+  "name": "empty-psd-to-phaser-project",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -10,12 +10,12 @@
   },
   "devDependencies": {
     "chokidar": "^4.0.3",
-    "vite": "^6.0.7"
+    "vite": "^6.3.5"
   },
   "dependencies": {
-    "phaser": "^3.87.0",
-    "psd-to-phaser-plugin": "^1.0.3",
-    "ua-parser-js": "^2.0.0",
+    "phaser": "^3.90.0",
+    "psd-to-phaser": "^0.0.2",
+    "ua-parser-js": "^2.0.3",
     "webfontloader": "^1.6.28"
   }
 }
