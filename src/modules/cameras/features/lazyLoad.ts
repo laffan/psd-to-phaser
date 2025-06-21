@@ -9,6 +9,7 @@ export interface LazyLoadOptions {
   targetKeys?: string[]; // Specific PSD keys to target, defaults to all PSDs
   extendPreloadBounds?: number;
   checkInterval?: number;
+  createBoundaryCamera?: boolean; // Create invisible camera unaffected by zoom for boundary calculations
   debug?: {
     shape?: boolean;
     label?: boolean;
@@ -70,8 +71,12 @@ export function LazyLoadCamera(
   }> = [];
   let objectsBeingLoaded: Set<string> = new Set();
   let intervalId: number | null = null;
+  let boundaryCamera: Phaser.Cameras.Scene2D.Camera | null = null;
 
   function init() {
+    if (options.createBoundaryCamera) {
+      createBoundaryCamera();
+    }
     createLazyLoadBounds();
     createLazyLoadObjects();
     if (options.debug?.shape || options.debug?.label) {
@@ -81,14 +86,49 @@ export function LazyLoadCamera(
     setupInterval();
   }
 
+  function createBoundaryCamera() {
+    // Create invisible camera that follows the main camera but ignores zoom
+    boundaryCamera = scene.cameras.add();
+    boundaryCamera.setVisible(false);
+    boundaryCamera.setZoom(1); // Always keep at zoom level 1
+    
+    // Position the boundary camera to match the main camera's position
+    boundaryCamera.setScroll(camera.scrollX, camera.scrollY);
+    boundaryCamera.setSize(camera.width, camera.height);
+  }
+
   function createLazyLoadBounds() {
     const extend = options.extendPreloadBounds || 0;
-    lazyLoadBounds = new Phaser.Geom.Rectangle(
-      camera.scrollX - extend,
-      camera.scrollY - extend,
-      camera.width + extend * 2,
-      camera.height + extend * 2
-    );
+    const targetCamera = boundaryCamera || camera;
+    
+    // If using boundary camera, calculate world position based on main camera's zoom
+    if (boundaryCamera) {
+      // Update boundary camera position to match main camera
+      boundaryCamera.setScroll(camera.scrollX, camera.scrollY);
+      
+      // Calculate the actual viewport size in world coordinates
+      const worldWidth = camera.width / camera.zoom;
+      const worldHeight = camera.height / camera.zoom;
+      
+      // Center the bounds on the camera's center position
+      const centerX = camera.scrollX + (camera.width / 2);
+      const centerY = camera.scrollY + (camera.height / 2);
+      
+      lazyLoadBounds = new Phaser.Geom.Rectangle(
+        centerX - (worldWidth / 2) - extend,
+        centerY - (worldHeight / 2) - extend,
+        worldWidth + extend * 2,
+        worldHeight + extend * 2
+      );
+    } else {
+      // Original behavior when not using boundary camera
+      lazyLoadBounds = new Phaser.Geom.Rectangle(
+        camera.scrollX - extend,
+        camera.scrollY - extend,
+        camera.width + extend * 2,
+        camera.height + extend * 2
+      );
+    }
   }
 
   function createLazyLoadObjects() {
@@ -324,6 +364,10 @@ export function LazyLoadCamera(
       lazyLoadObjects.forEach((obj) => obj.boundary.destroy());
       if (debugGraphics) {
         debugGraphics.destroy();
+      }
+      if (boundaryCamera) {
+        scene.cameras.remove(boundaryCamera);
+        boundaryCamera = null;
       }
     },
   };
