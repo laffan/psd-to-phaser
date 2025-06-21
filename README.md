@@ -483,6 +483,52 @@ this.myCamera = this.P2P.createCamera(this.cameras.main, ['lazyLoad', 'draggable
 
 P2P comes with a few preset functions built in that help you get started more quickly. These are stored in the 'use' class.
 
+### button()
+
+Create interactive buttons with visual states and customizable callbacks. Accepts two objects: `images` (what is displayed) and `callbacks` (what happens on interaction).
+
+```js
+// Simple button with click callback
+this.P2P.use.button([this.buttonNormal, (btn) => {
+  console.log("clicked");
+}]);
+
+// Button with hover image (3-parameter shorthand)
+this.P2P.use.button([this.buttonNormal, this.buttonHover, (btn) => {
+  console.log("clicked");
+}]);
+
+// Full object syntax with all images and callbacks
+this.P2P.use.button([
+  {
+    normal: this.buttonNormal,
+    hover: this.buttonHover,
+    active: this.buttonPressed
+  },
+  {
+    click: (btn) => console.log("clicked"),
+    mouseOver: (btn) => console.log("mouse over"),
+    mouseOut: (btn) => console.log("mouse out"),
+    mousePress: (btn) => console.log("pressed down")
+  }
+]);
+```
+
+**Image States:**
+- **normal**: Default image (required)
+- **hover**: Image shown on mouse over (desktop only, optional)
+- **active**: Image shown while pressed down (optional)
+
+**Callback Types:**
+- **click**: Triggered on button release
+- **mouseOver**: Triggered when mouse enters button area (desktop only)
+- **mouseOut**: Triggered when mouse leaves button area (desktop only)
+- **mousePress**: Triggered when button is pressed down
+
+**How it works:** The button function automatically manages which image is visible based on user interaction. Only the appropriate image for the current state is shown, while others are hidden.
+
+**Mobile Support:** Hover states automatically work on desktop with mouse interaction but are disabled on mobile devices to prevent conflicts with touch events.
+
 ### parallax()
 
 Make any placed object move at a different speed than the camera scroll, creating a parallax effect.
