@@ -162,6 +162,8 @@ export function placeSingleTile(
     tile.setOrigin(0, 0);
     if (parent instanceof Phaser.GameObjects.Group) {
       parent.add(tile);
+    } else if (parent instanceof Phaser.GameObjects.Container) {
+      parent.add(tile);
     }
     // console.log(
     //   `Placed tile: ${tileData.key} at (${tileData.x}, ${tileData.y})`

@@ -208,24 +208,25 @@ export function LazyLoadCamera(
       console.log(`LazyLoad: Object loaded ${key}`);
     }
 
-    // Create a group to hold the loaded objects
-    const itemGroup = scene.add.group();
-
     if (data.category === "sprite") {
+      // Create a group to hold the loaded objects for sprites
+      const itemGroup = scene.add.group();
       placeSprites(scene, data, plugin, itemGroup, () => {}, data._psdKey);
     } else if (data.category === "tile" || data.category === "tileset") {
+      // For tiles, find the existing tile container or create one with proper depth
+      const tileContainer = findOrCreateTileContainer(scene, data);
       placeSingleTile(
         scene,
         {
-          x: data.x,
-          y: data.y,
+          x: data.x - tileContainer.x, // Adjust for container position
+          y: data.y - tileContainer.y, // Adjust for container position
           key: `${data.tilesetName}_tile_${data.col}_${data.row}`,
           initialDepth: data.initialDepth,
           tilesetName: data.tilesetName,
           col: data.col,
           row: data.row,
         },
-        itemGroup
+        tileContainer
       );
     }
 
@@ -248,6 +249,29 @@ export function LazyLoadCamera(
     }
 
     updateDebugGraphics();
+  }
+
+  function findOrCreateTileContainer(scene: Phaser.Scene, tileData: any): Phaser.GameObjects.Container {
+    // Look for existing tile container with the same name
+    const existingContainer = scene.children.list.find(
+      (child) => 
+        child instanceof Phaser.GameObjects.Container && 
+        child.name === tileData.tilesetName
+    ) as Phaser.GameObjects.Container;
+
+    if (existingContainer) {
+      return existingContainer;
+    }
+
+    // Create new container with proper depth ordering
+    // Position the container at the original tileset position
+    const tilesetOriginX = tileData.x - (tileData.col * tileData.tile_slice_size);
+    const tilesetOriginY = tileData.y - (tileData.row * tileData.tile_slice_size);
+    const newContainer = scene.add.container(tilesetOriginX, tilesetOriginY);
+    newContainer.setName(tileData.tilesetName);
+    newContainer.setDepth(tileData.initialDepth);
+
+    return newContainer;
   }
 
   function tileToLazyObjects(tileset: any, tileSliceSize: number) {
