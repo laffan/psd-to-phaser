@@ -22,6 +22,10 @@
         .code-editor-container {
             position: relative;
         }
+        .phaser-container {
+            max-width: 100%;
+            overflow: hidden;
+        }
         .layer-structure ul {
             list-style: none;
             padding-left: 20px;
@@ -66,13 +70,46 @@
             color: #198754;
             font-size: 12px;
         }
+        
+        /* Layout improvements */
+        .sidebar {
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        main {
+            margin-left: 250px;
+            max-width: 1000px;
+            padding: 20px;
+        }
+        
+        /* Responsive layout for narrow screens */
+        @media (max-width: 1000px) {
+            .interactive-example .row {
+                flex-direction: column;
+            }
+            .interactive-example .col-8,
+            .interactive-example .col-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                width: 100%;
+            }
+            .interactive-example .ace-editor,
+            .interactive-example .phaser-container {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar Navigation -->
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+        <!-- Sidebar Navigation -->
+        <nav class="bg-light sidebar">
                 <div class="position-sticky pt-3">
                     <div class="mb-3">
                         <h5 class="text-primary">PSD to Phaser</h5>
@@ -95,10 +132,10 @@
                     </div>
                     {% endfor %}
                 </div>
-            </nav>
+        </nav>
 
-            <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <!-- Main Content -->
+        <main>
                 <header class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">{{ title or "PSD to Phaser Documentation" }}</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
@@ -114,8 +151,7 @@
                 <div class="content">
                     {{ content | safe }}
                 </div>
-            </main>
-        </div>
+        </main>
     </div>
 
     <!-- SVG Icons -->

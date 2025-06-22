@@ -153,10 +153,14 @@ class InteractiveExample {
     // Basic game configuration
     const config = {
       type: Phaser.AUTO,
-      width: containerRect.width || 300,
+      width: Math.min(containerRect.width || 300, container.parentElement.offsetWidth),
       height: containerRect.height || 300,
       parent: this.containerId,
       backgroundColor: '#2c3e50',
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+      },
       plugins: {
         global: [
           {
