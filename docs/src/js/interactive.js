@@ -15,6 +15,7 @@ class InteractiveExample {
     
     this.initializeEditor();
     this.setupEventListeners();
+    this.loadLayerStructure();
   }
   
   initializeEditor() {
@@ -78,6 +79,9 @@ class InteractiveExample {
     
     // Clear the container
     container.innerHTML = '';
+    
+    // Match Ace editor height to Phaser container height
+    this.matchEditorHeight();
     
     // Generate unique plugin key with timestamp to avoid conflicts
     const uniquePluginKey = `PsdToPhaser_${self.psdName}_${Date.now()}`;
@@ -174,6 +178,100 @@ class InteractiveExample {
     };
     
     this.game = new Phaser.Game(config);
+  }
+  
+  matchEditorHeight() {
+    const phaserContainer = document.getElementById(this.containerId);
+    const editorElement = document.getElementById(this.editorId);
+    
+    if (phaserContainer && editorElement && this.editor) {
+      const phaserHeight = phaserContainer.offsetHeight || 300;
+      editorElement.style.height = `${phaserHeight}px`;
+      this.editor.resize();
+    }
+  }
+  
+  async loadLayerStructure() {
+    const layerContainer = document.getElementById(`layers-${this.psdName}`);
+    const psdPath = layerContainer.getAttribute('data-psd-path');
+    
+    try {
+      const response = await fetch(`/${psdPath}/data.json`);
+      if (!response.ok) {
+        throw new Error(`Failed to load layer data: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const layerHtml = this.renderLayerStructure(data.layers);
+      layerContainer.innerHTML = layerHtml;
+    } catch (error) {
+      console.error('Error loading layer structure:', error);
+      layerContainer.innerHTML = `<p class="text-muted">Could not load layer structure</p>`;
+    }
+  }
+  
+  renderLayerStructure(layers) {
+    if (!layers || layers.length === 0) {
+      return '<p class="text-muted">No layers found</p>';
+    }
+    
+    let html = '<ul>';
+    layers.forEach(layer => {
+      html += this.renderLayer(layer);
+    });
+    html += '</ul>';
+    return html;
+  }
+  
+  renderLayer(layer) {
+    const originalName = this.reconstructOriginalName(layer);
+    const categoryClass = `layer-${layer.category || 'unknown'}`;
+    let html = `<li class="${categoryClass}">`;
+    
+    // Display reconstructed original layer name with pipe structure
+    html += `<span class="layer-name">${originalName}</span>`;
+    
+    // Render children if this is a group
+    if (layer.children && layer.children.length > 0) {
+      html += '<ul>';
+      layer.children.forEach(child => {
+        html += this.renderLayer(child);
+      });
+      html += '</ul>';
+    }
+    
+    html += '</li>';
+    return html;
+  }
+  
+  reconstructOriginalName(layer) {
+    // Map data.json categories back to psd-to-json category letters
+    const categoryMap = {
+      'group': 'G',
+      'sprite': 'S', 
+      'tile': 'T',
+      'text': 'T', // Could be text, but T is used for Tile in psd-to-json
+      'point': 'P',
+      'zone': 'Z'
+    };
+    
+    const categoryLetter = categoryMap[layer.category] || 'S';
+    const categoryName = {
+      'G': 'Group',
+      'S': 'Sprite',
+      'T': 'Tile',
+      'P': 'Point',
+      'Z': 'Zone'
+    }[categoryLetter] || 'Unknown';
+    
+    // Reconstruct the original PSD layer name format
+    let display = `<span class="layer-category">${categoryLetter}</span>`;
+    display += ` | <span class="layer-actual-name">${layer.name}</span>`;
+    
+    // Add type info if we can infer it (animation, etc.)
+    // This would need more sophisticated logic based on attributes or naming patterns
+    
+    return display;
   }
 }
 
