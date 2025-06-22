@@ -1,0 +1,26 @@
+---
+layout: base.njk
+title: Debugging
+---
+
+As mentioned in the [initialization guide](/installation), the plugin features a top-level debug mode you can feed either a boolean or a configuration object that gives you more granular control : `{ label, shape, console}`. "Label" controls the text label of the layer, "shape" is the visual outline of what is being placed on the canvas and "console" just gives you some basic info about the placement.
+
+When placing objects, you can override whatever your global setting is the same way.
+
+```js
+// Turn off the text labels
+this.P2P.place(this, "psd_key", "backgroundTiles", {
+  debug: {
+    label: false,
+  },
+});
+
+// The equivelant of not using debug at all.
+this.P2P.place(this, "psd_key", "pickups/deepNestPoints", {
+  debug: {
+    shape: false,
+    label: false,
+    console: false,
+  },
+});
+```

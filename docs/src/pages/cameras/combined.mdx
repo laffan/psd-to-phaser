@@ -1,0 +1,37 @@
+---
+layout: base.njk
+title: Combined Camera Features
+---
+
+And of course you can combine functions to create a supercamera.
+
+```js
+// Combined camera with both lazyLoad and draggable features (applies to all PSDs)
+this.myCamera = this.P2P.createCamera(this.cameras.main, ['lazyLoad', 'draggable'], {
+  lazyLoad: {
+    extendPreloadBounds: 10, // extend/contract trigger bounds beyond camera
+    debug: {
+      shape: true, // draw a shape around the lazyLoad trigger
+      label: true, // show labels for lazy load items
+      console: true // output lazy load info
+    }
+  },
+  draggable: {
+    useBounds: { x: 0, y: 0, width: 1000, height: 1000 }, // set boundary of drag
+    easeDragging: true, // use eased dragging
+    friction: 0.95, // friction of ease
+    minSpeed: 0.1 // minimum speed threshold
+  }
+});
+
+// Combined camera targeting specific PSDs
+this.myCamera = this.P2P.createCamera(this.cameras.main, ['lazyLoad', 'draggable'], {
+  lazyLoad: {
+    targetKeys: ["background_psd", "foreground_psd"], // only these PSDs
+    debug: { console: true }
+  },
+  draggable: {
+    easeDragging: true
+  }
+});
+```

@@ -1,0 +1,20 @@
+---
+layout: base.njk
+title: Camera Overview
+---
+
+P2P has a few camera functions that help optimize your project and get you started with some basic interaction styles.
+
+You can add these functions to any camera by passing it in to the `createCamera` function. The basic syntax is:
+
+```js
+this.P2P.createCamera(camera, features, options?)
+```
+
+- **camera**: The Phaser camera to enhance (usually `this.cameras.main`)
+- **features**: Array of feature names (`['draggable']`, `['lazyLoad']`, etc.)
+- **options**: Optional configuration object for the features
+
+At the moment, there are camera features: `lazyLoad` and `draggable`.
+
+**Camera features default to applying to all PSDs.** For `lazyLoad`, you can specify which PSDs to target using the `targetKeys` option.

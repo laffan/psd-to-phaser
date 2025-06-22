@@ -8,30 +8,50 @@
       ]
     },
     {
-      "title": "Core Features",
+      "title": "Loading",
       "items": [
-        {"title": "Loading PSDs", "url": "/posts/loading/", "file": "posts/loading"},
-        {"title": "Placing Layers", "url": "/posts/placing/", "file": "posts/placing"},
-        {"title": "Sprite Types", "url": "/posts/sprite-types/", "file": "posts/sprite-types"}
+        {"title": "load()", "url": "/pages/loading/load/", "file": "pages/loading/load"},
+        {"title": "loadMultiple()", "url": "/pages/loading/load-multiple/", "file": "pages/loading/load-multiple"},
+        {"title": "getData()", "url": "/pages/loading/get-data/", "file": "pages/loading/get-data"},
+        {"title": "getTexture()", "url": "/pages/loading/get-texture/", "file": "pages/loading/get-texture"}
       ]
     },
     {
-      "title": "Advanced Features",
+      "title": "Placing",
       "items": [
-        {"title": "Cameras", "url": "/cameras/", "file": "cameras"},
-        {"title": "LazyLoad", "url": "/cameras/lazyload/", "file": "cameras/lazyload"},
-        {"title": "Draggable Camera", "url": "/cameras/draggable/", "file": "cameras/draggable"}
+        {"title": "place()", "url": "/pages/placing/place/", "file": "pages/placing/place"},
+        {"title": "Sprite Methods", "url": "/pages/placing/sprite-methods/", "file": "pages/placing/sprite-methods"},
+        {"title": "target()", "url": "/pages/placing/target/", "file": "pages/placing/target"},
+        {"title": "remove()", "url": "/pages/placing/remove/", "file": "pages/placing/remove"}
+      ]
+    },
+    {
+      "title": "Cameras",
+      "items": [
+        {"title": "Overview", "url": "/pages/cameras/overview/", "file": "pages/cameras/overview"},
+        {"title": "LazyLoad", "url": "/pages/cameras/lazy-load/", "file": "pages/cameras/lazy-load"},
+        {"title": "Draggable", "url": "/pages/cameras/draggable/", "file": "pages/cameras/draggable"},
+        {"title": "Combined Features", "url": "/pages/cameras/combined/", "file": "pages/cameras/combined"}
       ]
     },
     {
       "title": "Presets",
       "items": [
-        {"title": "Overview", "url": "/presets/", "file": "presets"},
-        {"title": "Button", "url": "/presets/button/", "file": "presets/button"},
-        {"title": "Parallax", "url": "/presets/parallax/", "file": "presets/parallax"},
-        {"title": "Pan To", "url": "/presets/panto/", "file": "presets/panto"},
-        {"title": "Fill Zone", "url": "/presets/fillzone/", "file": "presets/fillzone"},
-        {"title": "Joystick", "url": "/presets/joystick/", "file": "presets/joystick"}
+        {"title": "Overview", "url": "/pages/presets/overview/", "file": "pages/presets/overview"},
+        {"title": "button()", "url": "/pages/presets/button/", "file": "pages/presets/button"},
+        {"title": "parallax()", "url": "/pages/presets/parallax/", "file": "pages/presets/parallax"},
+        {"title": "panTo()", "url": "/pages/presets/pan-to/", "file": "pages/presets/pan-to"},
+        {"title": "fillZone()", "url": "/pages/presets/fill-zone/", "file": "pages/presets/fill-zone"},
+        {"title": "joystick()", "url": "/pages/presets/joystick/", "file": "pages/presets/joystick"}
+      ]
+    },
+    {
+      "title": "Other",
+      "items": [
+        {"title": "Sprite Types", "url": "/pages/sprite-types/overview/", "file": "pages/sprite-types/overview"},
+        {"title": "Animation Type", "url": "/pages/sprite-types/animation/", "file": "pages/sprite-types/animation"},
+        {"title": "Debugging", "url": "/pages/debugging/", "file": "pages/debugging"},
+        {"title": "Gotchas", "url": "/pages/gotchas/", "file": "pages/gotchas"}
       ]
     }
   ]

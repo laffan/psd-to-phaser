@@ -1,0 +1,17 @@
+---
+layout: base.njk
+title: getData()
+---
+
+The `getData()` method returns the base path, where the data has been saved (`basePath`), the JSON manifest in its entirity (`original`), the initially loaded items (`initialLoad`) and finally any items that are being lazy loaded (`lazyLoad`).
+
+```js
+// Save all PSD data to a variable
+const psdData = this.P2P.getData("psd_key");
+
+// "basePath" is where the PSD data is stored.
+const psdPath = psdData.basePath;
+
+// "original" is the entire JSON blob. 
+const psdWidth = psdData.original.width;
+```

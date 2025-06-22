@@ -1,0 +1,27 @@
+---
+layout: base.njk
+title: place()
+---
+
+If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional "options" object allows you to limit the recursion ("depth") and set debugging options ("debug").
+
+```js
+// Place a top level layer
+const psd = this.P2P.place(this, "psd_key", "root");
+
+const sprite = this.P2P.place(this, "psd_key", "root/spiteName");
+
+// Place all the children of a nested group with some optional overrides
+const item = this.P2P.place(
+  this,
+  "psd_key"
+  "groupName/nestedGroup",
+  {
+    depth: 1, // Only place top level items in this group, not the descendants
+    ignore: ["background", "sprites/sprite1"], // array of paths to ignore
+    debug: {
+      shape: true
+    },
+  }
+);
+```

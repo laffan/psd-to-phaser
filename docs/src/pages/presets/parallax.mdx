@@ -1,0 +1,19 @@
+---
+layout: base.njk
+title: parallax()
+---
+
+Make any placed object move at a different speed than the camera scroll, creating a parallax effect.
+
+```js
+const psd = this.P2P.place(this, 'psd_key', 'root');
+
+const distantItem = psd.target('distant');
+
+this.P2P.use.parallax({
+  target: distantItem,
+  scrollFactor: 0.25
+});
+```
+
+This defaults to the main camera, but accepts a `camera` parameter, allowing you can pass in a different target camera.

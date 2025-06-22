@@ -1,0 +1,13 @@
+---
+layout: base.njk
+title: Sprite Methods
+---
+
+Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+
+```js
+// Set the alpha and rotation of a group.
+const depthTest = this.P2P.place(this, "psd_key", "depthTest");
+depthTest.setAlpha(0.3);
+depthTest.setRotation(Math.PI / 4);
+```

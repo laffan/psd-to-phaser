@@ -1,0 +1,32 @@
+---
+layout: base.njk
+title: panTo()
+---
+
+Pass in an item or x/y and have the canvas pan to it.
+
+```js
+// Pan to item.
+this.P2P.use.panTo(this.cameras.main, this.placedPoint, {
+  targetPositionY: "center", // "center", "top", "bottom"
+  targetPositionZ: "center", // "center", "left", "right"
+  targetOffset: [300, 100], // Adjust target with x/y
+  speed: 300, // time in ms it takes to pan to point
+  easing: true, // turn easing on/off
+});
+```
+
+Pans trigger events, so you can listen for "panOnStart", "panProgress" and "panOnComplete".
+
+```js
+this.events.on("panToStart", (  ) => {
+  console.log(`panTo has started`);
+});
+this.events.on("panToProgress", ( value ) => {
+  console.log(`Pan is ${value} percent complete.`);
+});
+
+this.events.on("panToComplete", () => {
+  console.log("Pan has completed!");
+});
+```

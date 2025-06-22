@@ -1,0 +1,13 @@
+---
+layout: base.njk
+title: remove()
+---
+
+Any placed item comes with a remove method, which lets you search through the placed structure and destroy certain items.
+
+```js
+const placedGroup = this.P2P.place(this, "psd_key", "placedGroup");
+
+placedGroup.remove("innerGroup", { depth: 1 }); // removes only immediate children
+placedGroup.remove("innerGroup"); // removes all descendants from this point
+```

@@ -1,0 +1,25 @@
+---
+layout: base.njk
+title: target()
+---
+
+If you would like to target a portion of a placed group - or a portion of a placed group - and assign it to a new variable, you can use the copy() method. You can also deactivate the targeted items in the original, giving the impression that the original object is being affected.
+
+```js
+// Place item
+const placedGroup = this.P2P.place(this, "psd_key", "placedGroup");
+
+// Use target to apply method to portion of target
+const lightened = placedGroup.target("iAmAtlas").setAlpha(0.3);
+
+// Chain several methods on target
+placedGroup.target("surround").setAlpha(0.3).setX(200); // chain methods
+
+// Assign target to a new variable and update it that way.
+const = L1Text = placedGroup.target("depthTest/Level1/Level1Text");
+L1Text.setAlpha(0.3)
+
+// Get  the points which make up a placed Zone
+const zone = placedGroup.target("depthTest/zone1");
+const points = zone.getData('points');
+```

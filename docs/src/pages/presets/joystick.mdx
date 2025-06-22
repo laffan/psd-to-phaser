@@ -1,0 +1,84 @@
+---
+layout: base.njk
+title: joystick()
+---
+
+Joystick allows you to move combine any sprite and zone to create a draggable "joystick" within the bounds of the zone that returns normalized x/y values. Because you may want to use multiple joysticks at once,
+each joystick requires its own key.
+
+```js
+//  mySprite is now draggable, bounded by myZone. Position is fixed on release.
+this.P2P.use.joystick(this.mySprite, this.myZone, "joystickA");
+
+this.P2P.use.joystick(this.mySprite, this.myZone, "joystickB", {
+  bounceBack: true, //  On release, mySprite now bounces back to original position.
+});
+```
+
+You can even use mutiple joysticks at once, so long as you have the number of pointers set:
+
+```js
+const joyZoneA = everything.target("joystickA/joyZone");
+const joyStickA = everything.target("joystickA/joyBtn");
+
+const joyZoneB = everything.target("joystickB/joyZone");
+const joyStickB = everything.target("joystickB/joyBtn");
+
+this.input.addPointer(2);
+
+this.P2P.use.joystick(joyStickA, joyZoneA, "joystickA", { bounceBack: true });
+this.P2P.use.joystick(joyStickB, joyZoneB, "joystickB", { bounceBack: true });
+```
+
+Joystick fires events that you can use elsewhere in your project. You can parse the returned values using the keys.
+
+```js
+this.events.on("joystickStart", (values) => {
+  console.log(values); // { reference to joystick }
+  
+});
+this.events.on("joystickActive", (values) => {
+  console.log(values); // { normalized values of movement }
+});
+
+this.events.on("joystickRelease", (values) => {
+  console.log(values); // { reference to joystick }
+});
+```
+
+In all cases, the values object has the same structure :
+
+```js
+    values: {
+      joystickA: { // joystick key
+        isActive: false // is active or not
+        position: {x: 100, y: 30 } // new x/y of sprite
+        change: {x: 30, y: -3 } // shift from original position
+        normalized: {x: .3, y: -.6 } // normalized shift from original position
+        }
+      },
+    }
+```
+
+## joystick.control()
+
+Joystick comes with some preset control options, which you can use just by chaining the `control` keyword on to the end
+
+```js
+this.P2P.use
+  .joystick(joyStickA, joyZoneA, "joystickA",
+  { bounceBack: true })
+  .control( spriteToControl , { // options object
+    // speed = standard set position at a particular rate (use maxSpeed option)
+    // velocity = apply velocity to a physics object (use force option)
+    // until = move sprite a specific number of pixels (use pixels and repeatRate options)
+    // tracked = 1-to-1 tracking of joystick with an optional multiplier (use multiplier option )
+    type: "speed" | "velocity" | "unit" | "tracked", 
+    force : 2, // force multiplier if using "velocity" option
+    multiplier : 1.3, // position multiplier if using "tracked" option
+    maxSpeed: 300, // speed if using "speed" option
+    pixels: 100,// pixels moved  per repeat if using "unit" option.
+    repeatRate: 300 // ms between repetitions if using "unit" option.
+    directionLock: 4 | 8 | false // 4 = lock to x/y, 8 = x/y + diagonal, false = no direction lock )
+});
+```

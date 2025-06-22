@@ -1,0 +1,41 @@
+---
+layout: base.njk
+title: Draggable Camera
+---
+
+The draggable camera lets you click and drag around the canvas. That's about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.
+
+```js
+// Initialize a draggable camera (no psdKey needed)
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable']);
+
+// Initialize a draggable camera with options
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
+  draggable: {
+    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+    easeDragging: true,
+    friction: 0.95,
+    minSpeed: 0.1,
+  },
+});
+```
+
+Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.
+
+Dragging triggers events, so you can listen for "dragOnStart", "isDragging" and "dragOnComplete".
+
+```js
+this.dragCam = this.P2P.createCamera(this.cameras.main, ["draggable"]);
+
+this.events.on("draggableStart", () => {
+  console.log(`Drag has begun.`);
+});
+
+this.events.on("draggableActive", () => {
+  console.log(`Drag is active.`);
+});
+
+this.events.on("draggableComplete", () => {
+  console.log(`Drag has completed.`);
+});
+```

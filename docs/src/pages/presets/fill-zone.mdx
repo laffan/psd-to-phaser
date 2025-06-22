@@ -1,0 +1,17 @@
+---
+layout: base.njk
+title: fillZone()
+---
+
+Randomly fills a zone with a sprite or texture. You can pass in items directly from the JSON or one you've already placed. An optional options object lets you control which frames to use (if using a spritesheet or atlas) as well as size and tint options.
+
+```js
+// Fill a zone with sprites.
+this.P2P.use.fillZone(this.myZone, this.mySprite);
+
+this.P2P.use.fillZone(this.myZone, this.mySpritesheet, {
+  useFrames: [1, 3], // optionally use only these frames from the spritesheet or atlas
+  scaleRange: [0.8, 1.1], // optionally randomly scale items within these bounds.
+  tint: [0x15ae15, 0xdaaf3a, 0xda3a64], // optionally apply these tints to the placed items
+});
+```
