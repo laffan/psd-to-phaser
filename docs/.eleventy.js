@@ -6,9 +6,6 @@ module.exports = function(eleventyConfig) {
   
   // Add custom shortcode for interactive examples
   eleventyConfig.addShortcode("interactive", function(psdFilename, psdName, code) {
-    // Escape the code for safe HTML embedding
-    const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    
     // Base64 encode the code to avoid any processing issues
     const encodedCode = Buffer.from(code).toString('base64');
     
@@ -16,11 +13,11 @@ module.exports = function(eleventyConfig) {
       <div class="row">
         <div class="col-8">
           <div class="code-editor-container">
-            <pre><code class="language-javascript">${escapedCode}</code></pre>
+            <div class="ace-editor" id="editor-${psdName}"></div>
             <button class="btn btn-primary btn-sm run-example" 
                     data-psd="${psdFilename}" 
                     data-name="${psdName}"
-                    data-code="${encodedCode}">
+                    data-initial-code="${encodedCode}">
               Run Example
             </button>
           </div>

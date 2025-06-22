@@ -8,35 +8,79 @@ class InteractiveExample {
     this.psdName = psdName;
     this.psdFilename = psdFilename;
     this.containerId = `phaser-${psdName}`;
+    this.editorId = `editor-${psdName}`;
     this.game = null;
+    this.editor = null;
+    this.initialCode = '';
     
+    this.initializeEditor();
+    this.setupEventListeners();
+  }
+  
+  initializeEditor() {
+    // Get initial code and decode it
+    const encodedCode = this.button.getAttribute('data-initial-code');
+    this.initialCode = encodedCode ? atob(encodedCode) : '';
+    
+    // Initialize Ace editor
+    if (typeof ace !== 'undefined') {
+      this.editor = ace.edit(this.editorId);
+      this.editor.setTheme("ace/theme/github");
+      this.editor.session.setMode("ace/mode/javascript");
+      this.editor.setValue(this.initialCode, -1);
+      this.editor.setOptions({
+        fontSize: 14,
+        showPrintMargin: false,
+        wrap: true
+      });
+    }
+  }
+  
+  setupEventListeners() {
+    // Run example button
     this.button.addEventListener('click', () => this.runExample());
+    
+    // Auto-run the initial example
+    setTimeout(() => {
+      this.runExample();
+    }, 100);
+  }
+  
+  getCurrentCode() {
+    if (this.editor) {
+      return this.editor.getValue();
+    }
+    return this.initialCode;
   }
   
   runExample() {
-    // Get the code from the button's data attribute and decode it
-    const encodedCode = this.button.getAttribute('data-code');
-    const code = encodedCode ? atob(encodedCode) : '';
+    // Get the current code from editor or initial code
+    const code = this.getCurrentCode();
     
     console.log('Extracted code:', code); // Debug log
     
     // Clear any existing game
     if (this.game) {
       this.game.destroy(true);
+      // Wait a moment for cleanup
+      setTimeout(() => {
+        this.createGame(code);
+      }, 50);
+    } else {
+      this.createGame(code);
     }
-    
-    // Clear the container
-    const container = document.getElementById(this.containerId);
-    container.innerHTML = '';
-    
-    // Create new Phaser game with the user's code
-    this.createGame(code);
   }
   
   createGame(userCode) {
     const container = document.getElementById(this.containerId);
     const containerRect = container.getBoundingClientRect();
     const self = this;
+    
+    // Clear the container
+    container.innerHTML = '';
+    
+    // Generate unique plugin key with timestamp to avoid conflicts
+    const uniquePluginKey = `PsdToPhaser_${self.psdName}_${Date.now()}`;
     
     // Create a proper scene class
     class ExampleScene extends Phaser.Scene {
@@ -112,7 +156,7 @@ class InteractiveExample {
       plugins: {
         global: [
           {
-            key: "PsdToPhaser",
+            key: uniquePluginKey,
             plugin: window.PsdToPhaserPlugin,
             start: true,
             mapping: "P2P",
