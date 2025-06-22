@@ -5,7 +5,7 @@ title: Placing Layers
 
 # Placing Layers
 
-The `place()` method is how you render loaded PSD layers to your Phaser scene. You can place entire groups, individual sprites, or specific nested elements using a simple path syntax.
+The `place()` method is how you render loaded PSD layers to your Phaser scene. You can place entire groups, individual sprites, or specific nested elements using a simple path syntax. The placement system supports depth control, targeting specific items, and applying transformations to groups.
 
 ## Basic Placement
 
@@ -113,17 +113,66 @@ this.events.once('psdLoadComplete', () => {
 
 You can pass options to control how items are placed:
 
-```javascript
-// Place with depth limiting (only immediate children)
-const group = this.P2P.place(this, 'psd_key', 'groupName', {
-  depth: 1, // Only place top level items in this group
-  ignore: ['background', 'sprites/sprite1'], // Skip these items
-  debug: {
-    shape: true, // Show outlines
-    label: true  // Show labels
-  }
-});
-```
+{% interactive "demos/output/placement", "placement_options", "// Load the PSD
+this.P2P.load.load(this, 'demo_psd', 'public/demos/output/placement');
+
+this.events.once('psdLoadComplete', () => {
+  // Place with options
+  const group = this.P2P.place(this, 'demo_psd', 'dots', {
+    depth: 1, // Only place immediate children
+    debug: {
+      shape: true, // Show outlines
+      label: true  // Show labels
+    }
+  });
+  
+  group.setPosition(this.cameras.main.centerX, this.cameras.main.centerY);
+  group.setScale(8);
+});" %}
+
+## Working with Textures
+
+Once a sprite has been loaded, you can grab its texture and use it elsewhere:
+
+{% interactive "demos/output/placement", "get_texture", "// Load the PSD
+this.P2P.load.load(this, 'demo_psd', 'public/demos/output/placement');
+
+this.events.once('psdLoadComplete', () => {
+  // Get texture from loaded sprite
+  const dotTexture = this.P2P.getTexture(this, 'demo_psd', 'dots/dot');
+  
+  // Create new sprites with the texture
+  const newSprite1 = this.add.sprite(100, 100, dotTexture);
+  const newSprite2 = this.add.sprite(200, 150, dotTexture);
+  
+  // Set depth to ensure visibility
+  newSprite1.setDepth(100);
+  newSprite2.setDepth(100);
+  
+  // Apply different transforms
+  newSprite1.setScale(2).setTint(0xff0000);
+  newSprite2.setScale(3).setTint(0x00ff00);
+});" %}
+
+## Removing Items
+
+Any placed item comes with a `remove()` method for selective destruction:
+
+{% interactive "demos/output/placement", "remove_items", "// Load the PSD
+this.P2P.load.load(this, 'demo_psd', 'public/demos/output/placement');
+
+this.events.once('psdLoadComplete', () => {
+  // Place everything
+  const everything = this.P2P.place(this, 'demo_psd', 'dots');
+  everything.setPosition(this.cameras.main.centerX, this.cameras.main.centerY);
+  everything.setScale(8);
+  
+  // Remove specific item after 2 seconds
+  this.time.delayedCall(2000, () => {
+    everything.remove('dot');
+    console.log('Removed dot layer');
+  });
+});" %}
 
 ## Path Syntax
 
@@ -135,3 +184,13 @@ The placement system uses a simple path syntax:
 - `'groupName/subGroup/deepItem'` - Places deeply nested items
 
 The path matches the layer structure from your PSD exactly as exported by psd-to-json.
+
+## Depth Considerations
+
+Because the plugin maintains layer order with `setDepth()`, new items you create may be hidden behind PSD layers. When placing your own items, set their depth higher than the number of PSD layers:
+
+```javascript
+// Create your own sprite
+const mySprite = this.add.sprite(x, y, texture);
+mySprite.setDepth(100); // Ensure it appears above PSD layers
+```

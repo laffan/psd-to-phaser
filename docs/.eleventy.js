@@ -10,6 +10,30 @@ module.exports = function(eleventyConfig) {
     const encodedCode = Buffer.from(code).toString('base64');
     
     return `<div class="interactive-example">
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="accordion" id="accordion-${psdName}">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading-${psdName}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#collapse-${psdName}" aria-expanded="false" 
+                        aria-controls="collapse-${psdName}">
+                  PSD Layers
+                </button>
+              </h2>
+              <div id="collapse-${psdName}" class="accordion-collapse collapse" 
+                   aria-labelledby="heading-${psdName}" data-bs-parent="#accordion-${psdName}">
+                <div class="accordion-body">
+                  <div class="layer-structure" id="layers-${psdName}" 
+                       data-psd-path="public/${psdFilename}">
+                    Loading layer structure...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="row">
         <div class="col-8">
           <div class="code-editor-container">

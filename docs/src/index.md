@@ -7,7 +7,7 @@ title: Introduction
 
 psd-to-phaser is a Phaser plugin that reads the JSON manifest created by [psd-to-json](https://pypi.org/project/psd-to-json/), loads the files and then does the work of rebuilding the PSD.
 
-It also has some nifty extras like [lazyLoading](/cameras/lazyload/) and a few presets that I thought might be useful ([parallax](/presets/parallax/) and [build-your-own-joystick](/presets/joystick/) being my favorites.)
+It also has some nifty extras like [lazy loading](/posts/cameras/) and a few presets that I thought might be useful ([parallax](/posts/presets/) and [build-your-own-joystick](/posts/presets/) being my favorites.)
 
 ## Try It Out
 
@@ -20,7 +20,39 @@ this.P2P.load.load(this, 'placement_psd', 'public/demos/output/placement');
 this.events.once('psdLoadComplete', () => {
   // Place the entire PSD
   const placedPSD = this.P2P.place(this, 'placement_psd', 'dots');
+  placedPSD.setPosition(this.cameras.main.centerX, this.cameras.main.centerY);
+  placedPSD.setScale(8);
 });" %}
+
+## Initializing the Plugin
+
+You can initialize the plugin when creating your game's configuration object:
+
+```javascript
+new Phaser.Game({
+  // ...
+  plugins: {
+    global: [
+      {
+        key: "PsdToPhaser",
+        plugin: PsdToPhaser,
+        start: true,
+        mapping: "P2P", // all examples assume you're mapping to P2P
+        data: {
+          debug: {
+            shape: false, // outline all items
+            label: false, // text labels for all objects
+            console: false, // output placement & progress info to console
+          },
+          applyAlphaAll: false, // apply alpha value to all items by default
+          applyBlendModesAll: false, // apply blendMode of all items by default
+        },
+      },
+    ],
+  },
+  // ...
+});
+```
 
 ## Getting Started
 
