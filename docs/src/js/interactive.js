@@ -7,6 +7,8 @@ class InteractiveExample {
     this.button = button;
     this.psdName = psdName;
     this.psdFilename = psdFilename;
+    this.outputPath = button.getAttribute('data-output-path');
+    this.psdKey = button.getAttribute('data-psd-key');
     this.containerId = `phaser-${psdName}`;
     this.editorId = `editor-${psdName}`;
     this.game = null;
@@ -98,26 +100,36 @@ class InteractiveExample {
         if (this.P2P) {
           console.log('Preload - P2P object:', this.P2P);
           console.log('Preload - P2P methods:', Object.getOwnPropertyNames(this.P2P));
+          
+          // Automatically load the PSD if outputPath and psdKey are provided
+          if (self.outputPath && self.psdKey) {
+            const fullPath = `public/${self.outputPath}`;
+            console.log(`Auto-loading PSD: ${self.psdKey} from ${fullPath}`);
+            this.P2P.load.load(this, self.psdKey, fullPath);
+          }
         }
       }
       
       create() {
         try {
-          console.log('Executing user code:', userCode); // Debug log
-          console.log('P2P available:', !!this.P2P); // Debug log
-          console.log('P2P object:', this.P2P); // Debug log
-          console.log('P2P methods:', this.P2P ? Object.getOwnPropertyNames(this.P2P) : 'N/A'); // Debug log
-          console.log('P2P.load type:', typeof this.P2P.load); // Debug log
-          console.log('P2P.load object:', this.P2P.load); // Debug log
-          if (this.P2P.load && typeof this.P2P.load === 'object') {
-            console.log('P2P.load methods:', Object.getOwnPropertyNames(this.P2P.load));
+          // If we have auto-loading enabled, wait for PSD load completion
+          if (self.outputPath && self.psdKey) {
+            // Try a timeout fallback since the event timing seems to work
+            setTimeout(() => {
+              this.executeUserCode(userCode);
+            }, 1000); // Wait 1 second then execute
+            
+          } else {
+            // No auto-loading, execute user code immediately
+            this.executeUserCode(userCode);
           }
-          console.log('P2P.place type:', typeof this.P2P.place); // Debug log
-          console.log('P2P.place object:', this.P2P.place); // Debug log
-          if (this.P2P.place && typeof this.P2P.place === 'object') {
-            console.log('P2P.place methods:', Object.getOwnPropertyNames(this.P2P.place));
-          }
-          
+        } catch (error) {
+          this.displayError(error);
+        }
+      }
+      
+      executeUserCode(userCode) {
+        try {
           // Validate that we have code to execute
           if (!userCode || userCode.trim() === '') {
             throw new Error('No code provided');
@@ -126,26 +138,30 @@ class InteractiveExample {
           // Create a function from the user's code and execute it in the scene context
           const userFunction = new Function(userCode);
           userFunction.call(this);
+          
         } catch (error) {
           console.error('Error executing user code:', error);
-          
-          // Display error in the game container
-          if (this.add && this.cameras) {
-            const errorText = this.add.text(
-              this.cameras.main.centerX,
-              this.cameras.main.centerY,
-              `Error: ${error.message}`,
-              {
-                fontSize: '14px',
-                fill: '#ff6b6b',
-                align: 'center',
-                wordWrap: { width: this.cameras.main.width - 40 }
-              }
-            );
-            errorText.setOrigin(0.5);
-          } else {
-            console.error('Scene not properly initialized for error display');
-          }
+          this.displayError(error);
+        }
+      }
+      
+      displayError(error) {
+        // Display error in the game container
+        if (this.add && this.cameras) {
+          const errorText = this.add.text(
+            this.cameras.main.centerX,
+            this.cameras.main.centerY,
+            `Error: ${error.message}`,
+            {
+              fontSize: '14px',
+              fill: '#ff6b6b',
+              align: 'center',
+              wordWrap: { width: this.cameras.main.width - 40 }
+            }
+          );
+          errorText.setOrigin(0.5);
+        } else {
+          console.error('Scene not properly initialized for error display');
         }
       }
     }

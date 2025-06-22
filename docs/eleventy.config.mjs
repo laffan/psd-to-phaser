@@ -51,11 +51,12 @@ export default function(eleventyConfig) {
   }
 
   // Interactive React component for MDX
-  const Interactive = ({ path, demoId, children }) => {
+  const Interactive = ({ outputPath, psdKey, children }) => {
     // Extract code from markdown code block
     const code = extractCodeFromChildren(children);
     const encodedCode = Buffer.from(code).toString('base64');
-    const psdFilename = `${path}/${path.split('/').pop()}.psd`;
+    const psdFilename = `${outputPath}/${outputPath.split('/').pop()}.psd`;
+    const demoId = psdKey;
     
     const htmlContent = `<div class="row mb-3">
       <div class="col-12">
@@ -88,6 +89,8 @@ export default function(eleventyConfig) {
           <button class="btn btn-primary btn-sm run-example" 
                   data-psd="${psdFilename}" 
                   data-name="${demoId}"
+                  data-output-path="${outputPath}"
+                  data-psd-key="${psdKey}"
                   data-initial-code="${encodedCode}">
             Run Example
           </button>
