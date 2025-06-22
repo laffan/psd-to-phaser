@@ -51,7 +51,7 @@ export default function(eleventyConfig) {
   }
 
   // Interactive React component for MDX
-  const Interactive = ({ outputPath, psdKey, children }) => {
+  const Interactive = ({ outputPath, psdKey, pixelArt = true, children }) => {
     // Extract code from markdown code block
     const code = extractCodeFromChildren(children);
     const encodedCode = Buffer.from(code).toString('base64');
@@ -91,6 +91,7 @@ export default function(eleventyConfig) {
                   data-name="${demoId}"
                   data-output-path="${outputPath}"
                   data-psd-key="${psdKey}"
+                  data-pixel-art="${pixelArt}"
                   data-initial-code="${encodedCode}">
             Run Example
           </button>

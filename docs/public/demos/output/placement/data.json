@@ -1,0 +1,54 @@
+{
+  "name": "placement",
+  "width": 300,
+  "height": 300,
+  "tile_slice_size": 500,
+  "tile_scaled_versions": [],
+  "layers": [
+    {
+      "name": "dots",
+      "category": "group",
+      "x": 17,
+      "y": 179,
+      "width": 242,
+      "height": 98,
+      "initialDepth": 3,
+      "attributes": {},
+      "children": [
+        {
+          "name": "dot2",
+          "category": "sprite",
+          "x": 17,
+          "y": 179,
+          "width": 242,
+          "height": 38,
+          "attributes": {},
+          "filePath": "sprites/dot2.png",
+          "initialDepth": 2
+        },
+        {
+          "name": "dot",
+          "category": "sprite",
+          "x": 17,
+          "y": 239,
+          "width": 242,
+          "height": 38,
+          "attributes": {},
+          "filePath": "sprites/dot.png",
+          "initialDepth": 1
+        }
+      ]
+    },
+    {
+      "name": "background",
+      "category": "sprite",
+      "x": -7,
+      "y": -7,
+      "width": 314,
+      "height": 314,
+      "attributes": {},
+      "filePath": "sprites/background.png",
+      "initialDepth": 0
+    }
+  ]
+}

@@ -9,6 +9,7 @@ class InteractiveExample {
     this.psdFilename = psdFilename;
     this.outputPath = button.getAttribute('data-output-path');
     this.psdKey = button.getAttribute('data-psd-key');
+    this.pixelArt = button.getAttribute('data-pixel-art') !== 'false';
     this.containerId = `phaser-${psdName}`;
     this.editorId = `editor-${psdName}`;
     this.game = null;
@@ -176,6 +177,9 @@ class InteractiveExample {
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
+      },
+      render: {
+        pixelArt: self.pixelArt
       },
       plugins: {
         global: [
