@@ -73,7 +73,7 @@ export default function(eleventyConfig) {
                  aria-labelledby="heading-${demoId}" data-bs-parent="#accordion-${demoId}">
               <div class="accordion-body">
                 <div class="layer-structure" id="layers-${demoId}" 
-                     data-psd-path="public/${psdFilename}">
+                     data-psd-path="public/${outputPath}">
                   Loading layer structure...
                 </div>
               </div>

@@ -220,7 +220,7 @@ class InteractiveExample {
     const psdPath = layerContainer.getAttribute('data-psd-path');
     
     try {
-      const response = await fetch(`/${psdPath}/data.json`);
+      const response = await fetch(`${psdPath}/data.json`);
       if (!response.ok) {
         throw new Error(`Failed to load layer data: ${response.status}`);
       }
