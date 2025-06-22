@@ -13,22 +13,26 @@ It also has some nifty extras like [lazy loading](/posts/cameras/) and a few pre
 
 Here's a simple example of loading and placing a PSD:
 
-{% interactive "demos/output/placement", "placement_demo", "// Load the placement demo PSD
+<Interactive path="demos/output/placement" demoId="placement_demo">
+
+```js 
+// Load the placement demo PSD
 this.P2P.load.load(this, 'placement_psd', 'public/demos/output/placement');
 
+console.log("HOOO")
 // Wait for loading to complete
 this.events.once('psdLoadComplete', () => {
   // Place the entire PSD
   const placedPSD = this.P2P.place(this, 'placement_psd', 'dots');
-  placedPSD.setPosition(this.cameras.main.centerX, this.cameras.main.centerY);
-  placedPSD.setScale(8);
-});" %}
+});
+```
+</Interactive>
 
 ## Initializing the Plugin
 
 You can initialize the plugin when creating your game's configuration object:
 
-```javascript
+```js
 new Phaser.Game({
   // ...
   plugins: {

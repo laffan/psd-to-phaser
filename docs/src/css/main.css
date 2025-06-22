@@ -168,3 +168,132 @@ h3:first-child {
   background-color: #f8f9fa;
   font-weight: 600;
 }
+
+/* Bootstrap-style code blocks with Prism.js integration */
+code[class*="language-"],
+pre[class*="language-"] {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace !important;
+  font-size: 13px !important;
+  line-height: 1.42857143 !important;
+  color: #333 !important;
+  background: #f5f5f5 !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  white-space: pre !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
+  word-wrap: normal !important;
+  tab-size: 4 !important;
+  hyphens: none !important;
+  /* Remove any line borders */
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+pre[class*="language-"] {
+  display: block !important;
+  padding: 9.5px !important;
+  margin: 0 0 10px !important;
+  overflow: auto !important;
+  /* Override any Bootstrap table or other element styles */
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+/* Remove borders from any child elements in code blocks */
+pre[class*="language-"] * {
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Ensure code lines don't have borders */
+pre[class*="language-"] .token {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: normal;
+}
+
+/* Non-highlighted inline code */
+code:not([class*="language-"]) {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Prism.js token colors for better Bootstrap integration */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #8e908c;
+}
+
+.token.namespace {
+  opacity: .7;
+}
+
+.token.boolean,
+.token.number {
+  color: #f5871f;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #c82829;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #718c00;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+  color: #f5871f;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.function,
+.token.class-name {
+  color: #4271ae;
+}
+
+.token.keyword {
+  color: #8959a8;
+}
+
+.token.regex,
+.token.important {
+  color: #f5871f;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
