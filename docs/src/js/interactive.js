@@ -1,0 +1,171 @@
+/**
+ * Interactive Phaser Examples for PSD to Phaser Documentation
+ */
+
+class InteractiveExample {
+  constructor(button, psdName, psdFilename) {
+    this.button = button;
+    this.psdName = psdName;
+    this.psdFilename = psdFilename;
+    this.containerId = `phaser-${psdName}`;
+    this.game = null;
+    
+    this.button.addEventListener('click', () => this.runExample());
+  }
+  
+  runExample() {
+    // Get the code from the button's data attribute and decode it
+    const encodedCode = this.button.getAttribute('data-code');
+    const code = encodedCode ? atob(encodedCode) : '';
+    
+    console.log('Extracted code:', code); // Debug log
+    
+    // Clear any existing game
+    if (this.game) {
+      this.game.destroy(true);
+    }
+    
+    // Clear the container
+    const container = document.getElementById(this.containerId);
+    container.innerHTML = '';
+    
+    // Create new Phaser game with the user's code
+    this.createGame(code);
+  }
+  
+  createGame(userCode) {
+    const container = document.getElementById(this.containerId);
+    const containerRect = container.getBoundingClientRect();
+    const self = this;
+    
+    // Create a proper scene class
+    class ExampleScene extends Phaser.Scene {
+      constructor() {
+        super({ key: 'ExampleScene' });
+      }
+      
+      preload() {
+        // Plugin should already be loaded via game config
+        console.log('Preload - P2P available:', !!this.P2P);
+        if (this.P2P) {
+          console.log('Preload - P2P object:', this.P2P);
+          console.log('Preload - P2P methods:', Object.getOwnPropertyNames(this.P2P));
+        }
+      }
+      
+      create() {
+        try {
+          console.log('Executing user code:', userCode); // Debug log
+          console.log('P2P available:', !!this.P2P); // Debug log
+          console.log('P2P object:', this.P2P); // Debug log
+          console.log('P2P methods:', this.P2P ? Object.getOwnPropertyNames(this.P2P) : 'N/A'); // Debug log
+          console.log('P2P.load type:', typeof this.P2P.load); // Debug log
+          console.log('P2P.load object:', this.P2P.load); // Debug log
+          if (this.P2P.load && typeof this.P2P.load === 'object') {
+            console.log('P2P.load methods:', Object.getOwnPropertyNames(this.P2P.load));
+          }
+          console.log('P2P.place type:', typeof this.P2P.place); // Debug log
+          console.log('P2P.place object:', this.P2P.place); // Debug log
+          if (this.P2P.place && typeof this.P2P.place === 'object') {
+            console.log('P2P.place methods:', Object.getOwnPropertyNames(this.P2P.place));
+          }
+          
+          // Validate that we have code to execute
+          if (!userCode || userCode.trim() === '') {
+            throw new Error('No code provided');
+          }
+          
+          // Create a function from the user's code and execute it in the scene context
+          const userFunction = new Function(userCode);
+          userFunction.call(this);
+        } catch (error) {
+          console.error('Error executing user code:', error);
+          
+          // Display error in the game container
+          if (this.add && this.cameras) {
+            const errorText = this.add.text(
+              this.cameras.main.centerX,
+              this.cameras.main.centerY,
+              `Error: ${error.message}`,
+              {
+                fontSize: '14px',
+                fill: '#ff6b6b',
+                align: 'center',
+                wordWrap: { width: this.cameras.main.width - 40 }
+              }
+            );
+            errorText.setOrigin(0.5);
+          } else {
+            console.error('Scene not properly initialized for error display');
+          }
+        }
+      }
+    }
+    
+    // Basic game configuration
+    const config = {
+      type: Phaser.AUTO,
+      width: containerRect.width || 300,
+      height: containerRect.height || 300,
+      parent: this.containerId,
+      backgroundColor: '#2c3e50',
+      plugins: {
+        global: [
+          {
+            key: "PsdToPhaser",
+            plugin: window.PsdToPhaserPlugin,
+            start: true,
+            mapping: "P2P",
+            data: {
+              debug: {
+                console: true,
+                shape: false,
+                label: false
+              }
+            }
+          }
+        ]
+      },
+      scene: ExampleScene
+    };
+    
+    this.game = new Phaser.Game(config);
+  }
+}
+
+// Initialize interactive examples when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  const exampleButtons = document.querySelectorAll('.run-example');
+  
+  exampleButtons.forEach(button => {
+    const psdName = button.getAttribute('data-name');
+    const psdFilename = button.getAttribute('data-psd');
+    
+    new InteractiveExample(button, psdName, psdFilename);
+  });
+  
+  // Handle window resize for responsive Phaser games
+  window.addEventListener('resize', debounce(() => {
+    document.querySelectorAll('.phaser-container canvas').forEach(canvas => {
+      const container = canvas.parentElement;
+      const rect = container.getBoundingClientRect();
+      
+      if (canvas.game && canvas.game.scale) {
+        canvas.game.scale.resize(rect.width, rect.height);
+      }
+    });
+  }, 250));
+});
+
+// Utility function for debouncing
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}

@@ -1,0 +1,47 @@
+{
+  "sections": [
+    {
+      "title": "Getting Started",
+      "items": [
+        {"title": "Introduction", "url": "/", "file": "index"},
+        {"title": "Examples", "url": "/examples/", "file": "examples"},
+        {"title": "Installation", "url": "/installation/", "file": "installation"}
+      ]
+    },
+    {
+      "title": "Core Features",
+      "items": [
+        {"title": "Initializing", "url": "/initializing/", "file": "initializing"},
+        {"title": "Loading PSDs", "url": "/loading/", "file": "loading"},
+        {"title": "Placing Layers", "url": "/posts/placing/", "file": "posts/placing"},
+        {"title": "Sprite Types", "url": "/sprite-types/", "file": "sprite-types"}
+      ]
+    },
+    {
+      "title": "Advanced Features",
+      "items": [
+        {"title": "Cameras", "url": "/cameras/", "file": "cameras"},
+        {"title": "LazyLoad", "url": "/cameras/lazyload/", "file": "cameras-lazyload"},
+        {"title": "Draggable Camera", "url": "/cameras/draggable/", "file": "cameras-draggable"}
+      ]
+    },
+    {
+      "title": "Presets",
+      "items": [
+        {"title": "Overview", "url": "/presets/", "file": "presets"},
+        {"title": "Button", "url": "/presets/button/", "file": "presets-button"},
+        {"title": "Parallax", "url": "/presets/parallax/", "file": "presets-parallax"},
+        {"title": "Pan To", "url": "/presets/panto/", "file": "presets-panto"},
+        {"title": "Fill Zone", "url": "/presets/fillzone/", "file": "presets-fillzone"},
+        {"title": "Joystick", "url": "/presets/joystick/", "file": "presets-joystick"}
+      ]
+    },
+    {
+      "title": "Reference",
+      "items": [
+        {"title": "Gotchas", "url": "/gotchas/", "file": "gotchas"},
+        {"title": "Development", "url": "/development/", "file": "development"}
+      ]
+    }
+  ]
+}
