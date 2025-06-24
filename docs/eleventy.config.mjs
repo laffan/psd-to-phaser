@@ -58,10 +58,8 @@ export default function(eleventyConfig) {
     const psdFilename = `${outputPath}/${outputPath.split('/').pop()}.psd`;
     const demoId = psdKey;
     
-    // Calculate PSD download path: change "output" to "psds" and add .psd extension
-    const psdRelativePath = outputPath.replace('/output/', '/psds/') + '.psd';
-    // Use direct GitHub repo link for downloads
-    const psdDownloadPath = `https://github.com/laffan/psd-to-phaser/blob/main/docs/public${psdRelativePath}?raw=true`;
+    // Static link to PSDs folder on GitHub
+    const psdDownloadPath = `https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds`;
     
     const htmlContent = `<div class="row mb-3">
       <div class="col-12">
@@ -147,10 +145,8 @@ export default function(eleventyConfig) {
     // Base64 encode the code to avoid any processing issues
     const encodedCode = Buffer.from(code).toString('base64');
     
-    // Calculate PSD download path for shortcode version  
-    const psdRelativePath = psdFilename.replace('/output/', '/psds/') + '.psd';
-    // Use direct GitHub repo link for downloads
-    const psdDownloadPath = `https://github.com/laffan/psd-to-phaser/blob/main/docs/public${psdRelativePath}?raw=true`;
+    // Static link to PSDs folder on GitHub  
+    const psdDownloadPath = `https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds`;
     
     return `<div class="interactive-example">
       <div class="row mb-3">
