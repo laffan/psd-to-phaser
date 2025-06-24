@@ -29,8 +29,16 @@ this.P2P.place(this, 'p7_key', 'background');
 this.P2P.place(this, 'p7_key', 'dots');
 this.P2P.place(this, 'p7_key', 'shapes');
 
-// Create simple draggable cam
-this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable']);
+// Initialize a draggable camera with options
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
+  draggable: {
+    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+    easeDragging: true,
+    friction: 0.95,
+    minSpeed: 0.1,
+  },
+});
+
 
 ```
 </Interactive>
@@ -58,24 +66,16 @@ this.events.on("draggableComplete", () => {
 <Interactive outputPath="demos/output/dragging" psdKey="p8_key" >
 
 ```js 
-
 // Place background
 this.P2P.place(this, 'p8_key', 'background');
 this.P2P.place(this, 'p8_key', 'dots');
 this.shapes = this.P2P.place(this, 'p8_key', 'shapes');
 
-// Initialize a draggable camera with options
-this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
-  draggable: {
-    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
-    easeDragging: true,
-    friction: 0.95,
-    minSpeed: 0.1,
-  },
-});
+// Create simple draggable cam
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable']);
 
 // Change values during drag.
-this.events.on("draggableActive", () => {
+this.events.on("draggableStart", () => {
   this.shapes.setAlpha(0.3)
 });
 
