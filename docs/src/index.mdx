@@ -9,18 +9,6 @@ psd-to-phaser is a Phaser plugin that reads the JSON manifest created by [psd-to
 
 It also has some nifty extras like [lazy loading](/posts/cameras/) and a few presets that I thought might be useful ([parallax](/posts/presets/) and [build-your-own-joystick](/posts/presets/) being my favorites.)
 
-## Try It Out
-
-Here's a simple example of loading and placing a PSD:
-
-<Interactive outputPath="demos/output/placement" psdKey="placement_psd" zoom={3} >
-
-```js 
-// Place the entire PSD
-const placedPSD = this.P2P.place(this, 'placement_psd', 'dots');
-```
-</Interactive>
-
 ## Initializing the Plugin
 
 You can initialize the plugin when creating your game's configuration object:
