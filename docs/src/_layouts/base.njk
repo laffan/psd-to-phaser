@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="{{ '/' | url }}">
     <title>{% if title %}{{ title }} - {% endif %}PSD to Phaser Documentation</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Prism CSS for syntax highlighting - using a minimal theme -->
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="/css/main.css" rel="stylesheet">
+    <link href="{{ '/css/main.css' | url }}" rel="stylesheet">
     <!-- Ace Editor CSS -->
     <style>
         .ace-editor {
@@ -193,7 +195,7 @@
                             {% for item in section.items %}
                             <li class="nav-item">
                                 <a class="nav-link {% if page.fileSlug == item.file %}active{% endif %}" 
-                                   href="{{ item.url }}">
+                                   href="{{ item.url | url }}">
                                     {{ item.title }}
                                 </a>
                             </li>
@@ -351,7 +353,7 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
     
     <!-- PSD to Phaser -->
-    <script src="/js/psd-to-phaser.min.js"></script>
+    <script src="{{ '/js/psd-to-phaser.min.js' | url }}"></script>
     <script>
       // Debug: Check if PsdToPhaserPlugin is loaded (UMD export name)
       if (typeof window.PsdToPhaserPlugin !== 'undefined') {
@@ -368,6 +370,6 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     
     <!-- Interactive Examples -->
-    <script src="/js/interactive.js"></script>
+    <script src="{{ '/js/interactive.js' | url }}"></script>
 </body>
 </html>

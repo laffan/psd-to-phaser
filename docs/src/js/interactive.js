@@ -104,9 +104,11 @@ class InteractiveExample {
           
           // Automatically load the PSD if outputPath and psdKey are provided
           if (self.outputPath && self.psdKey) {
-            // Ensure outputPath is absolute from site root
+            // Ensure outputPath is absolute from site root, handling pathprefix
             const normalizedPath = self.outputPath.startsWith('/') ? self.outputPath.slice(1) : self.outputPath;
-            const fullPath = `/${normalizedPath.startsWith('public/') ? normalizedPath : `public/${normalizedPath}`}`;
+            const publicPath = normalizedPath.startsWith('public/') ? normalizedPath : `public/${normalizedPath}`;
+            const basePath = document.querySelector('base')?.getAttribute('href') || '/';
+            const fullPath = basePath === '/' ? `/${publicPath}` : `${basePath}${publicPath}`;
             console.log(`Auto-loading PSD: ${self.psdKey} from ${fullPath}`);
             this.P2P.load.load(this, self.psdKey, fullPath);
           }
@@ -222,9 +224,11 @@ class InteractiveExample {
     const psdPath = layerContainer.getAttribute('data-psd-path');
     
     try {
-      // Ensure the path is absolute from site root
+      // Ensure the path is absolute from site root, handling pathprefix
       const normalizedPath = psdPath.replace(/^public\//, '').replace(/^\//, '');
-      const fullPath = `/public/${normalizedPath}`;
+      const publicPath = `public/${normalizedPath}`;
+      const basePath = document.querySelector('base')?.getAttribute('href') || '/';
+      const fullPath = basePath === '/' ? `/${publicPath}` : `${basePath}${publicPath}`;
       const response = await fetch(`${fullPath}/data.json`);
       if (!response.ok) {
         throw new Error(`Failed to load layer data: ${response.status}`);

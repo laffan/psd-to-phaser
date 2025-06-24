@@ -59,7 +59,8 @@ export default function(eleventyConfig) {
     const demoId = psdKey;
     
     // Calculate PSD download path: change "output" to "psds" and add .psd extension
-    const psdDownloadPath = `/${outputPath.replace('/output/', '/psds/')}.psd`;
+    const psdRelativePath = outputPath.replace('/output/', '/psds/') + '.psd';
+    const psdDownloadPath = `public${psdRelativePath}`;
     
     const htmlContent = `<div class="row mb-3">
       <div class="col-12">
@@ -146,7 +147,8 @@ export default function(eleventyConfig) {
     const encodedCode = Buffer.from(code).toString('base64');
     
     // Calculate PSD download path for shortcode version  
-    const psdDownloadPath = `/${psdFilename.replace('/output/', '/psds/')}.psd`;
+    const psdRelativePath = psdFilename.replace('/output/', '/psds/') + '.psd';
+    const psdDownloadPath = `public${psdRelativePath}`;
     
     return `<div class="interactive-example">
       <div class="row mb-3">
