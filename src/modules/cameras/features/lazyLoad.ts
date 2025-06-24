@@ -251,7 +251,16 @@ export function LazyLoadCamera(
     if (data.category === "sprite") {
       // Create a group to hold the loaded objects for sprites
       const itemGroup = scene.add.group();
-      placeSprites(scene, data, plugin, itemGroup, () => {}, data._psdKey);
+      placeSprites(scene, data, plugin, itemGroup, () => {
+        // Force depth re-evaluation after sprite is placed
+        itemGroup.getChildren().forEach((child: any) => {
+          if (child.setDepth && data.initialDepth !== undefined) {
+            child.setDepth(data.initialDepth);
+          }
+        });
+        // Re-sort scene display list to ensure proper depth ordering
+        scene.children.sort('depth');
+      }, data._psdKey);
     } else if (data.category === "tile" || data.category === "tileset") {
       // For tiles, find the existing tile container or create one with proper depth
       const tileContainer = findOrCreateTileContainer(scene, data);

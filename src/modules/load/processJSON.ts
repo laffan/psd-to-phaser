@@ -50,7 +50,7 @@ export function processJSON(
 function processLayersRecursively(layers: any[], processedData: any, parentLazyLoad: boolean, lazyLoadOption?: boolean | string[]) {
   
   layers.forEach((layer: any) => {
-    let isLazyLoad = parentLazyLoad || layer.lazyLoad === true;
+    let isLazyLoad = parentLazyLoad || layer.attributes?.lazyLoad === true;
     
     // Apply lazyLoad option from load() parameters
     if (lazyLoadOption !== undefined) {

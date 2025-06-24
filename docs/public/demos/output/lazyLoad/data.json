@@ -26,11 +26,10 @@
             "lazyLoad": true
           },
           "filePath": "sprites/dot.png",
-            "lazyLoad": true,
           "initialDepth": 10
         },
         {
-          "name": "dot",
+          "name": "dot2",
           "category": "sprite",
           "x": 748,
           "y": 820,
@@ -39,7 +38,7 @@
           "attributes": {
             "lazyLoad": true
           },
-          "filePath": "sprites/dot.png",
+          "filePath": "sprites/dot2.png",
           "initialDepth": 9
         },
         {
@@ -69,7 +68,7 @@
           "initialDepth": 7
         },
         {
-          "name": "orangeTriangle",
+          "name": "orangeTriangle2",
           "category": "sprite",
           "x": 66,
           "y": 106,
@@ -78,24 +77,24 @@
           "attributes": {
             "lazyLoad": true
           },
-          "filePath": "sprites/orangeTriangle.png",
+          "filePath": "sprites/orangeTriangle2.png",
           "initialDepth": 6
         },
         {
-          "name": "orangeTriangle",
+          "name": "orangeTriangle3",
           "category": "sprite",
           "x": 482,
-          "y": 575,
+          "y": 574,
           "width": 78,
-          "height": 67,
+          "height": 68,
           "attributes": {
             "lazyLoad": true
           },
-          "filePath": "sprites/orangeTriangle.png",
+          "filePath": "sprites/orangeTriangle3.png",
           "initialDepth": 5
         },
         {
-          "name": "blueSquare",
+          "name": "blueSquare1",
           "category": "sprite",
           "x": 743,
           "y": 105,
@@ -104,11 +103,11 @@
           "attributes": {
             "lazyLoad": true
           },
-          "filePath": "sprites/blueSquare.png",
+          "filePath": "sprites/blueSquare1.png",
           "initialDepth": 4
         },
         {
-          "name": "blueSquare",
+          "name": "blueSquare2",
           "category": "sprite",
           "x": 319,
           "y": 224,
@@ -117,7 +116,7 @@
           "attributes": {
             "lazyLoad": true
           },
-          "filePath": "sprites/blueSquare.png",
+          "filePath": "sprites/blueSquare2.png",
           "initialDepth": 3
         },
         {
