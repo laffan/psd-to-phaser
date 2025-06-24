@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+
+# Build output
+_dist/
+_site/
+dist/
+
+# 11ty cache
+.cache/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+
+# VSCode settings
+.vscode/

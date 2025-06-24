@@ -11,7 +11,8 @@ export function placeSprites(
   plugin: PsdToPhaserPlugin,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
-  psdKey: string
+  psdKey: string,
+  animationOptions?: Phaser.Types.Animations.Animation
 ): void {
   if (spriteData.lazyLoad) {
     const placeholder = createLazyLoadPlaceholder(scene, spriteData, plugin);
@@ -38,7 +39,7 @@ export function placeSprites(
         spriteObject = placeAtlas(scene, spriteData, plugin, psdKey, textureKey);
         break;
       case "animation":
-        spriteObject = placeAnimation(scene, spriteData, plugin, psdKey, textureKey);
+        spriteObject = placeAnimation(scene, spriteData, plugin, psdKey, textureKey, animationOptions);
         break;
       default:
         spriteObject = placeDefaultSprite(scene, spriteData, plugin, psdKey, textureKey);

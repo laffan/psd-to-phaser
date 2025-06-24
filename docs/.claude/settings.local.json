@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(npm run dev:*)",
+      "Bash(mv:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run debug:*)",
+      "WebFetch(domain:www.11ty.dev)",
+      "Bash(mkdir:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": []
+  }
+}

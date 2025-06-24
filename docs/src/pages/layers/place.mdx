@@ -103,6 +103,17 @@ this.P2P.place(this, "psd_key", "nested/bounce",   {
   });
 ```
 
+If you have already placed the animation, you can also override the initial settings using the `updateAnimation` method.
+
+```js
+this.bounce = this.P2P.place(this, "psd_key", "nested/bounce");
+
+this.bounce.updateAnimation({
+  frameRate: 5,
+  yoyo: true,
+});
+```
+
 
 <Interactive outputPath="demos/output/placement" psdKey="p3_key" >
 
@@ -113,27 +124,17 @@ this.P2P.place(this, 'p3_key', 'background');
 this.P2P.place(this, 'p3_key', 'face/leftEye');
 this.P2P.place(this, 'p3_key', 'face/rightEye');
 
-// Assign placed item to a variable
-this.P2P.place(this, "p3_key", "face/mouthAnimated",   {
-    animationOptions: {
-      frameRate: 12,
-      yoyo: true,
-    }
-  });
+// Default frameRate is set by the layer name
+this.talk = this.P2P.place(this, 'p3_key', 'face/mouthAnimated');
 
+// Uncomment this updateAnimation to trigger overrides.
+// this.talk.updateAnimation({
+//   frameRate: 15,
+//   yoyo: true
+// });
 
 ```
 </Interactive>
 
 
 
-3. Using get() : You can always use get() to retreive the sprite and then use updateAnimation():
-
-```js
-this.bounce = this.P2P.place(this, "psd_key", "nested/bounce");
-
-this.bounce.updateAnimation({
-  frameRate: 5,
-  yoyo: true,
-});
-```

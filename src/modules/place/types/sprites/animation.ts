@@ -7,7 +7,8 @@ export function placeAnimation(
   layer: any,
   plugin: PsdToPhaserPlugin,
   psdKey: string,
-  textureKey?: string
+  textureKey?: string,
+  animationOptions?: Phaser.Types.Animations.Animation
 ): Phaser.GameObjects.Sprite {
   const actualTextureKey = textureKey || layer.name;
   const gameObject = scene.add.sprite(layer.x, layer.y, actualTextureKey, 0);
@@ -45,6 +46,20 @@ export function placeAnimation(
     }
     if (layer.attributes?.hideOnComplete !== undefined) {
       animConfig.hideOnComplete = layer.attributes.hideOnComplete;
+    }
+
+    // Merge in animationOptions (these take precedence over layer attributes)
+    if (animationOptions) {
+      Object.assign(animConfig, animationOptions);
+      // Ensure key is preserved since it's required for the animation system
+      animConfig.key = actualTextureKey;
+      // Ensure frames are preserved if not overridden
+      if (!animationOptions.frames) {
+        animConfig.frames = scene.anims.generateFrameNumbers(actualTextureKey, {
+          start: 0,
+          end: layer.frame_count ? layer.frame_count - 1 : -1,
+        });
+      }
     }
 
     if (!scene.anims.exists(actualTextureKey)) {

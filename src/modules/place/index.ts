@@ -18,7 +18,7 @@ export default function placeModule(plugin: PsdToPhaserPlugin) {
     scene: Phaser.Scene,
     psdKey: string,
     layerPath: string,
-    options: { depth?: number } = {}
+    options: { depth?: number; animationOptions?: Phaser.Types.Animations.Animation } = {}
   ): Phaser.GameObjects.GameObject | Phaser.GameObjects.Group {
     const psdData = plugin.getData(psdKey);
     if (!psdData || !psdData.original) {
@@ -63,7 +63,7 @@ function placeLayer(
   tileSliceSize: number,
   group: Phaser.GameObjects.Group,
   psdKey: string,
-  options: { depth?: number }
+  options: { depth?: number; animationOptions?: Phaser.Types.Animations.Animation }
 ): Phaser.GameObjects.GameObject | Phaser.GameObjects.Group {
   if (layer.category === "group") {
     if (
@@ -126,7 +126,7 @@ function placeLayer(
         );
         return group;
       case "sprite":
-        placeSprites(scene, layer, plugin, group, () => {}, psdKey);
+        placeSprites(scene, layer, plugin, group, () => {}, psdKey, options.animationOptions);
         return group;
       case "zone":
         placeZones(scene, layer, plugin, group, () => {}, psdKey);
