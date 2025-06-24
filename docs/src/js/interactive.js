@@ -297,8 +297,27 @@ class InteractiveExample {
     let display = `<span class="layer-category">${categoryLetter}</span>`;
     display += ` | <span class="layer-actual-name">${layer.name}</span>`;
     
-    // Add type info if we can infer it (animation, etc.)
-    // This would need more sophisticated logic based on attributes or naming patterns
+    // Add type info if available
+    if (layer.type) {
+      display += ` | <span class="layer-type">${layer.type}</span>`;
+    }
+    
+    // Add attributes if they exist and are not empty
+    if (layer.attributes && Object.keys(layer.attributes).length > 0) {
+      const attributesArray = [];
+      for (const [key, value] of Object.entries(layer.attributes)) {
+        let formattedValue = value;
+        if (Array.isArray(value)) {
+          formattedValue = `[${value.join(', ')}]`;
+        } else if (typeof value === 'object') {
+          formattedValue = JSON.stringify(value);
+        }
+        attributesArray.push(`${key}: ${formattedValue}`);
+      }
+      if (attributesArray.length > 0) {
+        display += ` | <span class="layer-attributes">{${attributesArray.join(', ')}}</span>`;
+      }
+    }
     
     return display;
   }
