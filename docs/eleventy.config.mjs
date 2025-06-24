@@ -60,8 +60,8 @@ export default function(eleventyConfig) {
     
     // Calculate PSD download path: change "output" to "psds" and add .psd extension
     const psdRelativePath = outputPath.replace('/output/', '/psds/') + '.psd';
-    // Use url filter to handle pathPrefix properly (remove 'public/' since it's the source dir)
-    const psdDownloadPath = eleventyConfig.getFilter('url')(psdRelativePath);
+    // Use direct GitHub repo link for downloads
+    const psdDownloadPath = `https://github.com/laffan/psd-to-phaser/blob/main/docs/public${psdRelativePath}?raw=true`;
     
     const htmlContent = `<div class="row mb-3">
       <div class="col-12">
@@ -149,8 +149,8 @@ export default function(eleventyConfig) {
     
     // Calculate PSD download path for shortcode version  
     const psdRelativePath = psdFilename.replace('/output/', '/psds/') + '.psd';
-    // Use url filter to handle pathPrefix properly (remove 'public/' since it's the source dir)
-    const psdDownloadPath = eleventyConfig.getFilter('url')(psdRelativePath);
+    // Use direct GitHub repo link for downloads
+    const psdDownloadPath = `https://github.com/laffan/psd-to-phaser/blob/main/docs/public${psdRelativePath}?raw=true`;
     
     return `<div class="interactive-example">
       <div class="row mb-3">
