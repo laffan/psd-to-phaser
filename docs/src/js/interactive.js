@@ -260,14 +260,41 @@ class InteractiveExample {
     // Display reconstructed original layer name with pipe structure
     html += `<span class="layer-name">${originalName}</span>`;
     
-    // Render children if this is a group
-    if (layer.children && layer.children.length > 0) {
+    // Check if we need to render nested content (children or frames)
+    const hasChildren = layer.children && layer.children.length > 0;
+    const hasFrames = layer.frames && Object.keys(layer.frames).length > 0 && 
+                     (layer.type === 'atlas' || layer.type === 'spritesheet');
+    
+    if (hasChildren || hasFrames) {
       html += '<ul>';
-      layer.children.forEach(child => {
-        html += this.renderLayer(child);
-      });
+      
+      // Render children if this is a group
+      if (hasChildren) {
+        layer.children.forEach(child => {
+          html += this.renderLayer(child);
+        });
+      }
+      
+      // Render frames if this is an atlas or spritesheet
+      if (hasFrames) {
+        Object.entries(layer.frames).forEach(([frameName, frameData]) => {
+          html += this.renderFrame(frameName, frameData);
+        });
+      }
+      
       html += '</ul>';
     }
+    
+    html += '</li>';
+    return html;
+  }
+  
+  renderFrame(frameName, frameData) {
+    const categoryClass = `layer-frame layer-sprite`;
+    let html = `<li class="${categoryClass}">`;
+    
+    // Display only the frame name with opacity styling
+    html += `<span class="layer-name">${frameName}</span>`;
     
     html += '</li>';
     return html;
@@ -299,7 +326,7 @@ class InteractiveExample {
     
     // Add type info if available
     if (layer.type) {
-      display += ` | <span class="layer-type">${layer.type}</span>`;
+      display += ` | <span class="layer-type">${layer.type}</span> |`;
     }
     
     // Add attributes if they exist and are not empty
