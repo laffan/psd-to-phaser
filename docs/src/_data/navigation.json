@@ -74,14 +74,14 @@
           "file": "pages/cameras/overview"
         },
         {
-          "title": "lazyLoad",
-          "url": "/pages/cameras/lazy-load/",
-          "file": "pages/cameras/lazy-load"
-        },
-        {
           "title": "draggable",
           "url": "/pages/cameras/draggable/",
           "file": "pages/cameras/draggable"
+        },
+        {
+          "title": "lazyLoad",
+          "url": "/pages/cameras/lazy-load/",
+          "file": "pages/cameras/lazy-load"
         },
         {
           "title": "Combined",

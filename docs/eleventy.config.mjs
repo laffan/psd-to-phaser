@@ -58,26 +58,41 @@ export default function(eleventyConfig) {
     const psdFilename = `${outputPath}/${outputPath.split('/').pop()}.psd`;
     const demoId = psdKey;
     
+    // Calculate PSD download path: change "output" to "psds" and add .psd extension
+    const psdDownloadPath = `/${outputPath.replace('/output/', '/psds/')}.psd`;
+    
     const htmlContent = `<div class="row mb-3">
       <div class="col-12">
-        <div class="accordion" id="accordion-${demoId}">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="heading-${demoId}">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#collapse-${demoId}" aria-expanded="false" 
-                      aria-controls="collapse-${demoId}">
-                PSD Layers
-              </button>
-            </h2>
-            <div id="collapse-${demoId}" class="accordion-collapse collapse" 
-                 aria-labelledby="heading-${demoId}" data-bs-parent="#accordion-${demoId}">
-              <div class="accordion-body">
-                <div class="layer-structure" id="layers-${demoId}" 
-                     data-psd-path="public/${outputPath}">
-                  Loading layer structure...
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-${demoId}">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-${demoId}">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-${demoId}" aria-expanded="false" 
+                          aria-controls="collapse-${demoId}">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-${demoId}" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-${demoId}" data-bs-parent="#accordion-${demoId}">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-${demoId}" 
+                         data-psd-path="public/${outputPath}">
+                      Loading layer structure...
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="${psdDownloadPath}" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
           </div>
         </div>
       </div>
@@ -130,27 +145,43 @@ export default function(eleventyConfig) {
     // Base64 encode the code to avoid any processing issues
     const encodedCode = Buffer.from(code).toString('base64');
     
+    // Calculate PSD download path for shortcode version  
+    const psdDownloadPath = `/${psdFilename.replace('/output/', '/psds/')}.psd`;
+    
     return `<div class="interactive-example">
       <div class="row mb-3">
         <div class="col-12">
-          <div class="accordion" id="accordion-${psdName}">
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="heading-${psdName}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                        data-bs-target="#collapse-${psdName}" aria-expanded="false" 
-                        aria-controls="collapse-${psdName}">
-                  PSD Layers
-                </button>
-              </h2>
-              <div id="collapse-${psdName}" class="accordion-collapse collapse" 
-                   aria-labelledby="heading-${psdName}" data-bs-parent="#accordion-${psdName}">
-                <div class="accordion-body">
-                  <div class="layer-structure" id="layers-${psdName}" 
-                       data-psd-path="public/${psdFilename}">
-                    Loading layer structure...
+          <div class="d-flex align-items-start gap-2">
+            <div class="flex-grow-1">
+              <div class="accordion" id="accordion-${psdName}">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading-${psdName}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapse-${psdName}" aria-expanded="false" 
+                            aria-controls="collapse-${psdName}">
+                      PSD Layers
+                    </button>
+                  </h2>
+                  <div id="collapse-${psdName}" class="accordion-collapse collapse" 
+                       aria-labelledby="heading-${psdName}" data-bs-parent="#accordion-${psdName}">
+                    <div class="accordion-body">
+                      <div class="layer-structure" id="layers-${psdName}" 
+                           data-psd-path="public/${psdFilename}">
+                        Loading layer structure...
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="d-flex align-items-start">
+              <a href="${psdDownloadPath}" class="btn btn-outline-secondary d-flex align-items-center" style="min-height: 3rem; padding: 0.75rem 1rem;" download>
+                <svg width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Download PSD
+              </a>
             </div>
           </div>
         </div>

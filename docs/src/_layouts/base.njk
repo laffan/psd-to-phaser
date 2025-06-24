@@ -82,12 +82,67 @@
             width: 250px;
             height: 100vh;
             overflow-y: auto;
+            background-color: #f8f9fa;
+            z-index: 1040;
+            transition: transform 0.3s ease-in-out;
         }
         
         main {
             margin-left: 250px;
             max-width: 1000px;
             padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        
+        /* Mobile Navigation Toggle */
+        .navbar-toggler {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1060;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            min-width: 44px;
+            min-height: 44px;
+            cursor: pointer;
+        }
+        
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .navbar-toggler {
+                display: block;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            main {
+                margin-left: 0;
+                padding: 60px 20px 20px 20px;
+            }
+            
+            .sidebar-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1030;
+                display: none;
+            }
+            
+            .sidebar-backdrop.show {
+                display: block;
+            }
         }
         
         /* Responsive layout for narrow screens */
@@ -109,9 +164,23 @@
     </style>
 </head>
 <body>
+    <!-- Mobile Menu Toggle -->
+    <button class="navbar-toggler" type="button" id="sidebarToggle" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </span>
+    </button>
+    
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    
     <div class="container-fluid">
         <!-- Sidebar Navigation -->
-        <nav class="bg-light sidebar">
+        <nav class="bg-light sidebar" id="sidebar">
                 <div class="position-sticky pt-3">
                     <div class="mb-3">
                         <h5 class="text-primary">PSD to Phaser</h5>
@@ -164,6 +233,116 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Mobile Navigation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+            
+            if (!sidebarToggle || !sidebar || !sidebarBackdrop) {
+                console.error('Mobile navigation elements not found');
+                return;
+            }
+            
+            function toggleSidebar() {
+                console.log('Toggling sidebar');
+                sidebar.classList.toggle('show');
+                sidebarBackdrop.classList.toggle('show');
+            }
+            
+            function closeSidebar() {
+                console.log('Closing sidebar');
+                sidebar.classList.remove('show');
+                sidebarBackdrop.classList.remove('show');
+            }
+            
+            // Handle hamburger button clicks - add both click and touch events
+            sidebarToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('Click event fired');
+                toggleSidebar();
+            });
+            
+            sidebarToggle.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Touch event fired');
+                toggleSidebar();
+            });
+            
+            // Handle backdrop clicks
+            sidebarBackdrop.addEventListener('click', closeSidebar);
+            
+            // Close sidebar when navigation links are clicked on mobile
+            const navLinks = sidebar.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                // Handle click events (desktop)
+                link.addEventListener('click', function(e) {
+                    console.log('Link clicked:', this.href);
+                    if (window.innerWidth <= 768) {
+                        setTimeout(closeSidebar, 100);
+                    }
+                });
+                
+                // Handle touch events (mobile)
+                link.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    console.log('Link touched:', this.href);
+                    if (window.innerWidth <= 768) {
+                        // Navigate to the link
+                        window.location.href = this.href;
+                        // Close the sidebar
+                        setTimeout(closeSidebar, 50);
+                    }
+                });
+            });
+            
+            // Close sidebar when window is resized to desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+            
+            // Fix Bootstrap components for mobile touch
+            const bootstrapTogglers = document.querySelectorAll('[data-bs-toggle]');
+            bootstrapTogglers.forEach(toggler => {
+                // Skip the sidebar toggle since we handle it separately
+                if (toggler.id === 'sidebarToggle') return;
+                
+                toggler.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    console.log('Bootstrap toggle touched:', this.getAttribute('data-bs-toggle'));
+                    
+                    // Manually trigger the Bootstrap functionality
+                    const target = this.getAttribute('data-bs-target');
+                    const toggleType = this.getAttribute('data-bs-toggle');
+                    
+                    if (toggleType === 'collapse' && target) {
+                        const targetElement = document.querySelector(target);
+                        if (targetElement) {
+                            // Use Bootstrap's Collapse API if available
+                            if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+                                const bsCollapse = new bootstrap.Collapse(targetElement, {
+                                    toggle: true
+                                });
+                            } else {
+                                // Fallback: toggle Bootstrap classes manually
+                                targetElement.classList.toggle('show');
+                                this.classList.toggle('collapsed');
+                                this.setAttribute('aria-expanded', 
+                                    this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+                            }
+                        }
+                    }
+                });
+            });
+            
+            console.log('Mobile navigation initialized');
+        });
+    </script>
     <!-- Ace Editor -->
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/ace.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/mode-javascript.js"></script>

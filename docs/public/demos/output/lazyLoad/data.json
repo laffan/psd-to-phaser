@@ -1,0 +1,168 @@
+{
+  "name": "lazyLoad",
+  "width": 1000,
+  "height": 1000,
+  "tile_slice_size": 300,
+  "tile_scaled_versions": [],
+  "layers": [
+    {
+      "name": "shapes",
+      "category": "group",
+      "x": 66,
+      "y": 105,
+      "width": 806,
+      "height": 763,
+      "initialDepth": 11,
+      "attributes": {},
+      "children": [
+        {
+          "name": "dot",
+          "category": "sprite",
+          "x": 89,
+          "y": 538,
+          "width": 51,
+          "height": 48,
+          "attributes": {
+            "lazyLoad": true
+          },
+          "filePath": "sprites/dot.png",
+            "lazyLoad": true,
+          "initialDepth": 10
+        },
+        {
+          "name": "dot",
+          "category": "sprite",
+          "x": 748,
+          "y": 820,
+          "width": 51,
+          "height": 48,
+          "attributes": {
+            "lazyLoad": true
+          },
+          "filePath": "sprites/dot.png",
+          "initialDepth": 9
+        },
+        {
+          "name": "dot",
+          "category": "sprite",
+          "x": 532,
+          "y": 337,
+          "width": 51,
+          "height": 48,
+          "attributes": {
+            "lazyLoad": true
+          },
+          "filePath": "sprites/dot.png",
+          "initialDepth": 8
+        },
+        {
+          "name": "orangeTriangle",
+          "category": "sprite",
+          "x": 794,
+          "y": 435,
+          "width": 78,
+          "height": 68,
+          "attributes": {
+            "lazyLoad": true
+          },
+          "filePath": "sprites/orangeTriangle.png",
+          "initialDepth": 7
+        },
+        {
+          "name": "orangeTriangle",
+          "category": "sprite",
+          "x": 66,
+          "y": 106,
+          "width": 78,
+          "height": 68,
+          "attributes": {
+            "lazyLoad": true
+          },
+          "filePath": "sprites/orangeTriangle.png",
+          "initialDepth": 6
+        },
+        {
+          "name": "orangeTriangle",
+          "category": "sprite",
+          "x": 482,
+          "y": 575,
+          "width": 78,
+          "height": 67,
+          "attributes": {
+            "lazyLoad": true
+          },
+          "filePath": "sprites/orangeTriangle.png",
+          "initialDepth": 5
+        },
+        {
+          "name": "blueSquare",
+          "category": "sprite",
+          "x": 743,
+          "y": 105,
+          "width": 64,
+          "height": 66,
+          "attributes": {
+            "lazyLoad": true
+          },
+          "filePath": "sprites/blueSquare.png",
+          "initialDepth": 4
+        },
+        {
+          "name": "blueSquare",
+          "category": "sprite",
+          "x": 319,
+          "y": 224,
+          "width": 66,
+          "height": 65,
+          "attributes": {
+            "lazyLoad": true
+          },
+          "filePath": "sprites/blueSquare.png",
+          "initialDepth": 3
+        },
+        {
+          "name": "blueSquare",
+          "category": "sprite",
+          "x": 201,
+          "y": 762,
+          "width": 64,
+          "height": 64,
+          "attributes": {},
+          "filePath": "sprites/blueSquare.png",
+          "initialDepth": 2
+        }
+      ]
+    },
+    {
+      "name": "dots",
+      "category": "tileset",
+      "x": -79,
+      "y": -33,
+      "width": 1156,
+      "height": 1064,
+      "attributes": {
+        "lazyLoad": true
+      },
+      "lazyLoad": true,
+      "columns": 4,
+      "rows": 4,
+      "filetype": "png",
+      "initialDepth": 1,
+      "alpha": 0.1
+    },
+    {
+      "name": "background",
+      "category": "tileset",
+      "x": -6,
+      "y": -7,
+      "width": 1012,
+      "height": 1013,
+      "attributes": {},
+      "type": "jpg",
+      "columns": 4,
+      "rows": 4,
+      "filetype": "jpg",
+      "initialDepth": 0
+    }
+  ]
+}

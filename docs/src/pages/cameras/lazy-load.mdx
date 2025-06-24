@@ -5,24 +5,54 @@ title: LazyLoad Camera
 
 This camera works in conjunction with the `lazyLoad` attribute, which you can set to true on any sprite or tile layer. Sprite or tile layers that have been given the `lazyLoad` attribute will not loaded during load() but later, when they enter the camera. This gives you the ability to load assets only when they're needed, potentially keeping load times much (much) smaller.
 
-**Note:**  : Currently does _not_ work with multiple cameras. Also, there are some tradeoffs to using `lazyLoad`. The biggest difference is that you can't manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they'll just show up when needed.
-
-The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence. If you do not use a lazyLoad camera and your PSD contains lazyLoad items you will get lots of "Texture not found" errors.
-
-**NOTE : ZOOM BUG**: By default, camera zoom will affects the preload boundaries of your lazyLoad camera, so if you zoom out, the boundary zooms out too.  It turns out this is a difficult fix. As a stopgap, you can set `createBoundaryCamera: true` in your lazy load options. This creates an invisible secondary camera that maintains accurate preload boundaries regardless of the main camera's zoom level. This is a tradeoff: it works, but   will increase processor load somewhat. 
-
 ```js
 // Initialize a lazyLoad camera (applies to all PSDs by default)
 this.lazyCamera = this.P2P.createCamera(this.cameras.main, ["lazyLoad"], {
   lazyLoad: {
-    extendPreloadBounds: -30, // pull lazyLoad boundary in to debug
+    extendPreloadBounds: 100, // distance outside camera to start loading
     debug: {
       shape: true, // outline lazyLoad items
-      label: true, // label with filename 
-      console: true, // show file loading in console
+      label: false, // label with filename 
+      console: false, // show file loading in console
     },
   },
 });
+
+```
+**Note:**  : Currently does _not_ work with multiple cameras. Also, there are some tradeoffs to using `lazyLoad`. The biggest difference is that you can't manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they'll just show up when needed.
+
+The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence. If you do not use a lazyLoad camera and your PSD contains lazyLoad items you will get lots of "Texture not found" errors.
+
+
+<Interactive outputPath="demos/output/lazyLoad" psdKey="p9_key" >
+
+```js 
+// Place background
+this.P2P.place(this, 'p9_key', 'background');
+this.P2P.place(this, 'p9_key', 'dots');
+this.shapes = this.P2P.place(this, 'p9_key', 'shapes');
+
+// Create simple draggable cam
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable', 'lazyLoad'], {
+    lazyLoad: {
+    extendPreloadBounds: -50, // negative bound so we can see the border for demonstration purposes.
+    debug: {
+      shape: true, // outline lazyLoad items
+      label: true, // show name of each item
+    },
+  },
+}
+);
+
+
+
+```
+</Interactive>
+
+
+
+
+```js
 
 // Target specific PSDs only
 this.lazyCamera = this.P2P.createCamera(this.cameras.main, ["lazyLoad"], {
@@ -41,6 +71,9 @@ this.lazyCamera = this.P2P.createCamera(this.cameras.main, ["lazyLoad"], {
   },
 });
 ```
+
+
+**NOTE : ZOOM BUG**: By default, camera zoom will affects the preload boundaries of your lazyLoad camera, so if you zoom out, the boundary zooms out too.  It turns out this is a difficult fix. As a stopgap, you can set `createBoundaryCamera: true` in your lazy load options. This creates an invisible secondary camera that maintains accurate preload boundaries regardless of the main camera's zoom level. This is a tradeoff: it works, but   will increase processor load somewhat. 
 
 Now P2P is keeping track of where the camera is and whether there is any overlap with the location of sprites or tiles. If there is overlap, it will trigger a load sequence. When lazyLoad items load, they trigger loadProgress events, so you can listen for "lazyLoadStart", "lazyLoadProgress", "lazyLoadingComplete".
 

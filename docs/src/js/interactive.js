@@ -190,13 +190,13 @@ class InteractiveExample {
             plugin: window.PsdToPhaserPlugin,
             start: true,
             mapping: "P2P",
-            data: {
-              debug: {
-                console: true,
-                shape: false,
-                label: false
-              }
-            }
+            // data: {
+            //   debug: {
+            //     console: true,
+            //     shape: false,
+            //     label: false
+            //   }
+            // }
           }
         ]
       },
