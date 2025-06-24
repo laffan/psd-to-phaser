@@ -3,6 +3,8 @@ layout: base.njk
 title: Gotchas
 ---
 
-## Depth & placing your own items.
+####  Depth & placing your own items.
 
-Because the plugin is maintaining layer order with setDepth() it is very likely that new items will be hidden behind something. When placing something of your own, make sure you set its depth to something higher than the number of layers you're bringing in from the PSD.
+The plugin maintains layer order with setDepth(), starting from 0 and extending to the number of layers in your PSD. This means that **it is very likely that new items will be hidden behind something**. 
+
+When placing something of your own, make sure you set its depth to something higher than the number of layers you're bringing in from the PSD.

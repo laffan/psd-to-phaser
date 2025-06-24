@@ -16,7 +16,7 @@
       ]
     },
     {
-      "title": "Loading",
+      "title": "Load",
       "items": [
         {
           "title": "load()",
@@ -27,16 +27,6 @@
           "title": "loadMultiple()",
           "url": "/pages/loading/load-multiple/",
           "file": "pages/loading/load-multiple"
-        },
-        {
-          "title": "getData()",
-          "url": "/pages/loading/get-data/",
-          "file": "pages/loading/get-data"
-        },
-        {
-          "title": "getTexture()",
-          "url": "/pages/loading/get-texture/",
-          "file": "pages/loading/get-texture"
         }
       ]
     },
@@ -57,6 +47,21 @@
           "title": "remove()",
           "url": "/pages/layers/remove/",
           "file": "pages/layers/remove"
+        }
+      ]
+    },
+    {
+      "title": "Get",
+      "items": [
+        {
+          "title": "getData()",
+          "url": "/pages/get/get-data/",
+          "file": "pages/get/get-data"
+        },
+        {
+          "title": "getTexture()",
+          "url": "/pages/get/get-texture/",
+          "file": "pages/get/get-texture"
         }
       ]
     },
