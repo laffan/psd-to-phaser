@@ -214,10 +214,7 @@ export default function(eleventyConfig) {
   // Copy public directory contents to root
   eleventyConfig.addPassthroughCopy("public");
   
-  // Copy psd-to-phaser from node_modules
-  eleventyConfig.addPassthroughCopy({
-    "node_modules/psd-to-phaser/dist/psd-to-phaser.umd.js": "js/psd-to-phaser.min.js"
-  });
+  // PSD to Phaser is now loaded from unpkg CDN
   
   // Watch for changes in JS and CSS
   eleventyConfig.addWatchTarget("./src/js/");
