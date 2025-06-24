@@ -5,53 +5,46 @@ title: getTexture()
 
 Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.
 
-Note : When placing new items, remember the [depth gotchya](/pages/gotchas).
-
-```js
-// Get the texture of a spritesheet
-const spriteTex = this.P2P.getTexture(this, "psd_key", "simpleSprite");
-const spritesheetTex = this.P2P.getTexture(this, "psd_key", 'nested/sheet');
-const atlasTex = this.P2P.getTexture(this, "psd_key", 'anAtlas');
-
-// Now you have access to just those textures and can use them however you please.
-// For example :
-
-// Create the new sprite like you normally would
-this.newSprite = this.add.sprite(200, 30, spriteTex);
-
-// Emit spritesheet frames
-this.spriteSheetParticles = this.add.particles(200, 30, spritesheetTex, {
-  frame: [0, 1, 2, 3],
-  speed: 100,
-  scale: { start: 1, end: 0 },
-});
-
-// Emit atlas frames
-this.atlasParticles = this.add.particles(200, 30, atlasTex, {
-  frame: ['pinkDot', 'greenDot'],
-  speed: 100,
-  scale: { start: 1, end: 0 },
-});
-
-// Place the 'pinkDot' of the atlas elsewhere in the scene as its own sprite.
-const testSprite = this.add.sprite(200, 30, atlasTex, 'pinkDot');
-
-// Avoid the depth gotchya! Make sure these new items are visible
-this.newSprite.setDepth(100);
-this.atlasParticles.setDepth(100);
-this.atlasParticles.setDepth(100);
-```
-
-
-
-
 <Interactive outputPath="demos/output/getting" psdKey="p6_key" >
 
 ```js 
 
 // Place background
 this.P2P.place(this, 'p6_key', 'background');
-this.P2P.place(this, 'p6_key', 'bob');
+
+// Get the texture from atlasBob
+const bob = this.P2P.getTexture(this, "p6_key", "atlasBob");
+
+// Create a new sprite using just a piece of the atlas
+  this.add.sprite(150, 150, bob, 'body');
+
+```
+</Interactive>
+
+Note : When placing new items, remember the [depth gotchya](/pages/gotchas).
+
+Once you have access to the texture you can use the frames in any normal Phaser context, like emitting particles.
+
+<Interactive outputPath="demos/output/getting" psdKey="p7_key" >
+
+```js 
+
+// Initial placement
+this.P2P.place(this, 'p7_key', 'background');
+this.P2P.place(this, 'p7_key', 'atlasBob');
+
+// Get the texture from atlasBob
+const texture = this.P2P.getTexture(this, "p7_key", 'atlasBob');
+
+// Use bob's arm and leg to create idea particles.
+const bobsIdea = this.add.particles(150, 110, texture, {
+  frame: ['armL', 'legL'],
+  speed: 100,
+  scale: { start: 1, end: 0 },
+});
+
+// Set particles to have lower opacity
+bobsIdea.setAlpha(0.3)
 
 ```
 </Interactive>

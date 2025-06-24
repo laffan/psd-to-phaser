@@ -6,7 +6,7 @@
   "tile_scaled_versions": [],
   "layers": [
     {
-      "name": "bob",
+      "name": "atlasBob",
       "category": "sprite",
       "x": 61,
       "y": 96,
@@ -14,7 +14,7 @@
       "height": 197,
       "attributes": {},
       "type": "atlas",
-      "filePath": "sprites/bob.png",
+      "filePath": "sprites/atlasBob.png",
       "instances": [
         {
           "name": "legL",

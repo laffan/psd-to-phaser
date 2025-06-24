@@ -20,6 +20,21 @@ this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
 });
 ```
 
+<Interactive outputPath="demos/output/dragging" psdKey="p7_key" >
+
+```js 
+
+// Place background
+this.P2P.place(this, 'p7_key', 'background');
+this.P2P.place(this, 'p7_key', 'dots');
+this.P2P.place(this, 'p7_key', 'shapes');
+
+// Create simple draggable cam
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable']);
+
+```
+</Interactive>
+
 Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.
 
 Dragging triggers events, so you can listen for "dragOnStart", "isDragging" and "dragOnComplete".
@@ -39,3 +54,34 @@ this.events.on("draggableComplete", () => {
   console.log(`Drag has completed.`);
 });
 ```
+
+<Interactive outputPath="demos/output/dragging" psdKey="p8_key" >
+
+```js 
+
+// Place background
+this.P2P.place(this, 'p8_key', 'background');
+this.P2P.place(this, 'p8_key', 'dots');
+this.shapes = this.P2P.place(this, 'p8_key', 'shapes');
+
+// Initialize a draggable camera with options
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
+  draggable: {
+    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+    easeDragging: true,
+    friction: 0.95,
+    minSpeed: 0.1,
+  },
+});
+
+// Change values during drag.
+this.events.on("draggableActive", () => {
+  this.shapes.setAlpha(0.3)
+});
+
+this.events.on("draggableComplete", () => {
+  this.shapes.setAlpha(1)
+});
+
+```
+</Interactive>
