@@ -60,7 +60,8 @@ export default function(eleventyConfig) {
     
     // Calculate PSD download path: change "output" to "psds" and add .psd extension
     const psdRelativePath = outputPath.replace('/output/', '/psds/') + '.psd';
-    const psdDownloadPath = `public${psdRelativePath}`;
+    // Use url filter to handle pathPrefix properly
+    const psdDownloadPath = eleventyConfig.getFilter('url')(`public${psdRelativePath}`);
     
     const htmlContent = `<div class="row mb-3">
       <div class="col-12">
@@ -148,7 +149,8 @@ export default function(eleventyConfig) {
     
     // Calculate PSD download path for shortcode version  
     const psdRelativePath = psdFilename.replace('/output/', '/psds/') + '.psd';
-    const psdDownloadPath = `public${psdRelativePath}`;
+    // Use url filter to handle pathPrefix properly
+    const psdDownloadPath = eleventyConfig.getFilter('url')(`public${psdRelativePath}`);
     
     return `<div class="interactive-example">
       <div class="row mb-3">
