@@ -216,6 +216,9 @@ export default function(eleventyConfig) {
   // Copy public directory contents to root
   eleventyConfig.addPassthroughCopy("public");
   
+  // Add .nojekyll for GitHub Pages to serve all file types
+  eleventyConfig.addPassthroughCopy({ ".nojekyll": ".nojekyll" });
+  
   // PSD to Phaser is now loaded from unpkg CDN
   
   // Watch for changes in JS and CSS
