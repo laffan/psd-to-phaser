@@ -1,0 +1,303 @@
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  padding: 48px 0 0;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  overflow-y: auto;
+}
+
+.sidebar-heading {
+  font-size: .875rem;
+  text-transform: uppercase;
+  letter-spacing: .05rem;
+  font-weight: 600;
+  margin-bottom: .5rem;
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+  padding: .25rem 1rem;
+  font-size: 1rem;
+}
+
+.sidebar .nav-link:hover {
+  color: #007bff;
+}
+
+.sidebar .nav-link.active {
+  color: #007bff;
+  background-color: rgba(0, 123, 255, .1);
+}
+
+/* Main content */
+main {
+  margin-left: 0;
+  max-width: 1000px;
+}
+
+@media (min-width: 768px) {
+  main {
+    margin-left: 16.666667%;
+  }
+}
+
+@media (min-width: 992px) {
+  main {
+    margin-left: 16.666667%;
+  }
+}
+
+/* Interactive Examples */
+.interactive-example {
+  margin: 2rem 0;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+.code-editor-container {
+  position: relative;
+}
+
+.code-editor-container pre {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+}
+
+.run-example {
+  margin-top: 0.5rem;
+}
+
+.phaser-container {
+  min-height: 300px;
+  background-color: #000;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: monospace;
+}
+
+.phaser-container:empty::before {
+  content: "Click 'Run Example' to see the result";
+  opacity: 0.7;
+}
+
+/* Code highlighting improvements */
+.highlight {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .sidebar {
+    position: static;
+    padding: 1rem;
+  }
+  
+  .interactive-example .row {
+    flex-direction: column;
+  }
+  
+  .interactive-example .col-8,
+  .interactive-example .col-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* Typography improvements */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar h5.text-primary {
+  margin-top: 0;
+}
+
+h1:first-child,
+h2:first-child,
+h3:first-child {
+  margin-top: 0;
+}
+
+.content p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.content ul, .content ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.content li {
+  margin-bottom: 0.5rem;
+}
+
+/* Alert boxes */
+.alert {
+  margin: 1rem 0;
+}
+
+/* Table improvements */
+.content table {
+  margin: 1rem 0;
+}
+
+.content table th,
+.content table td {
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+}
+
+.content table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+/* Bootstrap-style code blocks with Prism.js integration */
+code[class*="language-"],
+pre[class*="language-"] {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace !important;
+  font-size: 15px !important;
+  line-height: 1.42857143 !important;
+  color: #333 !important;
+  background: #f5f5f5 !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  white-space: pre !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
+  word-wrap: normal !important;
+  tab-size: 4 !important;
+  hyphens: none !important;
+  /* Remove any line borders */
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+pre[class*="language-"] {
+  display: block !important;
+  padding: 9.5px !important;
+  margin: 0 0 10px !important;
+  overflow: auto !important;
+  /* Override any Bootstrap table or other element styles */
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+/* Remove borders from any child elements in code blocks */
+pre[class*="language-"] * {
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Ensure code lines don't have borders */
+pre[class*="language-"] .token {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: normal;
+}
+
+/* Non-highlighted inline code */
+code:not([class*="language-"]) {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Prism.js token colors for better Bootstrap integration */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #8e908c;
+}
+
+.token.namespace {
+  opacity: .7;
+}
+
+.token.boolean,
+.token.number {
+  color: #f5871f;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #c82829;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #718c00;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+  color: #f5871f;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.function,
+.token.class-name {
+  color: #4271ae;
+}
+
+.token.keyword {
+  color: #8959a8;
+}
+
+.token.regex,
+.token.important {
+  color: #f5871f;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}

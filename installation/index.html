@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation - PSD to Phaser Documentation</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Prism CSS for syntax highlighting - using a minimal theme -->
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/main.css" rel="stylesheet">
+    <!-- Ace Editor CSS -->
+    <style>
+        .ace-editor {
+            min-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .code-editor-container {
+            position: relative;
+        }
+        .phaser-container {
+            max-width: 100%;
+            overflow: hidden;
+        }
+        .layer-structure ul {
+            list-style: none;
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+        .layer-structure ul:first-child {
+            padding-left: 0;
+        }
+        .layer-structure li {
+            margin: 2px 0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .layer-group {
+            font-weight: bold;
+        }
+        .layer-path {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+        }
+        .layer-category {
+            font-weight: bold;
+            color: #0066cc;
+        }
+        .layer-category-name {
+            font-size: 11px;
+            color: #666;
+            font-weight: normal;
+        }
+        .layer-actual-name {
+            color: #333;
+            font-weight: 500;
+        }
+        .layer-type {
+            color: #333;
+        }
+        .layer-attributes {
+            color: #198754;
+            font-size: 12px;
+        }
+        .layer-frame {
+            opacity: 0.5;
+        }
+        
+        /* Layout improvements */
+        .sidebar {
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            z-index: 1040;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        main {
+            margin-left: 250px;
+            max-width: 1000px;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        
+        /* Mobile Navigation Toggle */
+        .navbar-toggler {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1060;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            min-width: 44px;
+            min-height: 44px;
+            cursor: pointer;
+        }
+        
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .navbar-toggler {
+                display: block;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            main {
+                margin-left: 0;
+                padding: 60px 20px 20px 20px;
+            }
+            
+            .sidebar-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1030;
+                display: none;
+            }
+            
+            .sidebar-backdrop.show {
+                display: block;
+            }
+        }
+        
+        /* Responsive layout for narrow screens */
+        @media (max-width: 1000px) {
+            .interactive-example .row {
+                flex-direction: column;
+            }
+            .interactive-example .col-8,
+            .interactive-example .col-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                width: 100%;
+            }
+            .interactive-example .ace-editor,
+            .interactive-example .phaser-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="navbar-toggler" type="button" id="sidebarToggle" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </span>
+    </button>
+    
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    
+    <div class="container-fluid">
+        <!-- Sidebar Navigation -->
+        <nav class="bg-light sidebar" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <div class="mb-3">
+                        <h5 class="text-primary">PSD to Phaser</h5>
+                    </div>
+                    
+                    
+                    <div class="mb-3">
+                        <h6 class="sidebar-heading text-muted">Getting Started</h6>
+                        <ul class="nav flex-column">
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/">
+                                    Introduction
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link active" 
+                                   href="/installation/">
+                                    Installation
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="sidebar-heading text-muted">Load</h6>
+                        <ul class="nav flex-column">
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/loading/load/">
+                                    load()
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/loading/load-multiple/">
+                                    loadMultiple()
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="sidebar-heading text-muted">Layers</h6>
+                        <ul class="nav flex-column">
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/layers/place/">
+                                    place()
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/layers/target/">
+                                    target()
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/layers/remove/">
+                                    remove()
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="sidebar-heading text-muted">Get</h6>
+                        <ul class="nav flex-column">
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/get/get-data/">
+                                    getData()
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/get/get-texture/">
+                                    getTexture()
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="sidebar-heading text-muted">Cameras</h6>
+                        <ul class="nav flex-column">
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/cameras/overview/">
+                                    Overview
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/cameras/draggable/">
+                                    draggable
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/cameras/lazy-load/">
+                                    lazyLoad
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/cameras/combined/">
+                                    Combined
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="sidebar-heading text-muted">Presets</h6>
+                        <ul class="nav flex-column">
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/presets/button/">
+                                    use.button()
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/presets/parallax/">
+                                    use.parallax()
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/presets/pan-to/">
+                                    use.panTo()
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/presets/fill-zone/">
+                                    use.fillZone()
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/presets/joystick/">
+                                    use.joystick()
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="sidebar-heading text-muted">Etc</h6>
+                        <ul class="nav flex-column">
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/other/debugging/">
+                                    Debugging
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/pages/other/gotchas/">
+                                    Gotchas
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main>
+                <header class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Installation</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="https://github.com/laffan/psd-to-phaser" class="btn btn-outline-secondary btn-sm">
+                            <svg class="me-1" width="16" height="16" fill="currentColor">
+                                <use xlink:href="#github"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </header>
+
+                <div class="content">
+                    <h1>Installation</h1>
+<p>Get started with psd-to-phaser by installing the plugin and setting up your development environment.</p>
+<h2>Requirements</h2>
+<p>To use psd-to-phaser, you&#x27;ll need:</p>
+<ol>
+<li><strong>PSD files processed with <a href="https://pypi.org/project/psd-to-json/">psd-to-json</a></strong></li>
+<li><strong>Phaser 3.x</strong> game engine</li>
+<li><strong>Node.js and npm</strong> for package management</li>
+</ol>
+<h2>Install psd-to-phaser</h2>
+<pre><code class="language-bash">npm install psd-to-phaser
+</code></pre>
+<h2>Install psd-to-json</h2>
+<p>First, install the Python tool that converts PSDs to usable JSON:</p>
+<pre><code class="language-bash">pip install psd-to-json
+</code></pre>
+<h2>Convert Your PSD</h2>
+<p>Use psd-to-json to convert your PSD files:</p>
+<pre><code class="language-bash"># Convert a single PSD
+psd-to-json your-file.psd output-folder/
+
+# Convert with options
+psd-to-json your-file.psd output-folder/ --scale 0.5 --format png
+</code></pre>
+<p>This creates a folder structure with:</p>
+<ul>
+<li><code>data.json</code> - Layer information and structure</li>
+<li><code>sprites/</code> - Individual layer images</li>
+<li><code>spritesheets/</code> - Combined sprite sheets (if applicable)</li>
+</ul>
+<h2>Basic Setup</h2>
+<h3>1. Import the Plugin</h3>
+<pre><code class="language-javascript">import PsdToPhaser from &#x27;psd-to-phaser&#x27;;
+</code></pre>
+<h3>2. Initialize in Your Game Config</h3>
+<pre><code class="language-javascript">const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  plugins: {
+    global: [
+      {
+        key: &quot;PsdToPhaser&quot;,
+        plugin: PsdToPhaser,
+        start: true,
+        mapping: &quot;P2P&quot;, // Access via this.P2P in scenes
+        data: {
+          debug: {
+            shape: false,   // Show sprite boundaries
+            label: false,   // Show sprite labels
+            console: false  // Console logging
+          }
+        }
+      }
+    ]
+  },
+  scene: YourScene
+};
+
+new Phaser.Game(config);
+</code></pre>
+<h3>3. Use in Your Scene</h3>
+<pre><code class="language-javascript">class YourScene extends Phaser.Scene {
+  preload() {
+    // Load PSD data
+    this.P2P.load.load(this, &#x27;my_psd&#x27;, &#x27;assets/psd-output&#x27;);
+  }
+  
+  create() {
+    // Wait for loading to complete
+    this.events.once(&#x27;psdLoadComplete&#x27;, () =&gt; {
+      // Place the PSD content
+      const psd = this.P2P.place(this, &#x27;my_psd&#x27;, &#x27;root&#x27;);
+      psd.setPosition(400, 300);
+    });
+  }
+}
+</code></pre>
+<h2>Directory Structure</h2>
+<p>After running psd-to-json, your assets should look like:</p>
+<pre><code>assets/
+  psd-output/
+    data.json
+    sprites/
+      background.png
+      character.png
+      ui-button.png
+</code></pre>
+<h2>CDN Usage</h2>
+<p>For quick prototyping, you can use the CDN version:</p>
+<pre><code class="language-html">&lt;script src=&quot;https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://cdn.jsdelivr.net/npm/psd-to-phaser/dist/psd-to-phaser.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+const config = {
+  // ... your config
+  plugins: {
+    global: [
+      {
+        key: &quot;PsdToPhaser&quot;,
+        plugin: window.PsdToPhaserPlugin, // Note: different export name
+        start: true,
+        mapping: &quot;P2P&quot;
+      }
+    ]
+  }
+};
+&lt;/script&gt;
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Common Issues</h3>
+<p><strong>&quot;PSD not loading&quot;</strong></p>
+<ul>
+<li>Check that the path to your PSD output folder is correct</li>
+<li>Ensure <code>data.json</code> exists in the specified folder</li>
+<li>Verify that sprite files referenced in <code>data.json</code> exist</li>
+</ul>
+<p><strong>&quot;Textures not found&quot;</strong></p>
+<ul>
+<li>Make sure image files are in the correct relative paths</li>
+<li>Check that file extensions match what&#x27;s in <code>data.json</code></li>
+<li>Verify your web server can serve the image files</li>
+</ul>
+<p><strong>&quot;Plugin not found&quot;</strong></p>
+<ul>
+<li>Check that the plugin is properly imported/included</li>
+<li>Verify the plugin key matches your configuration</li>
+<li>For CDN usage, ensure the global variable name is correct</li>
+</ul>
+<h3>Debug Mode</h3>
+<p>Enable debug mode to troubleshoot issues:</p>
+<pre><code class="language-javascript">data: {
+  debug: {
+    shape: true,   // See sprite boundaries
+    label: true,   // See sprite names
+    console: true  // Get console output
+  }
+}
+</code></pre>
+<h2>Next Steps</h2>
+<p>Once installed:</p>
+<ol>
+<li><a href="/posts/loading/">Learn about loading PSDs</a></li>
+<li><a href="/posts/placing/">Explore placing and positioning layers</a></li>
+<li><a href="/posts/sprite-types/">Discover sprite types and animations</a></li>
+<li><a href="/cameras/">Try the camera features</a></li>
+<li><a href="/presets/">Use preset functions</a></li>
+</ol>
+<p>Ready to start building? Check out the <a href="/examples/">examples page</a> for complete working demos!</p>
+                </div>
+        </main>
+    </div>
+
+    <!-- SVG Icons -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="github" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+        </symbol>
+    </svg>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Mobile Navigation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+            
+            if (!sidebarToggle || !sidebar || !sidebarBackdrop) {
+                console.error('Mobile navigation elements not found');
+                return;
+            }
+            
+            function toggleSidebar() {
+                console.log('Toggling sidebar');
+                sidebar.classList.toggle('show');
+                sidebarBackdrop.classList.toggle('show');
+            }
+            
+            function closeSidebar() {
+                console.log('Closing sidebar');
+                sidebar.classList.remove('show');
+                sidebarBackdrop.classList.remove('show');
+            }
+            
+            // Handle hamburger button clicks - add both click and touch events
+            sidebarToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('Click event fired');
+                toggleSidebar();
+            });
+            
+            sidebarToggle.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Touch event fired');
+                toggleSidebar();
+            });
+            
+            // Handle backdrop clicks
+            sidebarBackdrop.addEventListener('click', closeSidebar);
+            
+            // Close sidebar when navigation links are clicked on mobile
+            const navLinks = sidebar.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                // Handle click events (desktop)
+                link.addEventListener('click', function(e) {
+                    console.log('Link clicked:', this.href);
+                    if (window.innerWidth <= 768) {
+                        setTimeout(closeSidebar, 100);
+                    }
+                });
+                
+                // Handle touch events (mobile)
+                link.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    console.log('Link touched:', this.href);
+                    if (window.innerWidth <= 768) {
+                        // Navigate to the link
+                        window.location.href = this.href;
+                        // Close the sidebar
+                        setTimeout(closeSidebar, 50);
+                    }
+                });
+            });
+            
+            // Close sidebar when window is resized to desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+            
+            // Fix Bootstrap components for mobile touch
+            const bootstrapTogglers = document.querySelectorAll('[data-bs-toggle]');
+            bootstrapTogglers.forEach(toggler => {
+                // Skip the sidebar toggle since we handle it separately
+                if (toggler.id === 'sidebarToggle') return;
+                
+                toggler.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    console.log('Bootstrap toggle touched:', this.getAttribute('data-bs-toggle'));
+                    
+                    // Manually trigger the Bootstrap functionality
+                    const target = this.getAttribute('data-bs-target');
+                    const toggleType = this.getAttribute('data-bs-toggle');
+                    
+                    if (toggleType === 'collapse' && target) {
+                        const targetElement = document.querySelector(target);
+                        if (targetElement) {
+                            // Use Bootstrap's Collapse API if available
+                            if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+                                const bsCollapse = new bootstrap.Collapse(targetElement, {
+                                    toggle: true
+                                });
+                            } else {
+                                // Fallback: toggle Bootstrap classes manually
+                                targetElement.classList.toggle('show');
+                                this.classList.toggle('collapsed');
+                                this.setAttribute('aria-expanded', 
+                                    this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+                            }
+                        }
+                    }
+                });
+            });
+            
+            console.log('Mobile navigation initialized');
+        });
+    </script>
+    <!-- Ace Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/ace.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/mode-javascript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/theme-github.js"></script>
+    <!-- Phaser -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
+    
+    <!-- PSD to Phaser -->
+    <script src="/js/psd-to-phaser.min.js"></script>
+    <script>
+      // Debug: Check if PsdToPhaserPlugin is loaded (UMD export name)
+      if (typeof window.PsdToPhaserPlugin !== 'undefined') {
+        console.log('PsdToPhaserPlugin loaded successfully:', window.PsdToPhaserPlugin);
+      } else {
+        console.error('PsdToPhaserPlugin not found on window object');
+        // Try different possible names
+        console.log('Available on window:', Object.keys(window).filter(key => key.toLowerCase().includes('psd')));
+      }
+    </script>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- Interactive Examples -->
+    <script src="/js/interactive.js"></script>
+</body>
+</html>

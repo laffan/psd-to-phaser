@@ -1,0 +1,102 @@
+{
+  "name": "getting",
+  "width": 300,
+  "height": 300,
+  "tile_slice_size": 300,
+  "tile_scaled_versions": [],
+  "layers": [
+    {
+      "name": "atlasBob",
+      "category": "sprite",
+      "x": 61,
+      "y": 96,
+      "width": 173,
+      "height": 197,
+      "attributes": {},
+      "type": "atlas",
+      "filePath": "sprites/atlasBob.png",
+      "instances": [
+        {
+          "name": "legL",
+          "x": 93,
+          "y": 222
+        },
+        {
+          "name": "legR",
+          "x": 153,
+          "y": 221
+        },
+        {
+          "name": "head",
+          "x": 120,
+          "y": 96
+        },
+        {
+          "name": "armL",
+          "x": 61,
+          "y": 174
+        },
+        {
+          "name": "armR",
+          "x": 183,
+          "y": 174
+        },
+        {
+          "name": "body",
+          "x": 112,
+          "y": 162
+        }
+      ],
+      "frames": {
+        "legL": {
+          "x": 0,
+          "y": 0,
+          "width": 49,
+          "height": 71
+        },
+        "legR": {
+          "x": 49,
+          "y": 0,
+          "width": 50,
+          "height": 70
+        },
+        "head": {
+          "x": 99,
+          "y": 0,
+          "width": 56,
+          "height": 69
+        },
+        "armL": {
+          "x": 155,
+          "y": 0,
+          "width": 47,
+          "height": 35
+        },
+        "armR": {
+          "x": 202,
+          "y": 0,
+          "width": 51,
+          "height": 38
+        },
+        "body": {
+          "x": 253,
+          "y": 0,
+          "width": 69,
+          "height": 85
+        }
+      },
+      "initialDepth": 1
+    },
+    {
+      "name": "background",
+      "category": "sprite",
+      "x": -6,
+      "y": -7,
+      "width": 313,
+      "height": 312,
+      "attributes": {},
+      "filePath": "sprites/background.png",
+      "initialDepth": 0
+    }
+  ]
+}

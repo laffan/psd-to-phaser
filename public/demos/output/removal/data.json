@@ -1,0 +1,156 @@
+{
+  "name": "removal",
+  "width": 300,
+  "height": 300,
+  "tile_slice_size": 300,
+  "tile_scaled_versions": [],
+  "layers": [
+    {
+      "name": "outer",
+      "category": "group",
+      "x": 20,
+      "y": 17,
+      "width": 261,
+      "height": 249,
+      "initialDepth": 12,
+      "attributes": {},
+      "children": [
+        {
+          "name": "outerPattern",
+          "category": "sprite",
+          "x": 34,
+          "y": 32,
+          "width": 230,
+          "height": 222,
+          "attributes": {},
+          "filePath": "sprites/outerPattern.png",
+          "initialDepth": 11
+        },
+        {
+          "name": "outerRing",
+          "category": "sprite",
+          "x": 20,
+          "y": 17,
+          "width": 261,
+          "height": 249,
+          "attributes": {},
+          "filePath": "sprites/outerRing.png",
+          "initialDepth": 10
+        },
+        {
+          "name": "inner1",
+          "category": "group",
+          "x": 48,
+          "y": 43,
+          "width": 203,
+          "height": 197,
+          "initialDepth": 9,
+          "attributes": {},
+          "children": [
+            {
+              "name": "inner1Pattern",
+              "category": "sprite",
+              "x": 65,
+              "y": 58,
+              "width": 172,
+              "height": 169,
+              "attributes": {},
+              "filePath": "sprites/inner1Pattern.png",
+              "initialDepth": 8
+            },
+            {
+              "name": "inner1Ring",
+              "category": "sprite",
+              "x": 48,
+              "y": 43,
+              "width": 203,
+              "height": 197,
+              "attributes": {},
+              "filePath": "sprites/inner1Ring.png",
+              "initialDepth": 7
+            },
+            {
+              "name": "inner2",
+              "category": "group",
+              "x": 78,
+              "y": 80,
+              "width": 145,
+              "height": 128,
+              "initialDepth": 6,
+              "attributes": {},
+              "children": [
+                {
+                  "name": "inner2Pattern",
+                  "category": "sprite",
+                  "x": 98,
+                  "y": 96,
+                  "width": 103,
+                  "height": 97,
+                  "attributes": {},
+                  "filePath": "sprites/inner2Pattern.png",
+                  "initialDepth": 5
+                },
+                {
+                  "name": "inner2Ring",
+                  "category": "sprite",
+                  "x": 78,
+                  "y": 80,
+                  "width": 145,
+                  "height": 128,
+                  "attributes": {},
+                  "filePath": "sprites/inner2Ring.png",
+                  "initialDepth": 4
+                },
+                {
+                  "name": "center",
+                  "category": "group",
+                  "x": 109,
+                  "y": 111,
+                  "width": 73,
+                  "height": 60,
+                  "initialDepth": 3,
+                  "attributes": {},
+                  "children": [
+                    {
+                      "name": "centerDots",
+                      "category": "sprite",
+                      "x": 125,
+                      "y": 122,
+                      "width": 41,
+                      "height": 34,
+                      "attributes": {},
+                      "filePath": "sprites/centerDots.png",
+                      "initialDepth": 2
+                    },
+                    {
+                      "name": "centerRing",
+                      "category": "sprite",
+                      "x": 109,
+                      "y": 111,
+                      "width": 73,
+                      "height": 60,
+                      "attributes": {},
+                      "filePath": "sprites/centerRing.png",
+                      "initialDepth": 1
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "background",
+      "category": "sprite",
+      "x": -7,
+      "y": -7,
+      "width": 314,
+      "height": 314,
+      "attributes": {},
+      "filePath": "sprites/background.png",
+      "initialDepth": 0
+    }
+  ]
+}
