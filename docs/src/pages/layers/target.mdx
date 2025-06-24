@@ -23,3 +23,25 @@ L1Text.setAlpha(0.3)
 const zone = placedGroup.target("depthTest/zone1");
 const points = zone.getData('points');
 ```
+
+<Interactive outputPath="demos/output/targeting" psdKey="p4_key" >
+
+```js 
+
+// Place background
+this.P2P.place(this, 'p4_key', 'background');
+this.face = this.P2P.place(this, 'p4_key', 'face');
+
+
+// Use target to apply method to portion of target
+const rightEye = this.face.target("rightEye");
+
+// You can also use target on targeted items
+const rightEyeDot = rightEye.target("dot");
+
+// Now you can apply changes to just a portion.
+rightEye.setScale(2);
+rightEyeDot.setScale(.5);
+
+```
+</Interactive>
