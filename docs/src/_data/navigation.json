@@ -3,55 +3,131 @@
     {
       "title": "Getting Started",
       "items": [
-        {"title": "Introduction", "url": "/", "file": "index"},
-        {"title": "Installation", "url": "/installation/", "file": "installation"}
+        {
+          "title": "Introduction",
+          "url": "/",
+          "file": "index"
+        },
+        {
+          "title": "Installation",
+          "url": "/installation/",
+          "file": "installation"
+        }
       ]
     },
     {
       "title": "Loading",
       "items": [
-        {"title": "load()", "url": "/pages/loading/load/", "file": "pages/loading/load"},
-        {"title": "loadMultiple()", "url": "/pages/loading/load-multiple/", "file": "pages/loading/load-multiple"},
-        {"title": "getData()", "url": "/pages/loading/get-data/", "file": "pages/loading/get-data"},
-        {"title": "getTexture()", "url": "/pages/loading/get-texture/", "file": "pages/loading/get-texture"}
+        {
+          "title": "load()",
+          "url": "/pages/loading/load/",
+          "file": "pages/loading/load"
+        },
+        {
+          "title": "loadMultiple()",
+          "url": "/pages/loading/load-multiple/",
+          "file": "pages/loading/load-multiple"
+        },
+        {
+          "title": "getData()",
+          "url": "/pages/loading/get-data/",
+          "file": "pages/loading/get-data"
+        },
+        {
+          "title": "getTexture()",
+          "url": "/pages/loading/get-texture/",
+          "file": "pages/loading/get-texture"
+        }
       ]
     },
     {
-      "title": "Placing",
+      "title": "Layers",
       "items": [
-        {"title": "place()", "url": "/pages/placing/place/", "file": "pages/placing/place"},
-        {"title": "Sprite Methods", "url": "/pages/placing/sprite-methods/", "file": "pages/placing/sprite-methods"},
-        {"title": "target()", "url": "/pages/placing/target/", "file": "pages/placing/target"},
-        {"title": "remove()", "url": "/pages/placing/remove/", "file": "pages/placing/remove"}
+        {
+          "title": "place()",
+          "url": "/pages/layers/place/",
+          "file": "pages/layers/place"
+        },
+        {
+          "title": "target()",
+          "url": "/pages/layers/target/",
+          "file": "pages/layers/target"
+        },
+        {
+          "title": "remove()",
+          "url": "/pages/layers/remove/",
+          "file": "pages/layers/remove"
+        }
       ]
     },
     {
       "title": "Cameras",
       "items": [
-        {"title": "Overview", "url": "/pages/cameras/overview/", "file": "pages/cameras/overview"},
-        {"title": "LazyLoad", "url": "/pages/cameras/lazy-load/", "file": "pages/cameras/lazy-load"},
-        {"title": "Draggable", "url": "/pages/cameras/draggable/", "file": "pages/cameras/draggable"},
-        {"title": "Combined Features", "url": "/pages/cameras/combined/", "file": "pages/cameras/combined"}
+        {
+          "title": "Overview",
+          "url": "/pages/cameras/overview/",
+          "file": "pages/cameras/overview"
+        },
+        {
+          "title": "lazyLoad",
+          "url": "/pages/cameras/lazy-load/",
+          "file": "pages/cameras/lazy-load"
+        },
+        {
+          "title": "draggable",
+          "url": "/pages/cameras/draggable/",
+          "file": "pages/cameras/draggable"
+        },
+        {
+          "title": "Combined",
+          "url": "/pages/cameras/combined/",
+          "file": "pages/cameras/combined"
+        }
       ]
     },
     {
       "title": "Presets",
       "items": [
-        {"title": "Overview", "url": "/pages/presets/overview/", "file": "pages/presets/overview"},
-        {"title": "button()", "url": "/pages/presets/button/", "file": "pages/presets/button"},
-        {"title": "parallax()", "url": "/pages/presets/parallax/", "file": "pages/presets/parallax"},
-        {"title": "panTo()", "url": "/pages/presets/pan-to/", "file": "pages/presets/pan-to"},
-        {"title": "fillZone()", "url": "/pages/presets/fill-zone/", "file": "pages/presets/fill-zone"},
-        {"title": "joystick()", "url": "/pages/presets/joystick/", "file": "pages/presets/joystick"}
+        {
+          "title": "use.button()",
+          "url": "/pages/presets/button/",
+          "file": "pages/presets/button"
+        },
+        {
+          "title": "use.parallax()",
+          "url": "/pages/presets/parallax/",
+          "file": "pages/presets/parallax"
+        },
+        {
+          "title": "use.panTo()",
+          "url": "/pages/presets/pan-to/",
+          "file": "pages/presets/pan-to"
+        },
+        {
+          "title": "use.fillZone()",
+          "url": "/pages/presets/fill-zone/",
+          "file": "pages/presets/fill-zone"
+        },
+        {
+          "title": "use.joystick()",
+          "url": "/pages/presets/joystick/",
+          "file": "pages/presets/joystick"
+        }
       ]
     },
     {
-      "title": "Other",
+      "title": "Etc",
       "items": [
-        {"title": "Sprite Types", "url": "/pages/sprite-types/overview/", "file": "pages/sprite-types/overview"},
-        {"title": "Animation Type", "url": "/pages/sprite-types/animation/", "file": "pages/sprite-types/animation"},
-        {"title": "Debugging", "url": "/pages/debugging/", "file": "pages/debugging"},
-        {"title": "Gotchas", "url": "/pages/gotchas/", "file": "pages/gotchas"}
+        {
+          "title": "Debugging",
+          "url": "/pages/other/debugging/",
+          "file": "pages/other/debugging"
+        },
+        {
+          "title": "Gotchas",
+          "url": "/pages/other/gotchas/",
+          "file": "pages/other/gotchas"
+        }
       ]
     }
   ]

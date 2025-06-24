@@ -1,0 +1,81 @@
+---
+layout: base.njk
+title: place()
+---
+
+If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional "options" object allows you to limit the recursion ("depth") and set debugging options ("debug").
+
+```js
+// Place a top level layer
+const psd = this.P2P.place(this, "psd_key", "root");
+
+const sprite = this.P2P.place(this, "psd_key", "root/spiteName");
+
+// Place all the children of a nested group with some optional overrides
+const item = this.P2P.place(
+  this,
+  "psd_key"
+  "groupName/nestedGroup",
+  {
+    depth: 1, // Only place top level items in this group, not the descendants
+    ignore: ["background", "sprites/sprite1"], // array of paths to ignore
+    debug: {
+      shape: true
+    },
+  }
+);
+```
+
+<Interactive outputPath="demos/output/placement" psdKey="psd_key" >
+
+```js 
+// Place the entire PSD
+const placedPSD = this.P2P.place(this, 'psd_key', 'face');
+```
+</Interactive>
+
+
+### Default Methods
+
+Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+
+```js
+// Set the alpha and rotation of a group.
+const depthTest = this.P2P.place(this, "psd_key", "depthTest");
+depthTest.setAlpha(0.3);
+depthTest.setRotation(Math.PI / 4);
+```
+
+### Animations
+
+
+Animations automatically play when placed. However, you can override the default animation properties at several points.
+
+1. Layer naming : In the PSD itself, the attributes of the layer name itself can control animation properties. If you pass valid animation parameters, they will be merged in when instantiating the animation.
+
+```
+S | bounce | animation | frameRate: 5, yoyo: true
+```
+
+2. Instantiation : When instantiating the sprite, you can also pass in animation parameters, so the same thing could be acheived like so :
+
+```js
+// For individual sprites
+this.bounce = this.P2P.place(this, "psd_key", "nested/bounce");
+  animationOptions: {
+    frameRate: 5,
+    yoyo: true,
+  },
+});
+```
+
+3. Using get() : You can always use get() to retreive the sprite and then use updateAnimation():
+
+```js
+this.bounce = this.P2P.place(this, "psd_key", "nested/bounce");
+
+this.bounce.updateAnimation({
+  frameRate: 5,
+  yoyo: true,
+});
+```

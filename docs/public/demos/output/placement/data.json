@@ -2,39 +2,107 @@
   "name": "placement",
   "width": 300,
   "height": 300,
-  "tile_slice_size": 500,
+  "tile_slice_size": 300,
   "tile_scaled_versions": [],
   "layers": [
     {
-      "name": "dots",
+      "name": "face",
       "category": "group",
-      "x": 17,
-      "y": 179,
+      "x": 31,
+      "y": 44,
       "width": 242,
-      "height": 98,
-      "initialDepth": 3,
+      "height": 226,
+      "initialDepth": 9,
       "attributes": {},
       "children": [
         {
-          "name": "dot2",
+          "name": "nose",
           "category": "sprite",
-          "x": 17,
-          "y": 179,
-          "width": 242,
-          "height": 38,
+          "x": 128,
+          "y": 149,
+          "width": 49,
+          "height": 63,
           "attributes": {},
-          "filePath": "sprites/dot2.png",
-          "initialDepth": 2
+          "filePath": "sprites/nose.png",
+          "initialDepth": 8
         },
         {
-          "name": "dot",
+          "name": "rightEye",
+          "category": "group",
+          "x": 183,
+          "y": 44,
+          "width": 79,
+          "height": 89,
+          "initialDepth": 7,
+          "attributes": {},
+          "children": [
+            {
+              "name": "dot",
+              "category": "sprite",
+              "x": 197,
+              "y": 68,
+              "width": 51,
+              "height": 48,
+              "attributes": {},
+              "filePath": "sprites/dot.png",
+              "initialDepth": 6
+            },
+            {
+              "name": "colorBox",
+              "category": "sprite",
+              "x": 183,
+              "y": 44,
+              "width": 79,
+              "height": 89,
+              "attributes": {},
+              "filePath": "sprites/colorBox.png",
+              "initialDepth": 5
+            }
+          ]
+        },
+        {
+          "name": "leftEye",
+          "category": "group",
+          "x": 38,
+          "y": 46,
+          "width": 90,
+          "height": 90,
+          "initialDepth": 4,
+          "attributes": {},
+          "children": [
+            {
+              "name": "sketchDiamond",
+              "category": "sprite",
+              "x": 52,
+              "y": 62,
+              "width": 63,
+              "height": 61,
+              "attributes": {},
+              "filePath": "sprites/sketchDiamond.png",
+              "initialDepth": 3
+            },
+            {
+              "name": "square",
+              "category": "sprite",
+              "x": 38,
+              "y": 46,
+              "width": 90,
+              "height": 90,
+              "attributes": {},
+              "filePath": "sprites/square.png",
+              "initialDepth": 2
+            }
+          ]
+        },
+        {
+          "name": "mouth",
           "category": "sprite",
-          "x": 17,
-          "y": 239,
+          "x": 31,
+          "y": 232,
           "width": 242,
           "height": 38,
           "attributes": {},
-          "filePath": "sprites/dot.png",
+          "filePath": "sprites/mouth.png",
           "initialDepth": 1
         }
       ]

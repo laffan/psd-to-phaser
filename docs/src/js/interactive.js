@@ -104,7 +104,9 @@ class InteractiveExample {
           
           // Automatically load the PSD if outputPath and psdKey are provided
           if (self.outputPath && self.psdKey) {
-            const fullPath = `public/${self.outputPath}`;
+            // Ensure outputPath is absolute from site root
+            const normalizedPath = self.outputPath.startsWith('/') ? self.outputPath.slice(1) : self.outputPath;
+            const fullPath = `/${normalizedPath.startsWith('public/') ? normalizedPath : `public/${normalizedPath}`}`;
             console.log(`Auto-loading PSD: ${self.psdKey} from ${fullPath}`);
             this.P2P.load.load(this, self.psdKey, fullPath);
           }
@@ -220,7 +222,10 @@ class InteractiveExample {
     const psdPath = layerContainer.getAttribute('data-psd-path');
     
     try {
-      const response = await fetch(`${psdPath}/data.json`);
+      // Ensure the path is absolute from site root
+      const normalizedPath = psdPath.replace(/^public\//, '').replace(/^\//, '');
+      const fullPath = `/public/${normalizedPath}`;
+      const response = await fetch(`${fullPath}/data.json`);
       if (!response.ok) {
         throw new Error(`Failed to load layer data: ${response.status}`);
       }
