@@ -280,12 +280,13 @@ S | bounce | animation | frameRate: 5, yoyo: true
 
 ```js
 // For individual sprites
-this.bounce = this.P2P.place(this, "psd_key", "nested/bounce");
-  animationOptions: {
-    frameRate: 5,
-    yoyo: true,
-  },
-});
+this.P2P.place(this, "psd_key", "nested/bounce",   {
+    animationOptions: {
+      frameRate: 12,
+      yoyo: true,
+    }
+  });
+
 ```
 
 3. Using get() : You can always use get() to retreive the sprite and then use updateAnimation():

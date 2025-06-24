@@ -8,11 +8,11 @@
     {
       "name": "face",
       "category": "group",
-      "x": 31,
+      "x": 29,
       "y": 44,
-      "width": 242,
-      "height": 226,
-      "initialDepth": 9,
+      "width": 250,
+      "height": 245,
+      "initialDepth": 10,
       "attributes": {},
       "children": [
         {
@@ -24,7 +24,7 @@
           "height": 63,
           "attributes": {},
           "filePath": "sprites/nose.png",
-          "initialDepth": 8
+          "initialDepth": 9
         },
         {
           "name": "rightEye",
@@ -33,7 +33,7 @@
           "y": 44,
           "width": 79,
           "height": 89,
-          "initialDepth": 7,
+          "initialDepth": 8,
           "attributes": {},
           "children": [
             {
@@ -45,7 +45,7 @@
               "height": 48,
               "attributes": {},
               "filePath": "sprites/dot.png",
-              "initialDepth": 6
+              "initialDepth": 7
             },
             {
               "name": "colorBox",
@@ -56,18 +56,18 @@
               "height": 89,
               "attributes": {},
               "filePath": "sprites/colorBox.png",
-              "initialDepth": 5
+              "initialDepth": 6
             }
           ]
         },
         {
           "name": "leftEye",
           "category": "group",
-          "x": 38,
+          "x": 37,
           "y": 46,
-          "width": 90,
+          "width": 92,
           "height": 90,
-          "initialDepth": 4,
+          "initialDepth": 5,
           "attributes": {},
           "children": [
             {
@@ -79,28 +79,47 @@
               "height": 61,
               "attributes": {},
               "filePath": "sprites/sketchDiamond.png",
-              "initialDepth": 3
+              "initialDepth": 4
             },
             {
               "name": "square",
               "category": "sprite",
-              "x": 38,
+              "x": 37,
               "y": 46,
-              "width": 90,
+              "width": 92,
               "height": 90,
               "attributes": {},
               "filePath": "sprites/square.png",
-              "initialDepth": 2
+              "initialDepth": 3
             }
           ]
+        },
+        {
+          "name": "mouthAnimated",
+          "category": "sprite",
+          "x": 29,
+          "y": 187,
+          "width": 250,
+          "height": 102,
+          "attributes": {
+            "frameRate": 2
+          },
+          "type": "animation",
+          "filePath": "sprites/mouthAnimated.png",
+          "frame_width": 250,
+          "frame_height": 102,
+          "frame_count": 4,
+          "columns": 2,
+          "rows": 2,
+          "initialDepth": 2
         },
         {
           "name": "mouth",
           "category": "sprite",
           "x": 31,
-          "y": 232,
-          "width": 242,
-          "height": 38,
+          "y": 231,
+          "width": 243,
+          "height": 39,
           "attributes": {},
           "filePath": "sprites/mouth.png",
           "initialDepth": 1
