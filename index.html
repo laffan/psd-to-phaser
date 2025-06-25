@@ -399,39 +399,6 @@
                     <h1>PSD to Phaser</h1>
 <p>psd-to-phaser is a Phaser plugin that reads the JSON manifest created by <a href="https://pypi.org/project/psd-to-json/">psd-to-json</a>, loads the files and then does the work of rebuilding the PSD.</p>
 <p>It also has some nifty extras like <a href="/posts/cameras/">lazy loading</a> and a few presets that I thought might be useful (<a href="/posts/presets/">parallax</a> and <a href="/posts/presets/">build-your-own-joystick</a> being my favorites.)</p>
-<h2>Initializing the Plugin</h2>
-<p>You can initialize the plugin when creating your game&#x27;s configuration object:</p>
-<pre><code class="language-js">new Phaser.Game({
-  // ...
-  plugins: {
-    global: [
-      {
-        key: &quot;PsdToPhaser&quot;,
-        plugin: PsdToPhaser,
-        start: true,
-        mapping: &quot;P2P&quot;, // all examples assume you&#x27;re mapping to P2P
-        data: {
-          debug: {
-            shape: false, // outline all items
-            label: false, // text labels for all objects
-            console: false, // output placement &amp; progress info to console
-          },
-          applyAlphaAll: false, // apply alpha value to all items by default
-          applyBlendModesAll: false, // apply blendMode of all items by default
-        },
-      },
-    ],
-  },
-  // ...
-});
-</code></pre>
-<h2>Getting Started</h2>
-<p>To get started with PSD to Phaser, you&#x27;ll need:</p>
-<ol>
-<li>A PSD file processed with <a href="https://pypi.org/project/psd-to-json/">psd-to-json</a></li>
-<li>The Phaser game engine</li>
-<li>The psd-to-phaser plugin</li>
-</ol>
 <p>Check out the <a href="/installation/">Installation</a> guide to get up and running quickly.</p>
                 </div>
         </main>
