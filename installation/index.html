@@ -397,37 +397,13 @@
 
                 <div class="content">
                     <h1>Installation</h1>
-<p>Get started with psd-to-phaser by installing the plugin and setting up your development environment.</p>
-<h2>Requirements</h2>
-<p>To use psd-to-phaser, you&#x27;ll need:</p>
-<ol>
-<li><strong>PSD files processed with <a href="https://pypi.org/project/psd-to-json/">psd-to-json</a></strong></li>
-<li><strong>Phaser 3.x</strong> game engine</li>
-<li><strong>Node.js and npm</strong> for package management</li>
-</ol>
-<h2>Install psd-to-phaser</h2>
+<p>You can use psd-to-phaser as a node module :</p>
 <pre><code class="language-bash">npm install psd-to-phaser
 </code></pre>
-<h2>Install psd-to-json</h2>
-<p>First, install the Python tool that converts PSDs to usable JSON:</p>
-<pre><code class="language-bash">pip install psd-to-json
+<p>or, if you&#x27;re not using modules, include it as a script in your <code>&lt;head&gt;</code>.</p>
+<pre><code class="language-html">&lt;script src=&quot;https://unpkg.com/psd-to-phaser&quot;&gt;&lt;/script&gt;
 </code></pre>
-<h2>Convert Your PSD</h2>
-<p>Use psd-to-json to convert your PSD files:</p>
-<pre><code class="language-bash"># Convert a single PSD
-psd-to-json your-file.psd output-folder/
-
-# Convert with options
-psd-to-json your-file.psd output-folder/ --scale 0.5 --format png
-</code></pre>
-<p>This creates a folder structure with:</p>
-<ul>
-<li><code>data.json</code> - Layer information and structure</li>
-<li><code>sprites/</code> - Individual layer images</li>
-<li><code>spritesheets/</code> - Combined sprite sheets (if applicable)</li>
-</ul>
-<h2>Basic Setup</h2>
-<h3>1. Import the Plugin</h3>
+<h3>1. Import the Plugin (for module-users)</h3>
 <pre><code class="language-javascript">import PsdToPhaser from &#x27;psd-to-phaser&#x27;;
 </code></pre>
 <h3>2. Initialize in Your Game Config</h3>
@@ -474,77 +450,6 @@ new Phaser.Game(config);
   }
 }
 </code></pre>
-<h2>Directory Structure</h2>
-<p>After running psd-to-json, your assets should look like:</p>
-<pre><code>assets/
-  psd-output/
-    data.json
-    sprites/
-      background.png
-      character.png
-      ui-button.png
-</code></pre>
-<h2>CDN Usage</h2>
-<p>For quick prototyping, you can use the CDN version:</p>
-<pre><code class="language-html">&lt;script src=&quot;https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://cdn.jsdelivr.net/npm/psd-to-phaser/dist/psd-to-phaser.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-const config = {
-  // ... your config
-  plugins: {
-    global: [
-      {
-        key: &quot;PsdToPhaser&quot;,
-        plugin: window.PsdToPhaserPlugin, // Note: different export name
-        start: true,
-        mapping: &quot;P2P&quot;
-      }
-    ]
-  }
-};
-&lt;/script&gt;
-</code></pre>
-<h2>Troubleshooting</h2>
-<h3>Common Issues</h3>
-<p><strong>&quot;PSD not loading&quot;</strong></p>
-<ul>
-<li>Check that the path to your PSD output folder is correct</li>
-<li>Ensure <code>data.json</code> exists in the specified folder</li>
-<li>Verify that sprite files referenced in <code>data.json</code> exist</li>
-</ul>
-<p><strong>&quot;Textures not found&quot;</strong></p>
-<ul>
-<li>Make sure image files are in the correct relative paths</li>
-<li>Check that file extensions match what&#x27;s in <code>data.json</code></li>
-<li>Verify your web server can serve the image files</li>
-</ul>
-<p><strong>&quot;Plugin not found&quot;</strong></p>
-<ul>
-<li>Check that the plugin is properly imported/included</li>
-<li>Verify the plugin key matches your configuration</li>
-<li>For CDN usage, ensure the global variable name is correct</li>
-</ul>
-<h3>Debug Mode</h3>
-<p>Enable debug mode to troubleshoot issues:</p>
-<pre><code class="language-javascript">data: {
-  debug: {
-    shape: true,   // See sprite boundaries
-    label: true,   // See sprite names
-    console: true  // Get console output
-  }
-}
-</code></pre>
-<h2>Next Steps</h2>
-<p>Once installed:</p>
-<ol>
-<li><a href="/posts/loading/">Learn about loading PSDs</a></li>
-<li><a href="/posts/placing/">Explore placing and positioning layers</a></li>
-<li><a href="/posts/sprite-types/">Discover sprite types and animations</a></li>
-<li><a href="/cameras/">Try the camera features</a></li>
-<li><a href="/presets/">Use preset functions</a></li>
-</ol>
-<p>Ready to start building? Check out the <a href="/examples/">examples page</a> for complete working demos!</p>
                 </div>
         </main>
     </div>
