@@ -5,50 +5,20 @@ title: Installation
 
 # Installation
 
-Get started with psd-to-phaser by installing the plugin and setting up your development environment.
-
-## Requirements
-
-To use psd-to-phaser, you'll need:
-
-1. **PSD files processed with [psd-to-json](https://pypi.org/project/psd-to-json/)**
-2. **Phaser 3.x** game engine
-3. **Node.js and npm** for package management
-
-## Install psd-to-phaser
+You can use psd-to-phaser as a node module : 
 
 ```bash
 npm install psd-to-phaser
 ```
 
-## Install psd-to-json
+or, if you're not using modules, include it as a script in your `<head>`.
 
-First, install the Python tool that converts PSDs to usable JSON:
-
-```bash
-pip install psd-to-json
+```html
+<script src="https://unpkg.com/psd-to-phaser"></script>
 ```
 
-## Convert Your PSD
 
-Use psd-to-json to convert your PSD files:
-
-```bash
-# Convert a single PSD
-psd-to-json your-file.psd output-folder/
-
-# Convert with options
-psd-to-json your-file.psd output-folder/ --scale 0.5 --format png
-```
-
-This creates a folder structure with:
-- `data.json` - Layer information and structure
-- `sprites/` - Individual layer images
-- `spritesheets/` - Combined sprite sheets (if applicable)
-
-## Basic Setup
-
-### 1. Import the Plugin
+### 1. Import the Plugin (for module-users)
 
 ```javascript
 import PsdToPhaser from 'psd-to-phaser';
@@ -103,87 +73,3 @@ class YourScene extends Phaser.Scene {
   }
 }
 ```
-
-## Directory Structure
-
-After running psd-to-json, your assets should look like:
-
-```
-assets/
-  psd-output/
-    data.json
-    sprites/
-      background.png
-      character.png
-      ui-button.png
-```
-
-## CDN Usage
-
-For quick prototyping, you can use the CDN version:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/psd-to-phaser/dist/psd-to-phaser.min.js"></script>
-
-<script>
-const config = {
-  // ... your config
-  plugins: {
-    global: [
-      {
-        key: "PsdToPhaser",
-        plugin: window.PsdToPhaserPlugin, // Note: different export name
-        start: true,
-        mapping: "P2P"
-      }
-    ]
-  }
-};
-</script>
-```
-
-## Troubleshooting
-
-### Common Issues
-
-**"PSD not loading"**
-- Check that the path to your PSD output folder is correct
-- Ensure `data.json` exists in the specified folder
-- Verify that sprite files referenced in `data.json` exist
-
-**"Textures not found"**
-- Make sure image files are in the correct relative paths
-- Check that file extensions match what's in `data.json`
-- Verify your web server can serve the image files
-
-**"Plugin not found"**
-- Check that the plugin is properly imported/included
-- Verify the plugin key matches your configuration
-- For CDN usage, ensure the global variable name is correct
-
-### Debug Mode
-
-Enable debug mode to troubleshoot issues:
-
-```javascript
-data: {
-  debug: {
-    shape: true,   // See sprite boundaries
-    label: true,   // See sprite names
-    console: true  // Get console output
-  }
-}
-```
-
-## Next Steps
-
-Once installed:
-
-1. [Learn about loading PSDs](/posts/loading/)
-2. [Explore placing and positioning layers](/posts/placing/)
-3. [Discover sprite types and animations](/posts/sprite-types/)
-4. [Try the camera features](/cameras/)
-5. [Use preset functions](/presets/)
-
-Ready to start building? Check out the [examples page](/examples/) for complete working demos!
