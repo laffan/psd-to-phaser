@@ -15,10 +15,44 @@ class InteractiveExample {
     this.game = null;
     this.editor = null;
     this.initialCode = '';
-    
+
+    // Check for debug mode via URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    this.debugMode = urlParams.get('debug') === 'true';
+
     this.initializeEditor();
     this.setupEventListeners();
     this.loadLayerStructure();
+    this.addDebugToggle();
+  }
+
+  addDebugToggle() {
+    // Create debug toggle container
+    const toggleContainer = document.createElement('label');
+    toggleContainer.className = 'debug-toggle-container';
+    toggleContainer.innerHTML = `
+      <span class="debug-toggle">
+        <input type="checkbox" ${this.debugMode ? 'checked' : ''}>
+        <span class="debug-slider"></span>
+      </span>
+      <span class="debug-label">Debug</span>
+    `;
+
+    // Insert toggle next to the Run button
+    this.button.parentNode.insertBefore(toggleContainer, this.button.nextSibling);
+
+    // Add toggle event listener
+    const checkbox = toggleContainer.querySelector('input');
+    checkbox.addEventListener('change', (e) => {
+      const url = new URL(window.location.href);
+      if (e.target.checked) {
+        url.searchParams.set('debug', 'true');
+      } else {
+        url.searchParams.delete('debug');
+      }
+      // Reload page with new debug setting (required because debug is plugin-level config)
+      window.location.href = url.toString();
+    });
   }
   
   initializeEditor() {
@@ -192,13 +226,13 @@ class InteractiveExample {
             plugin: window.PsdToPhaserPlugin,
             start: true,
             mapping: "P2P",
-            // data: {
-            //   debug: {
-            //     console: true,
-            //     shape: false,
-            //     label: false
-            //   }
-            // }
+            data: self.debugMode ? {
+              debug: {
+                console: true,
+                shape: true,
+                label: true
+              }
+            } : undefined
           }
         ]
       },

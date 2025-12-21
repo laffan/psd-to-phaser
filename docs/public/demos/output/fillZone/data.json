@@ -1,0 +1,57 @@
+{
+  "name": "fillZone",
+  "width": 300,
+  "height": 300,
+  "layers": [
+    {
+      "name": "sprites",
+      "category": "group",
+      "x": 0,
+      "y": 0,
+      "width": 20,
+      "height": 20,
+      "initialDepth": 3,
+      "attributes": {},
+      "children": [
+        {
+          "name": "fillSprite",
+          "category": "sprite",
+          "x": 140,
+          "y": 140,
+          "width": 20,
+          "height": 20,
+          "attributes": {},
+          "filePath": "sprites/fillSprite.png",
+          "initialDepth": 2
+        }
+      ]
+    },
+    {
+      "name": "fillArea",
+      "category": "zone",
+      "x": 50,
+      "y": 50,
+      "width": 200,
+      "height": 200,
+      "attributes": {},
+      "bbox": {
+        "left": 50,
+        "top": 50,
+        "right": 250,
+        "bottom": 250
+      },
+      "initialDepth": 1
+    },
+    {
+      "name": "background",
+      "category": "sprite",
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "height": 300,
+      "attributes": {},
+      "filePath": "sprites/background.png",
+      "initialDepth": 0
+    }
+  ]
+}

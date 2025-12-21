@@ -3,6 +3,31 @@ layout: base.njk
 title: fillZone()
 ---
 
+<Interactive outputPath="demos/output/fillZone" psdKey="fillZone_key">
+
+```js
+// Place background first
+this.P2P.place(this, "fillZone_key", "background");
+
+// Place and get the zone object
+const zoneGroup = this.P2P.place(this, "fillZone_key", "fillArea");
+const zone = zoneGroup.getChildren()[0]; // Get actual Zone
+
+// Place and get the fill sprite
+const spritesGroup = this.P2P.place(this, "fillZone_key", "sprites");
+const fillSprite = spritesGroup.getChildren()[0]; // Get first sprite
+
+// Fill the zone with copies of the sprite
+this.P2P.use.fillZone(zone, fillSprite, {
+  minInstances: 8,
+  maxInstances: 15,
+  scaleRange: [0.5, 1.2],
+  tint: [0xff6666, 0x66ff66, 0x6666ff]
+});
+```
+
+</Interactive>
+
 Randomly fills a zone with a sprite or texture. You can pass in items directly from the JSON or one you've already placed. An optional options object lets you control which frames to use (if using a spritesheet or atlas) as well as size and tint options.
 
 ```js

@@ -1,0 +1,63 @@
+{
+  "name": "panTo",
+  "width": 800,
+  "height": 600,
+  "layers": [
+    {
+      "name": "markers",
+      "category": "group",
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 600,
+      "initialDepth": 4,
+      "attributes": {},
+      "children": [
+        {
+          "name": "markerA",
+          "category": "sprite",
+          "x": 100,
+          "y": 100,
+          "width": 40,
+          "height": 40,
+          "attributes": {},
+          "filePath": "sprites/markerA.png",
+          "initialDepth": 3
+        },
+        {
+          "name": "markerB",
+          "category": "sprite",
+          "x": 600,
+          "y": 150,
+          "width": 40,
+          "height": 40,
+          "attributes": {},
+          "filePath": "sprites/markerB.png",
+          "initialDepth": 2
+        },
+        {
+          "name": "markerC",
+          "category": "sprite",
+          "x": 350,
+          "y": 450,
+          "width": 40,
+          "height": 40,
+          "attributes": {},
+          "filePath": "sprites/markerC.png",
+          "initialDepth": 1
+        }
+      ]
+    },
+    {
+      "name": "background",
+      "category": "sprite",
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 600,
+      "attributes": {},
+      "filePath": "sprites/background.png",
+      "initialDepth": 0
+    }
+  ]
+}
