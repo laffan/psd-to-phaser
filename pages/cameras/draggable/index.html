@@ -375,6 +375,13 @@
                                 </a>
                             </li>
                             
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/psd-to-phaser/tests/">
+                                    Tests
+                                </a>
+                            </li>
+                            
                         </ul>
                     </div>
                     
@@ -396,21 +403,7 @@
                 </header>
 
                 <div class="content">
-                    <p>The draggable camera lets you click and drag around the canvas. That&#x27;s about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.</p>
-<pre><code class="language-js">// Initialize a draggable camera (no psdKey needed)
-this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;]);
-
-// Initialize a draggable camera with options
-this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;], {
-  draggable: {
-    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
-    easeDragging: true,
-    friction: 0.95,
-    minSpeed: 0.1,
-  },
-});
-</code></pre>
-<div class="interactive-example"><div class="row mb-3">
+                    <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
@@ -456,7 +449,7 @@ this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;],
                   data-output-path="demos/output/dragging"
                   data-psd-key="p7_key"
                   data-pixel-art="true"
-                  data-initial-code="Ci8vIFBsYWNlIGJhY2tncm91bmQKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A3X2tleScsICdiYWNrZ3JvdW5kJyk7CnRoaXMuUDJQLnBsYWNlKHRoaXMsICdwN19rZXknLCAnZG90cycpOwp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDdfa2V5JywgJ3NoYXBlcycpOwoKLy8gSW5pdGlhbGl6ZSBhIGRyYWdnYWJsZSBjYW1lcmEgd2l0aCBvcHRpb25zCnRoaXMuZHJhZ0NhbSA9IHRoaXMuUDJQLmNyZWF0ZUNhbWVyYSh0aGlzLmNhbWVyYXMubWFpbiwgWydkcmFnZ2FibGUnXSwgewogIGRyYWdnYWJsZTogewogICAgdXNlQm91bmRzOiB7IHg6IDAsIHk6IDAsIHdpZHRoOiAxMDAwLCBoZWlnaHQ6IDEwMDAgfSwKICAgIGVhc2VEcmFnZ2luZzogdHJ1ZSwKICAgIGZyaWN0aW9uOiAwLjk1LAogICAgbWluU3BlZWQ6IDAuMSwKICB9LAp9KTsKCgo=">
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDdfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A3X2tleScsICdkb3RzJyk7CnRoaXMuUDJQLnBsYWNlKHRoaXMsICdwN19rZXknLCAnc2hhcGVzJyk7CgovLyBJbml0aWFsaXplIGEgZHJhZ2dhYmxlIGNhbWVyYSB3aXRoIG9wdGlvbnMKdGhpcy5kcmFnQ2FtID0gdGhpcy5QMlAuY3JlYXRlQ2FtZXJhKHRoaXMuY2FtZXJhcy5tYWluLCBbJ2RyYWdnYWJsZSddLCB7CiAgZHJhZ2dhYmxlOiB7CiAgICB1c2VCb3VuZHM6IHsgeDogMCwgeTogMCwgd2lkdGg6IDEwMDAsIGhlaWdodDogMTAwMCB9LAogICAgZWFzZURyYWdnaW5nOiB0cnVlLAogICAgZnJpY3Rpb246IDAuOTUsCiAgICBtaW5TcGVlZDogMC4xLAogIH0sCn0pOw==">
             Run Example
           </button>
         </div>
@@ -465,22 +458,6 @@ this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;],
         <div class="phaser-container" id="phaser-p7_key"></div>
       </div>
     </div></div>
-<p>Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.</p>
-<p>Dragging triggers events, so you can listen for &quot;dragOnStart&quot;, &quot;isDragging&quot; and &quot;dragOnComplete&quot;.</p>
-<pre><code class="language-js">this.dragCam = this.P2P.createCamera(this.cameras.main, [&quot;draggable&quot;]);
-
-this.events.on(&quot;draggableStart&quot;, () =&gt; {
-  console.log(`Drag has begun.`);
-});
-
-this.events.on(&quot;draggableActive&quot;, () =&gt; {
-  console.log(`Drag is active.`);
-});
-
-this.events.on(&quot;draggableComplete&quot;, () =&gt; {
-  console.log(`Drag has completed.`);
-});
-</code></pre>
 <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
@@ -527,7 +504,7 @@ this.events.on(&quot;draggableComplete&quot;, () =&gt; {
                   data-output-path="demos/output/dragging"
                   data-psd-key="p8_key"
                   data-pixel-art="true"
-                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDhfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A4X2tleScsICdkb3RzJyk7CnRoaXMuc2hhcGVzID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A4X2tleScsICdzaGFwZXMnKTsKCi8vIENyZWF0ZSBzaW1wbGUgZHJhZ2dhYmxlIGNhbQp0aGlzLmRyYWdDYW0gPSB0aGlzLlAyUC5jcmVhdGVDYW1lcmEodGhpcy5jYW1lcmFzLm1haW4sIFsnZHJhZ2dhYmxlJ10pOwoKLy8gQ2hhbmdlIHZhbHVlcyBkdXJpbmcgZHJhZy4KdGhpcy5ldmVudHMub24oImRyYWdnYWJsZVN0YXJ0IiwgKCkgPT4gewogIHRoaXMuc2hhcGVzLnNldEFscGhhKDAuMykKfSk7Cgp0aGlzLmV2ZW50cy5vbigiZHJhZ2dhYmxlQ29tcGxldGUiLCAoKSA9PiB7CiAgdGhpcy5zaGFwZXMuc2V0QWxwaGEoMSkKfSk7Cgo=">
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDhfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A4X2tleScsICdkb3RzJyk7CnRoaXMuc2hhcGVzID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A4X2tleScsICdzaGFwZXMnKTsKCi8vIENyZWF0ZSBzaW1wbGUgZHJhZ2dhYmxlIGNhbQp0aGlzLmRyYWdDYW0gPSB0aGlzLlAyUC5jcmVhdGVDYW1lcmEodGhpcy5jYW1lcmFzLm1haW4sIFsnZHJhZ2dhYmxlJ10pOwoKLy8gQ2hhbmdlIHZhbHVlcyBkdXJpbmcgZHJhZy4KdGhpcy5ldmVudHMub24oImRyYWdnYWJsZVN0YXJ0IiwgKCkgPT4gewogIHRoaXMuc2hhcGVzLnNldEFscGhhKDAuMykKfSk7Cgp0aGlzLmV2ZW50cy5vbigiZHJhZ2dhYmxlQ29tcGxldGUiLCAoKSA9PiB7CiAgdGhpcy5zaGFwZXMuc2V0QWxwaGEoMSkKfSk7">
             Run Example
           </button>
         </div>
@@ -536,6 +513,36 @@ this.events.on(&quot;draggableComplete&quot;, () =&gt; {
         <div class="phaser-container" id="phaser-p8_key"></div>
       </div>
     </div></div>
+<p>The draggable camera lets you click and drag around the canvas. That&#x27;s about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.</p>
+<pre><code class="language-js">// Initialize a draggable camera (no psdKey needed)
+this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;]);
+
+// Initialize a draggable camera with options
+this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;], {
+  draggable: {
+    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+    easeDragging: true,
+    friction: 0.95,
+    minSpeed: 0.1,
+  },
+});
+</code></pre>
+<p>Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.</p>
+<p>Dragging triggers events, so you can listen for &quot;dragOnStart&quot;, &quot;isDragging&quot; and &quot;dragOnComplete&quot;.</p>
+<pre><code class="language-js">this.dragCam = this.P2P.createCamera(this.cameras.main, [&quot;draggable&quot;]);
+
+this.events.on(&quot;draggableStart&quot;, () =&gt; {
+  console.log(`Drag has begun.`);
+});
+
+this.events.on(&quot;draggableActive&quot;, () =&gt; {
+  console.log(`Drag is active.`);
+});
+
+this.events.on(&quot;draggableComplete&quot;, () =&gt; {
+  console.log(`Drag has completed.`);
+});
+</code></pre>
                 </div>
         </main>
     </div>

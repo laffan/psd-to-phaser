@@ -1,0 +1,63 @@
+{
+  "name": "button",
+  "width": 300,
+  "height": 300,
+  "layers": [
+    {
+      "name": "buttons",
+      "category": "group",
+      "x": 90,
+      "y": 125,
+      "width": 120,
+      "height": 50,
+      "initialDepth": 3,
+      "attributes": {},
+      "children": [
+        {
+          "name": "buttonNormal",
+          "category": "sprite",
+          "x": 90,
+          "y": 125,
+          "width": 120,
+          "height": 50,
+          "attributes": {},
+          "filePath": "sprites/buttonNormal.png",
+          "initialDepth": 2
+        },
+        {
+          "name": "buttonHover",
+          "category": "sprite",
+          "x": 90,
+          "y": 125,
+          "width": 120,
+          "height": 50,
+          "attributes": {},
+          "filePath": "sprites/buttonHover.png",
+          "initialDepth": 1
+        },
+        {
+          "name": "buttonActive",
+          "category": "sprite",
+          "x": 90,
+          "y": 125,
+          "width": 120,
+          "height": 50,
+          "attributes": {},
+          "filePath": "sprites/buttonActive.png",
+          "initialDepth": 0
+        }
+      ]
+    },
+    {
+      "name": "background",
+      "category": "sprite",
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "height": 300,
+      "attributes": {},
+      "filePath": "sprites/background.png",
+      "initialDepth": -1
+    }
+  ]
+}

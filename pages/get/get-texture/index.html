@@ -375,6 +375,13 @@
                                 </a>
                             </li>
                             
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/psd-to-phaser/tests/">
+                                    Tests
+                                </a>
+                            </li>
+                            
                         </ul>
                     </div>
                     
@@ -396,8 +403,7 @@
                 </header>
 
                 <div class="content">
-                    <p>Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.</p>
-<div class="interactive-example"><div class="row mb-3">
+                    <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
@@ -443,7 +449,7 @@
                   data-output-path="demos/output/getting"
                   data-psd-key="p6_key"
                   data-pixel-art="true"
-                  data-initial-code="Ci8vIFBsYWNlIGJhY2tncm91bmQKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A2X2tleScsICdiYWNrZ3JvdW5kJyk7CgovLyBHZXQgdGhlIHRleHR1cmUgZnJvbSBhdGxhc0JvYgpjb25zdCBib2IgPSB0aGlzLlAyUC5nZXRUZXh0dXJlKHRoaXMsICJwNl9rZXkiLCAiYXRsYXNCb2IiKTsKCi8vIENyZWF0ZSBhIG5ldyBzcHJpdGUgdXNpbmcganVzdCBhIHBpZWNlIG9mIHRoZSBhdGxhcwogIHRoaXMuYWRkLnNwcml0ZSgxNTAsIDE1MCwgYm9iLCAnYm9keScpOwoK">
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDZfa2V5JywgJ2JhY2tncm91bmQnKTsKCi8vIEdldCB0aGUgdGV4dHVyZSBmcm9tIGF0bGFzQm9iCmNvbnN0IGJvYiA9IHRoaXMuUDJQLmdldFRleHR1cmUodGhpcywgInA2X2tleSIsICJhdGxhc0JvYiIpOwoKLy8gQ3JlYXRlIGEgbmV3IHNwcml0ZSB1c2luZyBqdXN0IGEgcGllY2Ugb2YgdGhlIGF0bGFzCnRoaXMuYWRkLnNwcml0ZSgxNTAsIDE1MCwgYm9iLCAnYm9keScpOw==">
             Run Example
           </button>
         </div>
@@ -452,8 +458,6 @@
         <div class="phaser-container" id="phaser-p6_key"></div>
       </div>
     </div></div>
-<p>Note : When placing new items, remember the <a href="/pages/gotchas">depth gotchya</a>.</p>
-<p>Once you have access to the texture you can use the frames in any normal Phaser context, like emitting particles.</p>
 <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
@@ -500,7 +504,7 @@
                   data-output-path="demos/output/getting"
                   data-psd-key="p7_key"
                   data-pixel-art="true"
-                  data-initial-code="Ci8vIEluaXRpYWwgcGxhY2VtZW50CnRoaXMuUDJQLnBsYWNlKHRoaXMsICdwN19rZXknLCAnYmFja2dyb3VuZCcpOwp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDdfa2V5JywgJ2F0bGFzQm9iJyk7CgovLyBHZXQgdGhlIHRleHR1cmUgZnJvbSBhdGxhc0JvYgpjb25zdCB0ZXh0dXJlID0gdGhpcy5QMlAuZ2V0VGV4dHVyZSh0aGlzLCAicDdfa2V5IiwgJ2F0bGFzQm9iJyk7CgovLyBVc2UgYm9iJ3MgYXJtIGFuZCBsZWcgdG8gY3JlYXRlIGlkZWEgcGFydGljbGVzLgpjb25zdCBib2JzSWRlYSA9IHRoaXMuYWRkLnBhcnRpY2xlcygxNTAsIDExMCwgdGV4dHVyZSwgewogIGZyYW1lOiBbJ2FybUwnLCAnbGVnTCddLAogIHNwZWVkOiAxMDAsCiAgc2NhbGU6IHsgc3RhcnQ6IDEsIGVuZDogMCB9LAp9KTsKCi8vIFNldCBwYXJ0aWNsZXMgdG8gaGF2ZSBsb3dlciBvcGFjaXR5CmJvYnNJZGVhLnNldEFscGhhKDAuMykKCg==">
+                  data-initial-code="Ly8gSW5pdGlhbCBwbGFjZW1lbnQKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A3X2tleScsICdiYWNrZ3JvdW5kJyk7CnRoaXMuUDJQLnBsYWNlKHRoaXMsICdwN19rZXknLCAnYXRsYXNCb2InKTsKCi8vIEdldCB0aGUgdGV4dHVyZSBmcm9tIGF0bGFzQm9iCmNvbnN0IHRleHR1cmUgPSB0aGlzLlAyUC5nZXRUZXh0dXJlKHRoaXMsICJwN19rZXkiLCAnYXRsYXNCb2InKTsKCi8vIFVzZSBib2IncyBhcm0gYW5kIGxlZyB0byBjcmVhdGUgaWRlYSBwYXJ0aWNsZXMuCmNvbnN0IGJvYnNJZGVhID0gdGhpcy5hZGQucGFydGljbGVzKDE1MCwgMTEwLCB0ZXh0dXJlLCB7CiAgZnJhbWU6IFsnYXJtTCcsICdsZWdMJ10sCiAgc3BlZWQ6IDEwMCwKICBzY2FsZTogeyBzdGFydDogMSwgZW5kOiAwIH0sCn0pOwoKLy8gU2V0IHBhcnRpY2xlcyB0byBoYXZlIGxvd2VyIG9wYWNpdHkKYm9ic0lkZWEuc2V0QWxwaGEoMC4zKTs=">
             Run Example
           </button>
         </div>
@@ -509,6 +513,9 @@
         <div class="phaser-container" id="phaser-p7_key"></div>
       </div>
     </div></div>
+<p>Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.</p>
+<p>Note : When placing new items, remember the <a href="/pages/gotchas">depth gotchya</a>.</p>
+<p>Once you have access to the texture you can use the frames in any normal Phaser context, like emitting particles.</p>
                 </div>
         </main>
     </div>

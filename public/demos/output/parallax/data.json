@@ -1,0 +1,51 @@
+{
+  "name": "parallax",
+  "width": 600,
+  "height": 400,
+  "layers": [
+    {
+      "name": "foreground",
+      "category": "sprite",
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400,
+      "attributes": {},
+      "filePath": "sprites/foreground.png",
+      "initialDepth": 3
+    },
+    {
+      "name": "midground",
+      "category": "sprite",
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400,
+      "attributes": {},
+      "filePath": "sprites/midground.png",
+      "initialDepth": 2
+    },
+    {
+      "name": "stars",
+      "category": "sprite",
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400,
+      "attributes": {},
+      "filePath": "sprites/stars.png",
+      "initialDepth": 1
+    },
+    {
+      "name": "background",
+      "category": "sprite",
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400,
+      "attributes": {},
+      "filePath": "sprites/background.png",
+      "initialDepth": 0
+    }
+  ]
+}

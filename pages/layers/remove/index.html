@@ -375,6 +375,13 @@
                                 </a>
                             </li>
                             
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/psd-to-phaser/tests/">
+                                    Tests
+                                </a>
+                            </li>
+                            
                         </ul>
                     </div>
                     
@@ -396,13 +403,7 @@
                 </header>
 
                 <div class="content">
-                    <p>Any placed item comes with a remove method, which lets you search through the placed structure and destroy certain items.</p>
-<pre><code class="language-js">const placedGroup = this.P2P.place(this, &quot;psd_key&quot;, &quot;placedGroup&quot;);
-
-placedGroup.remove(&quot;innerGroup&quot;, { depth: 1 }); // removes only immediate children
-placedGroup.remove(&quot;innerGroup&quot;); // removes all descendants from this point
-</code></pre>
-<div class="interactive-example"><div class="row mb-3">
+                    <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
@@ -448,7 +449,7 @@ placedGroup.remove(&quot;innerGroup&quot;); // removes all descendants from this
                   data-output-path="demos/output/removal"
                   data-psd-key="p5_key"
                   data-pixel-art="true"
-                  data-initial-code="Ci8vIEluaXRpYWxseSBwbGFjZSBldmVyeXRoaW5nCnRoaXMuUDJQLnBsYWNlKHRoaXMsICdwNV9rZXknLCAnYmFja2dyb3VuZCcpOwpjb25zdCByaW5ncyA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICdwNV9rZXknLCAnb3V0ZXInKTsKCi8vIFJlbW92ZSB0aGUgY2VudGVyIGdyb3VwLgpyaW5ncy5yZW1vdmUoImlubmVyMS9pbm5lcjIvY2VudGVyIik7IAoKLy8gUmVtb3ZlIHRoZSBpbm5lcjIgZ3JvdXAgYnV0IG5vdCBpdHMgY2hpbGRyZW4uCnJpbmdzLnJlbW92ZSgiaW5uZXIxIiwgeyBkZXB0aDogMSB9KTsgCgo=">
+                  data-initial-code="Ly8gSW5pdGlhbGx5IHBsYWNlIGV2ZXJ5dGhpbmcKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A1X2tleScsICdiYWNrZ3JvdW5kJyk7CmNvbnN0IHJpbmdzID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A1X2tleScsICdvdXRlcicpOwoKLy8gUmVtb3ZlIHRoZSBjZW50ZXIgZ3JvdXAuCnJpbmdzLnJlbW92ZSgiaW5uZXIxL2lubmVyMi9jZW50ZXIiKTsKCi8vIFJlbW92ZSB0aGUgaW5uZXIyIGdyb3VwIGJ1dCBub3QgaXRzIGNoaWxkcmVuLgpyaW5ncy5yZW1vdmUoImlubmVyMSIsIHsgZGVwdGg6IDEgfSk7">
             Run Example
           </button>
         </div>
@@ -457,6 +458,12 @@ placedGroup.remove(&quot;innerGroup&quot;); // removes all descendants from this
         <div class="phaser-container" id="phaser-p5_key"></div>
       </div>
     </div></div>
+<p>Any placed item comes with a remove method, which lets you search through the placed structure and destroy certain items.</p>
+<pre><code class="language-js">const placedGroup = this.P2P.place(this, &quot;psd_key&quot;, &quot;placedGroup&quot;);
+
+placedGroup.remove(&quot;innerGroup&quot;, { depth: 1 }); // removes only immediate children
+placedGroup.remove(&quot;innerGroup&quot;); // removes all descendants from this point
+</code></pre>
                 </div>
         </main>
     </div>

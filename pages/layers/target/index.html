@@ -375,6 +375,13 @@
                                 </a>
                             </li>
                             
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/psd-to-phaser/tests/">
+                                    Tests
+                                </a>
+                            </li>
+                            
                         </ul>
                     </div>
                     
@@ -396,25 +403,7 @@
                 </header>
 
                 <div class="content">
-                    <p>If you would like to target a portion of a placed group - or a portion of a placed group - and assign it to a new variable, you can use the copy() method. You can also deactivate the targeted items in the original, giving the impression that the original object is being affected.</p>
-<pre><code class="language-js">// Place item
-const placedGroup = this.P2P.place(this, &quot;psd_key&quot;, &quot;placedGroup&quot;);
-
-// Use target to apply method to portion of target
-const lightened = placedGroup.target(&quot;iAmAtlas&quot;).setAlpha(0.3);
-
-// Chain several methods on target
-placedGroup.target(&quot;surround&quot;).setAlpha(0.3).setX(200); // chain methods
-
-// Assign target to a new variable and update it that way.
-const = L1Text = placedGroup.target(&quot;depthTest/Level1/Level1Text&quot;);
-L1Text.setAlpha(0.3)
-
-// Get  the points which make up a placed Zone
-const zone = placedGroup.target(&quot;depthTest/zone1&quot;);
-const points = zone.getData(&#x27;points&#x27;);
-</code></pre>
-<div class="interactive-example"><div class="row mb-3">
+                    <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
@@ -460,7 +449,7 @@ const points = zone.getData(&#x27;points&#x27;);
                   data-output-path="demos/output/targeting"
                   data-psd-key="p4_key"
                   data-pixel-art="true"
-                  data-initial-code="Ci8vIFBsYWNlIGJhY2tncm91bmQKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A0X2tleScsICdiYWNrZ3JvdW5kJyk7CnRoaXMuZmFjZSA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICdwNF9rZXknLCAnZmFjZScpOwoKCi8vIFVzZSB0YXJnZXQgdG8gYXBwbHkgbWV0aG9kIHRvIHBvcnRpb24gb2YgdGFyZ2V0CmNvbnN0IHJpZ2h0RXllID0gdGhpcy5mYWNlLnRhcmdldCgicmlnaHRFeWUiKTsKCi8vIFlvdSBjYW4gYWxzbyB1c2UgdGFyZ2V0IG9uIHRhcmdldGVkIGl0ZW1zCmNvbnN0IHJpZ2h0RXllRG90ID0gcmlnaHRFeWUudGFyZ2V0KCJkb3QiKTsKCi8vIE5vdyB5b3UgY2FuIGFwcGx5IGNoYW5nZXMgdG8ganVzdCBhIHBvcnRpb24uCnJpZ2h0RXllLnNldFNjYWxlKDIpOwpyaWdodEV5ZURvdC5zZXRTY2FsZSguNSk7Cgo=">
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDRfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5mYWNlID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A0X2tleScsICdmYWNlJyk7CgovLyBVc2UgdGFyZ2V0IHRvIGFwcGx5IG1ldGhvZCB0byBwb3J0aW9uIG9mIHRhcmdldApjb25zdCByaWdodEV5ZSA9IHRoaXMuZmFjZS50YXJnZXQoInJpZ2h0RXllIik7CgovLyBZb3UgY2FuIGFsc28gdXNlIHRhcmdldCBvbiB0YXJnZXRlZCBpdGVtcwpjb25zdCByaWdodEV5ZURvdCA9IHJpZ2h0RXllLnRhcmdldCgiZG90Iik7CgovLyBOb3cgeW91IGNhbiBhcHBseSBjaGFuZ2VzIHRvIGp1c3QgYSBwb3J0aW9uLgpyaWdodEV5ZS5zZXRTY2FsZSgyKTsKcmlnaHRFeWVEb3Quc2V0U2NhbGUoLjUpOw==">
             Run Example
           </button>
         </div>
@@ -469,6 +458,24 @@ const points = zone.getData(&#x27;points&#x27;);
         <div class="phaser-container" id="phaser-p4_key"></div>
       </div>
     </div></div>
+<p>If you would like to target a portion of a placed group - or a portion of a placed group - and assign it to a new variable, you can use the copy() method. You can also deactivate the targeted items in the original, giving the impression that the original object is being affected.</p>
+<pre><code class="language-js">// Place item
+const placedGroup = this.P2P.place(this, &quot;psd_key&quot;, &quot;placedGroup&quot;);
+
+// Use target to apply method to portion of target
+const lightened = placedGroup.target(&quot;iAmAtlas&quot;).setAlpha(0.3);
+
+// Chain several methods on target
+placedGroup.target(&quot;surround&quot;).setAlpha(0.3).setX(200); // chain methods
+
+// Assign target to a new variable and update it that way.
+const = L1Text = placedGroup.target(&quot;depthTest/Level1/Level1Text&quot;);
+L1Text.setAlpha(0.3)
+
+// Get  the points which make up a placed Zone
+const zone = placedGroup.target(&quot;depthTest/zone1&quot;);
+const points = zone.getData(&#x27;points&#x27;);
+</code></pre>
                 </div>
         </main>
     </div>

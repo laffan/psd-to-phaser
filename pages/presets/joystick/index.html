@@ -375,6 +375,13 @@
                                 </a>
                             </li>
                             
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/psd-to-phaser/tests/">
+                                    Tests
+                                </a>
+                            </li>
+                            
                         </ul>
                     </div>
                     
@@ -396,7 +403,62 @@
                 </header>
 
                 <div class="content">
-                    <p>Joystick allows you to move combine any sprite and zone to create a draggable &quot;joystick&quot; within the bounds of the zone that returns normalized x/y values. Because you may want to use multiple joysticks at once,
+                    <div class="interactive-example"><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-joystick_key">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-joystick_key">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-joystick_key" aria-expanded="false" 
+                          aria-controls="collapse-joystick_key">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-joystick_key" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-joystick_key" data-bs-parent="#accordion-joystick_key">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-joystick_key" 
+                         data-psd-path="public/demos/output/joystick">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-joystick_key"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/joystick/joystick.psd" 
+                  data-name="joystick_key"
+                  data-output-path="demos/output/joystick"
+                  data-psd-key="joystick_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAiam95c3RpY2tfa2V5IiwgImJhY2tncm91bmQiKTsKCi8vIEdldCBwbGF5ZXIgc3ByaXRlCmNvbnN0IHBsYXllckdyb3VwID0gdGhpcy5QMlAucGxhY2UodGhpcywgImpveXN0aWNrX2tleSIsICJwbGF5ZXIiKTsKY29uc3QgcGxheWVyID0gcGxheWVyR3JvdXAuZ2V0Q2hpbGRyZW4oKVswXTsKCi8vIFBsYWNlIGpveXN0aWNrIGNvbXBvbmVudHMKY29uc3Qgam95c3RpY2tHcm91cCA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICJqb3lzdGlja19rZXkiLCAiam95c3RpY2tBcmVhIik7CmNvbnN0IGNoaWxkcmVuID0gam95c3RpY2tHcm91cC5nZXRDaGlsZHJlbigpOwpjb25zdCBqb3lIYW5kbGUgPSBjaGlsZHJlbi5maW5kKGMgPT4gYy5uYW1lID09PSAiam95SGFuZGxlIik7CmNvbnN0IGpveVpvbmUgPSBjaGlsZHJlbi5maW5kKGMgPT4gYy5uYW1lID09PSAiam95Wm9uZSIpOwoKLy8gQWRkIGEgdGludGVkIGJhY2tncm91bmQgZm9yIHRoZSBqb3lzdGljayBhcmVhCmNvbnN0IHpvbmVCZyA9IHRoaXMuYWRkLnJlY3RhbmdsZSgxNTAsIDI1MCwgMTEwLCAxMTAsIDB4MDAwMDAwLCAwLjMpOwp6b25lQmcuc2V0RGVwdGgoMSk7CgovLyBDcmVhdGUgam95c3RpY2sgd2l0aCBib3VuY2VCYWNrCnRoaXMuUDJQLnVzZS5qb3lzdGljayhqb3lIYW5kbGUsIGpveVpvbmUsICJteUpveXN0aWNrIiwgewogIGJvdW5jZUJhY2s6IHRydWUKfSkuY29udHJvbChwbGF5ZXIsIHsKICB0eXBlOiAic3BlZWQiLAogIG1heFNwZWVkOiAxNTAKfSk7">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-joystick_key"></div>
+      </div>
+    </div></div>
+<p>Joystick allows you to move combine any sprite and zone to create a draggable &quot;joystick&quot; within the bounds of the zone that returns normalized x/y values. Because you may want to use multiple joysticks at once,
 each joystick requires its own key.</p>
 <pre><code class="language-js">//  mySprite is now draggable, bounded by myZone. Position is fixed on release.
 this.P2P.use.joystick(this.mySprite, this.myZone, &quot;joystickA&quot;);
@@ -420,7 +482,7 @@ this.P2P.use.joystick(joyStickB, joyZoneB, &quot;joystickB&quot;, { bounceBack: 
 <p>Joystick fires events that you can use elsewhere in your project. You can parse the returned values using the keys.</p>
 <pre><code class="language-js">this.events.on(&quot;joystickStart&quot;, (values) =&gt; {
   console.log(values); // { reference to joystick }
-  
+
 });
 this.events.on(&quot;joystickActive&quot;, (values) =&gt; {
   console.log(values); // { normalized values of movement }
@@ -451,7 +513,7 @@ this.events.on(&quot;joystickRelease&quot;, (values) =&gt; {
     // velocity = apply velocity to a physics object (use force option)
     // until = move sprite a specific number of pixels (use pixels and repeatRate options)
     // tracked = 1-to-1 tracking of joystick with an optional multiplier (use multiplier option )
-    type: &quot;speed&quot; | &quot;velocity&quot; | &quot;unit&quot; | &quot;tracked&quot;, 
+    type: &quot;speed&quot; | &quot;velocity&quot; | &quot;unit&quot; | &quot;tracked&quot;,
     force : 2, // force multiplier if using &quot;velocity&quot; option
     multiplier : 1.3, // position multiplier if using &quot;tracked&quot; option
     maxSpeed: 300, // speed if using &quot;speed&quot; option

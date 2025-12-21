@@ -375,6 +375,13 @@
                                 </a>
                             </li>
                             
+                            <li class="nav-item">
+                                <a class="nav-link " 
+                                   href="/psd-to-phaser/tests/">
+                                    Tests
+                                </a>
+                            </li>
+                            
                         </ul>
                     </div>
                     
@@ -396,23 +403,7 @@
                 </header>
 
                 <div class="content">
-                    <p>This camera works in conjunction with the <code>lazyLoad</code> attribute, which you can set to true on any sprite or tile layer. Sprite or tile layers that have been given the <code>lazyLoad</code> attribute will not loaded during load() but later, when they enter the camera. This gives you the ability to load assets only when they&#x27;re needed, potentially keeping load times much (much) smaller.</p>
-<pre><code class="language-js">// Initialize a lazyLoad camera (applies to all PSDs by default)
-this.lazyCamera = this.P2P.createCamera(this.cameras.main, [&quot;lazyLoad&quot;], {
-  lazyLoad: {
-    extendPreloadBounds: 100, // distance outside camera to start loading
-    debug: {
-      shape: true, // outline lazyLoad items
-      label: false, // label with filename 
-      console: false, // show file loading in console
-    },
-  },
-});
-
-</code></pre>
-<p><strong>Note:</strong>  : Currently does <em>not</em> work with multiple cameras. Also, there are some tradeoffs to using <code>lazyLoad</code>. The biggest difference is that you can&#x27;t manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they&#x27;ll just show up when needed.</p>
-<p>The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence. If you do not use a lazyLoad camera and your PSD contains lazyLoad items you will get lots of &quot;Texture not found&quot; errors.</p>
-<div class="interactive-example"><div class="row mb-3">
+                    <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
@@ -458,7 +449,7 @@ this.lazyCamera = this.P2P.createCamera(this.cameras.main, [&quot;lazyLoad&quot;
                   data-output-path="demos/output/lazyLoad"
                   data-psd-key="p9_key"
                   data-pixel-art="true"
-                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDlfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A5X2tleScsICdkb3RzJyk7CnRoaXMuc2hhcGVzID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A5X2tleScsICdzaGFwZXMnKTsKCi8vIENyZWF0ZSBzaW1wbGUgZHJhZ2dhYmxlIGNhbQp0aGlzLmRyYWdDYW0gPSB0aGlzLlAyUC5jcmVhdGVDYW1lcmEodGhpcy5jYW1lcmFzLm1haW4sIFsnZHJhZ2dhYmxlJywgJ2xhenlMb2FkJ10sIHsKICAgIGxhenlMb2FkOiB7CiAgICBleHRlbmRQcmVsb2FkQm91bmRzOiAtNTAsIC8vIG5lZ2F0aXZlIGJvdW5kIHNvIHdlIGNhbiBzZWUgdGhlIGJvcmRlciBmb3IgZGVtb25zdHJhdGlvbiBwdXJwb3Nlcy4KICAgIGRlYnVnOiB7CiAgICAgIHNoYXBlOiB0cnVlLCAvLyBvdXRsaW5lIGxhenlMb2FkIGl0ZW1zCiAgICAgIGxhYmVsOiB0cnVlLCAvLyBzaG93IG5hbWUgb2YgZWFjaCBpdGVtCiAgICB9LAogIH0sCn0KKTsKCgoK">
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDlfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A5X2tleScsICdkb3RzJyk7CnRoaXMuc2hhcGVzID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A5X2tleScsICdzaGFwZXMnKTsKCi8vIENoZWNrIGZvciBkZWJ1ZyBtb2RlIHZpYSBVUkwgcGFyYW1ldGVyCmNvbnN0IHVybFBhcmFtcyA9IG5ldyBVUkxTZWFyY2hQYXJhbXMod2luZG93LmxvY2F0aW9uLnNlYXJjaCk7CmNvbnN0IGRlYnVnTW9kZSA9IHVybFBhcmFtcy5nZXQoJ2RlYnVnJykgPT09ICd0cnVlJzsKCi8vIENyZWF0ZSBkcmFnZ2FibGUgKyBsYXp5TG9hZCBjYW1lcmEKdGhpcy5kcmFnQ2FtID0gdGhpcy5QMlAuY3JlYXRlQ2FtZXJhKHRoaXMuY2FtZXJhcy5tYWluLCBbJ2RyYWdnYWJsZScsICdsYXp5TG9hZCddLCB7CiAgbGF6eUxvYWQ6IHsKICAgIGV4dGVuZFByZWxvYWRCb3VuZHM6IC01MCwgLy8gbmVnYXRpdmUgYm91bmQgc28gd2UgY2FuIHNlZSB0aGUgYm9yZGVyIGZvciBkZW1vbnN0cmF0aW9uIHB1cnBvc2VzCiAgICBkZWJ1ZzogZGVidWdNb2RlID8gewogICAgICBzaGFwZTogdHJ1ZSwKICAgICAgbGFiZWw6IHRydWUsCiAgICB9IDogdW5kZWZpbmVkLAogIH0sCn0pOw==">
             Run Example
           </button>
         </div>
@@ -467,6 +458,22 @@ this.lazyCamera = this.P2P.createCamera(this.cameras.main, [&quot;lazyLoad&quot;
         <div class="phaser-container" id="phaser-p9_key"></div>
       </div>
     </div></div>
+<p>This camera works in conjunction with the <code>lazyLoad</code> attribute, which you can set to true on any sprite or tile layer. Sprite or tile layers that have been given the <code>lazyLoad</code> attribute will not loaded during load() but later, when they enter the camera. This gives you the ability to load assets only when they&#x27;re needed, potentially keeping load times much (much) smaller.</p>
+<pre><code class="language-js">// Initialize a lazyLoad camera (applies to all PSDs by default)
+this.lazyCamera = this.P2P.createCamera(this.cameras.main, [&quot;lazyLoad&quot;], {
+  lazyLoad: {
+    extendPreloadBounds: 100, // distance outside camera to start loading
+    debug: {
+      shape: true, // outline lazyLoad items
+      label: false, // label with filename
+      console: false, // show file loading in console
+    },
+  },
+});
+
+</code></pre>
+<p><strong>Note:</strong>  : Currently does <em>not</em> work with multiple cameras. Also, there are some tradeoffs to using <code>lazyLoad</code>. The biggest difference is that you can&#x27;t manually place lazily loaded items before the sprite texture has loaded. If the lazyLoad camera is on, they&#x27;ll just show up when needed.</p>
+<p>The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence. If you do not use a lazyLoad camera and your PSD contains lazyLoad items you will get lots of &quot;Texture not found&quot; errors.</p>
 <pre><code class="language-js">
 // Target specific PSDs only
 this.lazyCamera = this.P2P.createCamera(this.cameras.main, [&quot;lazyLoad&quot;], {

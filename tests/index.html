@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/psd-to-phaser/">
-    <title>place() - PSD to Phaser Documentation</title>
+    <title>Interactive Tests - PSD to Phaser Documentation</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
     
     <!-- Bootstrap CSS -->
@@ -376,7 +376,7 @@
                             </li>
                             
                             <li class="nav-item">
-                                <a class="nav-link " 
+                                <a class="nav-link active" 
                                    href="/psd-to-phaser/tests/">
                                     Tests
                                 </a>
@@ -391,7 +391,7 @@
         <!-- Main Content -->
         <main>
                 <header class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">place()</h1>
+                    <h1 class="h2">Interactive Tests</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <a href="https://github.com/laffan/psd-to-phaser" class="btn btn-outline-secondary btn-sm">
                             <svg class="me-1" width="16" height="16" fill="currentColor">
@@ -403,23 +403,412 @@
                 </header>
 
                 <div class="content">
-                    <div class="interactive-example"><div class="row mb-3">
+                    <p>This page displays all interactive examples in one place for easy testing and verification.</p>
+<h2>Presets</h2>
+<div class="interactive-example"><h3 class="mb-3">Button</h3><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
-            <div class="accordion" id="accordion-p1_key">
+            <div class="accordion" id="accordion-test_button">
               <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-p1_key">
+                <h2 class="accordion-header" id="heading-test_button">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                          data-bs-target="#collapse-p1_key" aria-expanded="false" 
-                          aria-controls="collapse-p1_key">
+                          data-bs-target="#collapse-test_button" aria-expanded="false" 
+                          aria-controls="collapse-test_button">
                     PSD Layers
                   </button>
                 </h2>
-                <div id="collapse-p1_key" class="accordion-collapse collapse" 
-                     aria-labelledby="heading-p1_key" data-bs-parent="#accordion-p1_key">
+                <div id="collapse-test_button" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_button" data-bs-parent="#accordion-test_button">
                   <div class="accordion-body">
-                    <div class="layer-structure" id="layers-p1_key" 
+                    <div class="layer-structure" id="layers-test_button" 
+                         data-psd-path="public/demos/output/button">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-test_button"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/button/button.psd" 
+                  data-name="test_button"
+                  data-output-path="demos/output/button"
+                  data-psd-key="button_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAiYnV0dG9uX2tleSIsICJiYWNrZ3JvdW5kIik7CgovLyBQbGFjZSBidXR0b24gc3ByaXRlcwpjb25zdCBidG5Ob3JtYWwgPSB0aGlzLlAyUC5wbGFjZSh0aGlzLCAiYnV0dG9uX2tleSIsICJidXR0b25zL2J1dHRvbk5vcm1hbCIpOwpjb25zdCBidG5Ib3ZlciA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICJidXR0b25fa2V5IiwgImJ1dHRvbnMvYnV0dG9uSG92ZXIiKTsKY29uc3QgYnRuQWN0aXZlID0gdGhpcy5QMlAucGxhY2UodGhpcywgImJ1dHRvbl9rZXkiLCAiYnV0dG9ucy9idXR0b25BY3RpdmUiKTsKCi8vIENyZWF0ZSBidXR0b24gd2l0aCBhbGwgc3RhdGVzCnRoaXMuUDJQLnVzZS5idXR0b24oWwogIHsKICAgIG5vcm1hbDogYnRuTm9ybWFsLAogICAgaG92ZXI6IGJ0bkhvdmVyLAogICAgYWN0aXZlOiBidG5BY3RpdmUKICB9LAogIHsKICAgIGNsaWNrOiAoYnRuKSA9PiBjb25zb2xlLmxvZygiQnV0dG9uIGNsaWNrZWQhIikKICB9Cl0pOw==">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-test_button"></div>
+      </div>
+    </div></div>
+<div class="interactive-example"><h3 class="mb-3">Parallax</h3><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-test_parallax">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-test_parallax">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-test_parallax" aria-expanded="false" 
+                          aria-controls="collapse-test_parallax">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-test_parallax" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_parallax" data-bs-parent="#accordion-test_parallax">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-test_parallax" 
+                         data-psd-path="public/demos/output/parallax">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-test_parallax"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/parallax/parallax.psd" 
+                  data-name="test_parallax"
+                  data-output-path="demos/output/parallax"
+                  data-psd-key="parallax_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgbGF5ZXJzIGluZGl2aWR1YWxseQpjb25zdCBiZyA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICJwYXJhbGxheF9rZXkiLCAiYmFja2dyb3VuZCIpOwpjb25zdCBzdGFycyA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICJwYXJhbGxheF9rZXkiLCAic3RhcnMiKTsKY29uc3QgbWlkID0gdGhpcy5QMlAucGxhY2UodGhpcywgInBhcmFsbGF4X2tleSIsICJtaWRncm91bmQiKTsKY29uc3QgZmcgPSB0aGlzLlAyUC5wbGFjZSh0aGlzLCAicGFyYWxsYXhfa2V5IiwgImZvcmVncm91bmQiKTsKCi8vIEdldCB0aGUgc3ByaXRlcyBmcm9tIHRoZSBncm91cHMKY29uc3QgYmdTcHJpdGUgPSBiZy5nZXRDaGlsZHJlbigpWzBdOwpjb25zdCBzdGFyc1Nwcml0ZSA9IHN0YXJzLmdldENoaWxkcmVuKClbMF07CmNvbnN0IG1pZFNwcml0ZSA9IG1pZC5nZXRDaGlsZHJlbigpWzBdOwoKLy8gQ3JlYXRlIGRyYWdnYWJsZSBjYW1lcmEgLSBkcmFnIHRvIHNlZSBwYXJhbGxheCEKdGhpcy5QMlAuY3JlYXRlQ2FtZXJhKHRoaXMuY2FtZXJhcy5tYWluLCBbJ2RyYWdnYWJsZSddLCB7CiAgZHJhZ2dhYmxlOiB7IGVhc2VEcmFnZ2luZzogdHJ1ZSB9Cn0pOwoKLy8gQXBwbHkgcGFyYWxsYXggLSBsb3dlciBzY3JvbGxGYWN0b3IgPSBzbG93ZXIgc2Nyb2xsCnRoaXMuUDJQLnVzZS5wYXJhbGxheCh7IHRhcmdldDogYmdTcHJpdGUsIHNjcm9sbEZhY3RvcjogMC4xIH0pOwp0aGlzLlAyUC51c2UucGFyYWxsYXgoeyB0YXJnZXQ6IHN0YXJzU3ByaXRlLCBzY3JvbGxGYWN0b3I6IDAuMyB9KTsKdGhpcy5QMlAudXNlLnBhcmFsbGF4KHsgdGFyZ2V0OiBtaWRTcHJpdGUsIHNjcm9sbEZhY3RvcjogMC42IH0pOw==">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-test_parallax"></div>
+      </div>
+    </div></div>
+<div class="interactive-example"><h3 class="mb-3">Pan To</h3><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-test_panTo">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-test_panTo">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-test_panTo" aria-expanded="false" 
+                          aria-controls="collapse-test_panTo">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-test_panTo" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_panTo" data-bs-parent="#accordion-test_panTo">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-test_panTo" 
+                         data-psd-path="public/demos/output/panTo">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-test_panTo"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/panTo/panTo.psd" 
+                  data-name="test_panTo"
+                  data-output-path="demos/output/panTo"
+                  data-psd-key="panTo_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAicGFuVG9fa2V5IiwgImJhY2tncm91bmQiKTsKCi8vIFBsYWNlIG1hcmtlcnMgaW5kaXZpZHVhbGx5IGZvciBiZXR0ZXIgY29udHJvbApjb25zdCBtYXJrZXJBID0gdGhpcy5QMlAucGxhY2UodGhpcywgInBhblRvX2tleSIsICJtYXJrZXJzL21hcmtlckEiKS5nZXRDaGlsZHJlbigpWzBdOwpjb25zdCBtYXJrZXJCID0gdGhpcy5QMlAucGxhY2UodGhpcywgInBhblRvX2tleSIsICJtYXJrZXJzL21hcmtlckIiKS5nZXRDaGlsZHJlbigpWzBdOwpjb25zdCBtYXJrZXJDID0gdGhpcy5QMlAucGxhY2UodGhpcywgInBhblRvX2tleSIsICJtYXJrZXJzL21hcmtlckMiKS5nZXRDaGlsZHJlbigpWzBdOwoKbGV0IGN1cnJlbnRJZHggPSAwOwpjb25zdCBtYXJrZXJzID0gW21hcmtlckEsIG1hcmtlckIsIG1hcmtlckNdOwoKbWFya2Vycy5mb3JFYWNoKChtYXJrZXIsIGlkeCkgPT4gewogIG1hcmtlci5zZXRJbnRlcmFjdGl2ZSh7IHVzZUhhbmRDdXJzb3I6IHRydWUgfSk7CiAgbWFya2VyLm9uKCJwb2ludGVyZG93biIsICgpID0+IHsKICAgIGN1cnJlbnRJZHggPSAoaWR4ICsgMSkgJSBtYXJrZXJzLmxlbmd0aDsKICAgIHRoaXMuUDJQLnVzZS5wYW5Ubyh0aGlzLmNhbWVyYXMubWFpbiwgbWFya2Vyc1tjdXJyZW50SWR4XSwgeyBzcGVlZDogNTAwIH0pOwogIH0pOwp9KTs=">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-test_panTo"></div>
+      </div>
+    </div></div>
+<div class="interactive-example"><h3 class="mb-3">Fill Zone</h3><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-test_fillZone">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-test_fillZone">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-test_fillZone" aria-expanded="false" 
+                          aria-controls="collapse-test_fillZone">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-test_fillZone" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_fillZone" data-bs-parent="#accordion-test_fillZone">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-test_fillZone" 
+                         data-psd-path="public/demos/output/fillZone">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-test_fillZone"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/fillZone/fillZone.psd" 
+                  data-name="test_fillZone"
+                  data-output-path="demos/output/fillZone"
+                  data-psd-key="fillZone_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZCBmaXJzdAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAiZmlsbFpvbmVfa2V5IiwgImJhY2tncm91bmQiKTsKCi8vIFBsYWNlIGFuZCBnZXQgdGhlIHpvbmUgb2JqZWN0CmNvbnN0IHpvbmVHcm91cCA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICJmaWxsWm9uZV9rZXkiLCAiZmlsbEFyZWEiKTsKY29uc3Qgem9uZSA9IHpvbmVHcm91cC5nZXRDaGlsZHJlbigpWzBdOyAvLyBHZXQgYWN0dWFsIFpvbmUKCi8vIFBsYWNlIGFuZCBnZXQgdGhlIGZpbGwgc3ByaXRlCmNvbnN0IHNwcml0ZXNHcm91cCA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICJmaWxsWm9uZV9rZXkiLCAic3ByaXRlcyIpOwpjb25zdCBmaWxsU3ByaXRlID0gc3ByaXRlc0dyb3VwLmdldENoaWxkcmVuKClbMF07IC8vIEdldCBmaXJzdCBzcHJpdGUKCi8vIEZpbGwgdGhlIHpvbmUgd2l0aCBjb3BpZXMgb2YgdGhlIHNwcml0ZQp0aGlzLlAyUC51c2UuZmlsbFpvbmUoem9uZSwgZmlsbFNwcml0ZSwgewogIG1pbkluc3RhbmNlczogOCwKICBtYXhJbnN0YW5jZXM6IDE1LAogIHNjYWxlUmFuZ2U6IFswLjUsIDEuMl0sCiAgdGludDogWzB4ZmY2NjY2LCAweDY2ZmY2NiwgMHg2NjY2ZmZdCn0pOw==">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-test_fillZone"></div>
+      </div>
+    </div></div>
+<div class="interactive-example"><h3 class="mb-3">Joystick</h3><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-test_joystick">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-test_joystick">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-test_joystick" aria-expanded="false" 
+                          aria-controls="collapse-test_joystick">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-test_joystick" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_joystick" data-bs-parent="#accordion-test_joystick">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-test_joystick" 
+                         data-psd-path="public/demos/output/joystick">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-test_joystick"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/joystick/joystick.psd" 
+                  data-name="test_joystick"
+                  data-output-path="demos/output/joystick"
+                  data-psd-key="joystick_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAiam95c3RpY2tfa2V5IiwgImJhY2tncm91bmQiKTsKCi8vIEdldCBwbGF5ZXIgc3ByaXRlCmNvbnN0IHBsYXllckdyb3VwID0gdGhpcy5QMlAucGxhY2UodGhpcywgImpveXN0aWNrX2tleSIsICJwbGF5ZXIiKTsKY29uc3QgcGxheWVyID0gcGxheWVyR3JvdXAuZ2V0Q2hpbGRyZW4oKVswXTsKCi8vIFBsYWNlIGpveXN0aWNrIGNvbXBvbmVudHMKY29uc3Qgam95c3RpY2tHcm91cCA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsICJqb3lzdGlja19rZXkiLCAiam95c3RpY2tBcmVhIik7CmNvbnN0IGNoaWxkcmVuID0gam95c3RpY2tHcm91cC5nZXRDaGlsZHJlbigpOwpjb25zdCBqb3lIYW5kbGUgPSBjaGlsZHJlbi5maW5kKGMgPT4gYy5uYW1lID09PSAiam95SGFuZGxlIik7CmNvbnN0IGpveVpvbmUgPSBjaGlsZHJlbi5maW5kKGMgPT4gYy5uYW1lID09PSAiam95Wm9uZSIpOwoKLy8gQWRkIGEgdGludGVkIGJhY2tncm91bmQgZm9yIHRoZSBqb3lzdGljayBhcmVhCmNvbnN0IHpvbmVCZyA9IHRoaXMuYWRkLnJlY3RhbmdsZSgxNTAsIDI1MCwgMTEwLCAxMTAsIDB4MDAwMDAwLCAwLjMpOwp6b25lQmcuc2V0RGVwdGgoMSk7CgovLyBDcmVhdGUgam95c3RpY2sgd2l0aCBib3VuY2VCYWNrCnRoaXMuUDJQLnVzZS5qb3lzdGljayhqb3lIYW5kbGUsIGpveVpvbmUsICJteUpveXN0aWNrIiwgewogIGJvdW5jZUJhY2s6IHRydWUKfSkuY29udHJvbChwbGF5ZXIsIHsKICB0eXBlOiAic3BlZWQiLAogIG1heFNwZWVkOiAxNTAKfSk7">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-test_joystick"></div>
+      </div>
+    </div></div>
+<h2>Cameras</h2>
+<div class="interactive-example"><h3 class="mb-3">Draggable Camera (with bounds)</h3><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-test_draggable1">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-test_draggable1">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-test_draggable1" aria-expanded="false" 
+                          aria-controls="collapse-test_draggable1">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-test_draggable1" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_draggable1" data-bs-parent="#accordion-test_draggable1">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-test_draggable1" 
+                         data-psd-path="public/demos/output/dragging">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-test_draggable1"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/dragging/dragging.psd" 
+                  data-name="test_draggable1"
+                  data-output-path="demos/output/dragging"
+                  data-psd-key="p7_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDdfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A3X2tleScsICdkb3RzJyk7CnRoaXMuUDJQLnBsYWNlKHRoaXMsICdwN19rZXknLCAnc2hhcGVzJyk7CgovLyBJbml0aWFsaXplIGEgZHJhZ2dhYmxlIGNhbWVyYSB3aXRoIG9wdGlvbnMKdGhpcy5kcmFnQ2FtID0gdGhpcy5QMlAuY3JlYXRlQ2FtZXJhKHRoaXMuY2FtZXJhcy5tYWluLCBbJ2RyYWdnYWJsZSddLCB7CiAgZHJhZ2dhYmxlOiB7CiAgICB1c2VCb3VuZHM6IHsgeDogMCwgeTogMCwgd2lkdGg6IDEwMDAsIGhlaWdodDogMTAwMCB9LAogICAgZWFzZURyYWdnaW5nOiB0cnVlLAogICAgZnJpY3Rpb246IDAuOTUsCiAgICBtaW5TcGVlZDogMC4xLAogIH0sCn0pOw==">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-test_draggable1"></div>
+      </div>
+    </div></div>
+<div class="interactive-example"><h3 class="mb-3">Draggable Camera (with events)</h3><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-test_draggable2">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-test_draggable2">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-test_draggable2" aria-expanded="false" 
+                          aria-controls="collapse-test_draggable2">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-test_draggable2" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_draggable2" data-bs-parent="#accordion-test_draggable2">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-test_draggable2" 
+                         data-psd-path="public/demos/output/dragging">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-test_draggable2"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/dragging/dragging.psd" 
+                  data-name="test_draggable2"
+                  data-output-path="demos/output/dragging"
+                  data-psd-key="p8_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDhfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A4X2tleScsICdkb3RzJyk7CnRoaXMuc2hhcGVzID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A4X2tleScsICdzaGFwZXMnKTsKCi8vIENyZWF0ZSBzaW1wbGUgZHJhZ2dhYmxlIGNhbQp0aGlzLmRyYWdDYW0gPSB0aGlzLlAyUC5jcmVhdGVDYW1lcmEodGhpcy5jYW1lcmFzLm1haW4sIFsnZHJhZ2dhYmxlJ10pOwoKLy8gQ2hhbmdlIHZhbHVlcyBkdXJpbmcgZHJhZy4KdGhpcy5ldmVudHMub24oImRyYWdnYWJsZVN0YXJ0IiwgKCkgPT4gewogIHRoaXMuc2hhcGVzLnNldEFscGhhKDAuMykKfSk7Cgp0aGlzLmV2ZW50cy5vbigiZHJhZ2dhYmxlQ29tcGxldGUiLCAoKSA9PiB7CiAgdGhpcy5zaGFwZXMuc2V0QWxwaGEoMSkKfSk7">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-test_draggable2"></div>
+      </div>
+    </div></div>
+<h2>Layers</h2>
+<div class="interactive-example"><h3 class="mb-3">Place (nested layers)</h3><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-test_place1">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-test_place1">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-test_place1" aria-expanded="false" 
+                          aria-controls="collapse-test_place1">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-test_place1" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_place1" data-bs-parent="#accordion-test_place1">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-test_place1" 
                          data-psd-path="public/demos/output/placement">
                       Loading layer structure...
                     </div>
@@ -442,10 +831,10 @@
     <div class="row">
       <div class="col-8">
         <div class="code-editor-container">
-          <div class="ace-editor" id="editor-p1_key"></div>
+          <div class="ace-editor" id="editor-test_place1"></div>
           <button class="btn btn-primary btn-sm run-example" 
                   data-psd="demos/output/placement/placement.psd" 
-                  data-name="p1_key"
+                  data-name="test_place1"
                   data-output-path="demos/output/placement"
                   data-psd-key="p1_key"
                   data-pixel-art="true"
@@ -455,26 +844,26 @@
         </div>
       </div>
       <div class="col-4">
-        <div class="phaser-container" id="phaser-p1_key"></div>
+        <div class="phaser-container" id="phaser-test_place1"></div>
       </div>
     </div></div>
-<div class="interactive-example"><div class="row mb-3">
+<div class="interactive-example"><h3 class="mb-3">Place (default methods)</h3><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
-            <div class="accordion" id="accordion-p2_key">
+            <div class="accordion" id="accordion-test_place2">
               <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-p2_key">
+                <h2 class="accordion-header" id="heading-test_place2">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                          data-bs-target="#collapse-p2_key" aria-expanded="false" 
-                          aria-controls="collapse-p2_key">
+                          data-bs-target="#collapse-test_place2" aria-expanded="false" 
+                          aria-controls="collapse-test_place2">
                     PSD Layers
                   </button>
                 </h2>
-                <div id="collapse-p2_key" class="accordion-collapse collapse" 
-                     aria-labelledby="heading-p2_key" data-bs-parent="#accordion-p2_key">
+                <div id="collapse-test_place2" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_place2" data-bs-parent="#accordion-test_place2">
                   <div class="accordion-body">
-                    <div class="layer-structure" id="layers-p2_key" 
+                    <div class="layer-structure" id="layers-test_place2" 
                          data-psd-path="public/demos/output/placement">
                       Loading layer structure...
                     </div>
@@ -497,10 +886,10 @@
     <div class="row">
       <div class="col-8">
         <div class="code-editor-container">
-          <div class="ace-editor" id="editor-p2_key"></div>
+          <div class="ace-editor" id="editor-test_place2"></div>
           <button class="btn btn-primary btn-sm run-example" 
                   data-psd="demos/output/placement/placement.psd" 
-                  data-name="p2_key"
+                  data-name="test_place2"
                   data-output-path="demos/output/placement"
                   data-psd-key="p2_key"
                   data-pixel-art="true"
@@ -510,26 +899,26 @@
         </div>
       </div>
       <div class="col-4">
-        <div class="phaser-container" id="phaser-p2_key"></div>
+        <div class="phaser-container" id="phaser-test_place2"></div>
       </div>
     </div></div>
-<div class="interactive-example"><div class="row mb-3">
+<div class="interactive-example"><h3 class="mb-3">Place (animations)</h3><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
-            <div class="accordion" id="accordion-p3_key">
+            <div class="accordion" id="accordion-test_place3">
               <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-p3_key">
+                <h2 class="accordion-header" id="heading-test_place3">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                          data-bs-target="#collapse-p3_key" aria-expanded="false" 
-                          aria-controls="collapse-p3_key">
+                          data-bs-target="#collapse-test_place3" aria-expanded="false" 
+                          aria-controls="collapse-test_place3">
                     PSD Layers
                   </button>
                 </h2>
-                <div id="collapse-p3_key" class="accordion-collapse collapse" 
-                     aria-labelledby="heading-p3_key" data-bs-parent="#accordion-p3_key">
+                <div id="collapse-test_place3" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-test_place3" data-bs-parent="#accordion-test_place3">
                   <div class="accordion-body">
-                    <div class="layer-structure" id="layers-p3_key" 
+                    <div class="layer-structure" id="layers-test_place3" 
                          data-psd-path="public/demos/output/placement">
                       Loading layer structure...
                     </div>
@@ -552,10 +941,10 @@
     <div class="row">
       <div class="col-8">
         <div class="code-editor-container">
-          <div class="ace-editor" id="editor-p3_key"></div>
+          <div class="ace-editor" id="editor-test_place3"></div>
           <button class="btn btn-primary btn-sm run-example" 
                   data-psd="demos/output/placement/placement.psd" 
-                  data-name="p3_key"
+                  data-name="test_place3"
                   data-output-path="demos/output/placement"
                   data-psd-key="p3_key"
                   data-pixel-art="true"
@@ -565,64 +954,9 @@
         </div>
       </div>
       <div class="col-4">
-        <div class="phaser-container" id="phaser-p3_key"></div>
+        <div class="phaser-container" id="phaser-test_place3"></div>
       </div>
     </div></div>
-<p>If you&#x27;re placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional &quot;options&quot; object allows you to limit the recursion (&quot;depth&quot;) and set debugging options (&quot;debug&quot;).</p>
-<pre><code class="language-js">// Place a top level layer
-const psd = this.P2P.place(this, &quot;psd_key&quot;, &quot;root&quot;);
-
-// Place a nested layer
-const sprite = this.P2P.place(this, &quot;psd_key&quot;, &quot;root/spiteName&quot;);
-
-// Place all the children of a nested group with some optional overrides
-const item = this.P2P.place(
-  this,
-  &quot;psd_key&quot;
-  &quot;groupName/nestedGroup&quot;,
-  {
-    depth: 1, // Only place top level items in this group, not the descendants
-    ignore: [&quot;background&quot;, &quot;sprites/sprite1&quot;], // array of paths to ignore
-    debug: {
-      shape: true
-    },
-  }
-);
-</code></pre>
-<p>In the following example, click the PSD Layers button to see how the PSD layers are named and nested.</p>
-<h3>Default Methods</h3>
-<p>Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : &#x27;setAlpha&#x27;, &#x27;setAngle&#x27;, &#x27;setBlendMode&#x27;, &#x27;setDepth&#x27;, &#x27;setDisplaySize&#x27;, &#x27;setFlip&#x27;, &#x27;setMask&#x27;, &#x27;setOrigin&#x27;, &#x27;setPipeline&#x27;, &#x27;setPosition&#x27;, &#x27;setRotation&#x27;, &#x27;setScale&#x27;, &#x27;setScrollFactor&#x27;, &#x27;setSize&#x27;, &#x27;setTint&#x27;, &#x27;setVisible&#x27;, &#x27;setX&#x27;, &#x27;setY&#x27;, &#x27;setZ&#x27;.</p>
-<pre><code class="language-js">// Set the alpha and rotation of a group.
-const depthTest = this.P2P.place(this, &quot;psd_key&quot;, &quot;depthTest&quot;);
-depthTest.setAlpha(0.3);
-depthTest.setRotation(Math.PI / 4);
-</code></pre>
-<h3>Animations</h3>
-<p>Animations automatically play when placed. However, you can override the default animation properties at several points.</p>
-<ol>
-<li>Layer naming : In the PSD itself, the attributes of the layer name itself can control animation properties. If you pass valid animation parameters, they will be merged in when instantiating the animation.</li>
-</ol>
-<pre><code>S | bounce | animation | frameRate: 5, yoyo: true
-</code></pre>
-<ol start="2">
-<li>Instantiation : When instantiating the sprite, you can also pass in animation parameters, so the same thing could be acheived like so :</li>
-</ol>
-<pre><code class="language-js">// For individual sprites
-this.P2P.place(this, &quot;psd_key&quot;, &quot;nested/bounce&quot;,   {
-    animationOptions: {
-      frameRate: 12,
-      yoyo: true,
-    }
-  });
-</code></pre>
-<p>If you have already placed the animation, you can also override the initial settings using the <code>updateAnimation</code> method.</p>
-<pre><code class="language-js">this.bounce = this.P2P.place(this, &quot;psd_key&quot;, &quot;nested/bounce&quot;);
-
-this.bounce.updateAnimation({
-  frameRate: 5,
-  yoyo: true,
-});
-</code></pre>
                 </div>
         </main>
     </div>
