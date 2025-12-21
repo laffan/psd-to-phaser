@@ -3,6 +3,10 @@ layout: base.njk
 title: Draggable Camera
 ---
 
+<Interactive outputPath="demos/output/dragging" psdKey="p7_key" src="interactive/cameras/draggable-1.js" />
+
+<Interactive outputPath="demos/output/dragging" psdKey="p8_key" src="interactive/cameras/draggable-2.js" />
+
 The draggable camera lets you click and drag around the canvas. That's about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.
 
 ```js
@@ -19,8 +23,6 @@ this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
   },
 });
 ```
-
-<Interactive outputPath="demos/output/dragging" psdKey="p7_key" src="interactive/cameras/draggable-1.js" />
 
 Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.
 
@@ -41,5 +43,3 @@ this.events.on("draggableComplete", () => {
   console.log(`Drag has completed.`);
 });
 ```
-
-<Interactive outputPath="demos/output/dragging" psdKey="p8_key" src="interactive/cameras/draggable-2.js" />

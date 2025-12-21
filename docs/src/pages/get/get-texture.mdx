@@ -3,48 +3,12 @@ layout: base.njk
 title: getTexture()
 ---
 
+<Interactive outputPath="demos/output/getting" psdKey="p6_key" src="interactive/get/get-texture-1.js" />
+
+<Interactive outputPath="demos/output/getting" psdKey="p7_key" src="interactive/get/get-texture-2.js" />
+
 Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.
-
-<Interactive outputPath="demos/output/getting" psdKey="p6_key" >
-
-```js 
-
-// Place background
-this.P2P.place(this, 'p6_key', 'background');
-
-// Get the texture from atlasBob
-const bob = this.P2P.getTexture(this, "p6_key", "atlasBob");
-
-// Create a new sprite using just a piece of the atlas
-  this.add.sprite(150, 150, bob, 'body');
-
-```
-</Interactive>
 
 Note : When placing new items, remember the [depth gotchya](/pages/gotchas).
 
 Once you have access to the texture you can use the frames in any normal Phaser context, like emitting particles.
-
-<Interactive outputPath="demos/output/getting" psdKey="p7_key" >
-
-```js 
-
-// Initial placement
-this.P2P.place(this, 'p7_key', 'background');
-this.P2P.place(this, 'p7_key', 'atlasBob');
-
-// Get the texture from atlasBob
-const texture = this.P2P.getTexture(this, "p7_key", 'atlasBob');
-
-// Use bob's arm and leg to create idea particles.
-const bobsIdea = this.add.particles(150, 110, texture, {
-  frame: ['armL', 'legL'],
-  speed: 100,
-  scale: { start: 1, end: 0 },
-});
-
-// Set particles to have lower opacity
-bobsIdea.setAlpha(0.3)
-
-```
-</Interactive>

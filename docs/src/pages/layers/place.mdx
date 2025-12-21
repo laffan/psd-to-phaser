@@ -3,6 +3,12 @@ layout: base.njk
 title: place()
 ---
 
+<Interactive outputPath="demos/output/placement" psdKey="p1_key" src="interactive/layers/place-1.js" />
+
+<Interactive outputPath="demos/output/placement" psdKey="p2_key" src="interactive/layers/place-2.js" />
+
+<Interactive outputPath="demos/output/placement" psdKey="p3_key" src="interactive/layers/place-3.js" />
+
 If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional "options" object allows you to limit the recursion ("depth") and set debugging options ("debug").
 
 ```js
@@ -29,8 +35,6 @@ const item = this.P2P.place(
 
 In the following example, click the PSD Layers button to see how the PSD layers are named and nested.
 
-<Interactive outputPath="demos/output/placement" psdKey="p1_key" src="interactive/layers/place-1.js" />
-
 
 ### Default Methods
 
@@ -42,8 +46,6 @@ const depthTest = this.P2P.place(this, "psd_key", "depthTest");
 depthTest.setAlpha(0.3);
 depthTest.setRotation(Math.PI / 4);
 ```
-
-<Interactive outputPath="demos/output/placement" psdKey="p2_key" src="interactive/layers/place-2.js" />
 
 
 
@@ -80,9 +82,3 @@ this.bounce.updateAnimation({
   yoyo: true,
 });
 ```
-
-
-<Interactive outputPath="demos/output/placement" psdKey="p3_key" src="interactive/layers/place-3.js" />
-
-
-
