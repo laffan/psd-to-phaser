@@ -222,12 +222,12 @@ export default function(eleventyConfig) {
     </div>`;
   });
   
-  // Copy static assets
-  eleventyConfig.addPassthroughCopy("src/assets");
-  eleventyConfig.addPassthroughCopy("src/js");
-  eleventyConfig.addPassthroughCopy("src/css");
+  // Copy static assets - use explicit source -> dest mapping
+  eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
+  eleventyConfig.addPassthroughCopy({ "src/js": "js" });
+  eleventyConfig.addPassthroughCopy({ "src/css": "css" });
   // Copy public directory contents to root
-  eleventyConfig.addPassthroughCopy("public");
+  eleventyConfig.addPassthroughCopy({ "public": "/" });
   
   // Add .nojekyll for GitHub Pages to serve all file types
   eleventyConfig.addPassthroughCopy({ ".nojekyll": ".nojekyll" });
@@ -235,9 +235,9 @@ export default function(eleventyConfig) {
   // PSD to Phaser is now loaded from unpkg CDN
   
   // Watch for changes in JS, CSS, and interactive examples
-  eleventyConfig.addWatchTarget("./src/js/");
-  eleventyConfig.addWatchTarget("./src/css/");
-  eleventyConfig.addWatchTarget("./src/interactive/");
+  eleventyConfig.addWatchTarget("src/js/");
+  eleventyConfig.addWatchTarget("src/css/");
+  eleventyConfig.addWatchTarget("src/interactive/");
   return {
     dir: {
       input: "src",
