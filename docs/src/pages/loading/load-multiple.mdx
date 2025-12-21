@@ -3,14 +3,16 @@ layout: base.njk
 title: loadMultiple()
 ---
 
-When you need to load multiple PSDs at once with position offsets, use P2P.loadMultiple(). This method takes an array of configuration objects, each specifying the key, path, position, and optional lazyLoad settings.
+<Interactive outputPath="demos/output/placement" psdKey="p1_key" src="interactive/loading/load-multiple.js" />
+
+When you need to load multiple PSDs at once with position offsets, use P2P.load.loadMultiple(). This method takes an array of configuration objects, each specifying the key, path, position, and optional lazyLoad settings.
 
 ```js
 // Load multiple PSDs with position offsets
-this.P2P.loadMultiple(this, [
+this.P2P.load.loadMultiple(this, [
   {
     key: "background_psd",
-    path: "assets/background", 
+    path: "assets/background",
     position: { x: 0, y: 0 }
   },
   {
@@ -25,16 +27,22 @@ this.P2P.loadMultiple(this, [
     lazyLoad: true // Set all layers in this PSD to lazy load
   },
   {
-    key: "effects_psd", 
+    key: "effects_psd",
     path: "assets/effects",
     position: { x: 200, y: 100 },
     lazyLoad: ["particles", "glow"] // Set specific layers to lazy load
   }
 ]);
+```
 
+### Loading Events
+
+The same loading events work with loadMultiple - progress is combined across all PSDs:
+
+```js
 // Listen for combined loading progress
 this.events.on("psdLoadProgress", (value) => {
-  console.log(`Multi-PSD loading: ${(value * 100).toFixed(2)}% complete`);
+  console.log(`Multi-PSD loading: ${(value * 100).toFixed(0)}% complete`);
 });
 
 // Listen for completion of all PSDs
