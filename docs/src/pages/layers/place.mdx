@@ -5,10 +5,6 @@ title: place()
 
 <Interactive outputPath="demos/output/placement" psdKey="p1_key" src="interactive/layers/place-1.js" />
 
-<Interactive outputPath="demos/output/placement" psdKey="p2_key" src="interactive/layers/place-2.js" />
-
-<Interactive outputPath="demos/output/placement" psdKey="p3_key" src="interactive/layers/place-3.js" />
-
 If you're placing a layer group, all of the descendants will be placed by default. However, place() also lets you place specific descendants using a slash path format. An optional "options" object allows you to limit the recursion ("depth") and set debugging options ("debug").
 
 ```js
@@ -40,6 +36,8 @@ In the following example, click the PSD Layers button to see how the PSD layers 
 
 Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
 
+<Interactive outputPath="demos/output/placement" psdKey="p2_key" id="place-methods" src="interactive/layers/place-2.js" />
+
 ```js
 // Set the alpha and rotation of a group.
 const depthTest = this.P2P.place(this, "psd_key", "depthTest");
@@ -53,6 +51,8 @@ depthTest.setRotation(Math.PI / 4);
 
 
 Animations automatically play when placed. However, you can override the default animation properties at several points.
+
+<Interactive outputPath="demos/output/placement" psdKey="p3_key" id="place-animations" src="interactive/layers/place-3.js" />
 
 1. Layer naming : In the PSD itself, the attributes of the layer name itself can control animation properties. If you pass valid animation parameters, they will be merged in when instantiating the animation.
 

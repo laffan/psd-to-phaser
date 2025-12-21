@@ -5,8 +5,6 @@ title: Draggable Camera
 
 <Interactive outputPath="demos/output/dragging" psdKey="p7_key" src="interactive/cameras/draggable-1.js" />
 
-<Interactive outputPath="demos/output/dragging" psdKey="p8_key" src="interactive/cameras/draggable-2.js" />
-
 The draggable camera lets you click and drag around the canvas. That's about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.
 
 ```js
@@ -26,7 +24,11 @@ this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
 
 Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.
 
-Dragging triggers events, so you can listen for "dragOnStart", "isDragging" and "dragOnComplete".
+### Events
+
+Dragging triggers events, so you can listen for "draggableStart", "draggableActive" and "draggableComplete".
+
+<Interactive outputPath="demos/output/dragging" psdKey="p8_key" id="draggable-events" src="interactive/cameras/draggable-2.js" />
 
 ```js
 this.dragCam = this.P2P.createCamera(this.cameras.main, ["draggable"]);
@@ -43,3 +45,50 @@ this.events.on("draggableComplete", () => {
   console.log(`Drag has completed.`);
 });
 ```
+
+### Pause and Resume
+
+You can pause and resume the draggable camera, which is useful when you need to interact with objects in the scene without the camera moving.
+
+<Interactive outputPath="demos/output/dragging" psdKey="p8_key" id="draggable-pause" src="interactive/cameras/draggable-4.js" />
+
+```js
+this.dragCam = this.P2P.createCamera(this.cameras.main, ["draggable"]);
+
+// Pause camera dragging
+this.dragCam.pause();
+
+// Resume camera dragging
+this.dragCam.resume();
+
+// Check if currently paused
+if (this.dragCam.isPaused()) {
+  console.log("Camera dragging is paused");
+}
+```
+
+### Ignore Objects
+
+You can specify paths to ignore when dragging. When the user clicks on an ignored interactive object, the camera drag won't start, allowing the object itself to be dragged or interacted with. This is perfect for having draggable objects within a draggable camera view.
+
+<Interactive outputPath="demos/output/dragging" psdKey="p7_key" id="draggable-ignore" src="interactive/cameras/draggable-3.js" />
+
+```js
+// Make shapes draggable
+this.shapes.getChildren().forEach(child => {
+  child.setInteractive({ draggable: true });
+  this.input.setDraggable(child);
+});
+
+// Camera ignores shapes group - drag the shapes, not the camera!
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
+  draggable: {
+    ignore: ['shapes']
+  }
+});
+```
+
+The `ignore` array uses path matching similar to `place()`:
+- Exact name match: `"button"` matches any object named "button"
+- Full path match: `"ui/buttons"` matches that exact path
+- Path prefix: `"ui/buttons"` also matches `"ui/buttons/ok"`

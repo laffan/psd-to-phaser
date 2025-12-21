@@ -5,10 +5,12 @@ title: getTexture()
 
 <Interactive outputPath="demos/output/getting" psdKey="p6_key" src="interactive/get/get-texture-1.js" />
 
-<Interactive outputPath="demos/output/getting" psdKey="p7_key" src="interactive/get/get-texture-2.js" />
+Once a sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.
 
-Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.
+Note : When placing new items, remember the [depth gotchya](/pages/other/gotchas).
 
-Note : When placing new items, remember the [depth gotchya](/pages/gotchas).
+### Using with Particles
 
 Once you have access to the texture you can use the frames in any normal Phaser context, like emitting particles.
+
+<Interactive outputPath="demos/output/getting" psdKey="p7_key" id="get-texture-particles" src="interactive/get/get-texture-2.js" />
