@@ -355,7 +355,7 @@ Note: : Currently does _not_ work with multiple cameras. Also, there are some tr
 
 The other tradeoff is that you MUST use the lazyLoad camera to see lazyLoaded items at all, as the plugin just leaves them out of the initial load sequence. If you do not use a lazyLoad camera and your PSD contains lazyLoad items you will get lots of "Texture not found" errors.
 
-NOTE : ZOOM BUG: By default, camera zoom will affects the preload boundaries of your lazyLoad camera, so if you zoom out, the boundary zooms out too. It turns out this is a difficult fix. As a stopgap, you can set `createBoundaryCamera: true` in your lazy load options. This creates an invisible secondary camera that maintains accurate preload boundaries regardless of the main camera's zoom level. This is a tradeoff: it works, but will increase processor load somewhat.
+Note on Zoom: The lazyLoad camera now correctly handles camera zoom by default. The `createBoundaryCamera: true` option is still available if you need a separate camera for boundary calculations, but it's no longer required for zoom to work correctly.
 
 ```js
 // Initialize a lazyLoad camera (applies to all PSDs by default)
