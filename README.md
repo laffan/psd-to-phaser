@@ -161,14 +161,10 @@ const sprite = this.P2P.place(this, "psd_key", "root/spiteName");
 // Place all the children of a nested group with some optional overrides
 const item = this.P2P.place(
   this,
-  "psd_key"
+  "psd_key",
   "groupName/nestedGroup",
   {
     depth: 1, // Only place top level items in this group, not the descendants
-    ignore: ["background", "sprites/sprite1"], // array of paths to ignore
-    debug: {
-      shape: true
-    },
   }
 );
 ```
@@ -284,11 +280,11 @@ Animations automatically play when placed. However, you can override the default
     S | bounce | animation | frameRate: 5, yoyo: true
     
 
-2.  Instantiation : When instantiating the sprite, you can also pass in animation parameters, so the same thing could be acheived like so :
+2.  Instantiation : When instantiating the sprite, you can also pass in animation parameters, so the same thing could be achieved like so :
 
 ```js
 // For individual sprites
-this.bounce = this.P2P.place(this, "psd_key", "nested/bounce");
+this.bounce = this.P2P.place(this, "psd_key", "nested/bounce", {
   animationOptions: {
     frameRate: 5,
     yoyo: true,
@@ -313,25 +309,7 @@ this.bounce.updateAnimation({
 
 As mentioned [above](https://www.npmjs.com/package/psd-to-phaser#initializing), the plugin features a top-level debug mode you can feed either a boolean or a configuration object that gives you more granular control : `{ label, shape, console}`. "Label" controls the text label of the layer, "shape" is the visual outline of what is being placed on the canvas and "console" just gives you some basic info about the placement.
 
-When placing objects, you can override whatever your global setting is the same way.
-
-```js
-// Turn off the text labels
-this.P2P.place(this, "psd_key", "backgroundTiles", {
-  debug: {
-    label: false,
-  },
-});
-
-// The equivelant of not using debug at all.
-this.P2P.place(this, "psd_key", "pickups/deepNestPoints", {
-  debug: {
-    shape: false,
-    label: false,
-    console: false,
-  },
-});
-```
+Debug settings are configured globally when initializing the plugin. All placed objects will use these global debug settings.
 
 ## Cameras
 
@@ -580,7 +558,7 @@ Pass in an item or x/y and have the canvas pan to it.
 // Pan to item.
 this.P2P.use.panTo(this.cameras.main, this.placedPoint, {
   targetPositionY: "center", // "center", "top", "bottom"
-  targetPositionZ: "center", // "center", "left", "right"
+  targetPositionX: "center", // "center", "left", "right"
   targetOffset: [300, 100], // Adjust target with x/y
   speed: 300, // time in ms it takes to pan to point
   easing: true, // turn easing on/off
