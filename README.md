@@ -451,6 +451,42 @@ this.events.on("draggableComplete", () => {
 });
 ```
 
+#### Pause and Resume
+
+You can pause and resume the draggable camera, which is useful when you need to drag objects within the scene without the camera moving.
+
+```js
+this.dragCam = this.P2P.createCamera(this.cameras.main, ["draggable"]);
+
+// Pause camera dragging (e.g., when entering object drag mode)
+this.dragCam.pause();
+
+// Resume camera dragging
+this.dragCam.resume();
+
+// Check if currently paused
+if (this.dragCam.isPaused()) {
+  console.log("Camera dragging is paused");
+}
+```
+
+#### Ignore Objects
+
+You can specify paths to ignore when dragging. When the user clicks on an ignored interactive object, the camera drag won't start, allowing the object itself to be dragged or interacted with.
+
+```js
+this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
+  draggable: {
+    ignore: ["ui/buttons", "draggableSprite", "controls/joystick"]
+  }
+});
+```
+
+The `ignore` array uses path matching similar to `place()`:
+- Exact name match: `"button"` matches any object named "button"
+- Full path match: `"ui/buttons"` matches that exact path
+- Path prefix: `"ui/buttons"` also matches `"ui/buttons/ok"`
+
 ### Combined
 
 [](https://www.npmjs.com/package/psd-to-phaser#combined)
