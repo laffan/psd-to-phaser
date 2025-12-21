@@ -64,12 +64,13 @@ export default function(eleventyConfig) {
   }
 
   // Interactive React component for MDX
-  const Interactive = ({ outputPath, psdKey, pixelArt = true, src, title, children }) => {
+  const Interactive = ({ outputPath, psdKey, pixelArt = true, src, title, id, children }) => {
     // Load code from file if src is provided, otherwise extract from children
     const code = src ? loadCodeFromFile(src) : extractCodeFromChildren(children);
     const encodedCode = Buffer.from(code).toString('base64');
     const psdFilename = `${outputPath}/${outputPath.split('/').pop()}.psd`;
-    const demoId = psdKey;
+    // Use id for DOM uniqueness if provided, otherwise fall back to psdKey
+    const demoId = id || psdKey;
     
     // Static link to PSDs folder on GitHub
     const psdDownloadPath = `https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds`;
