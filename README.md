@@ -133,17 +133,31 @@ this.events.once("psdLoadComplete", () => {
 
 [](https://www.npmjs.com/package/psd-to-phaser#getdatapsd_key)
 
-The `getData()` method returns the base path, where the data has been saved (`basePath`), the JSON manifest in its entirity (`original`), the initially loaded items (`initialLoad`) and finally any items that are being lazy loaded (`lazyLoad`).
+The `getData()` method returns an object containing:
+- `basePath` - where the PSD data is stored
+- `original` - the entire JSON manifest
+- `initialLoad` - items loaded immediately (sprites, tiles, zones, points, groups)
+- `lazyLoad` - items marked for lazy loading
+- `positionOffset` - position offset (only when loaded via `loadMultiple()`)
+- `isMultiplePsd` - flag indicating if loaded via `loadMultiple()`
 
 ```js
-    // Save all PSD data to a variable
-    const psdData = this.P2P.getData("psd_key");
+// Save all PSD data to a variable
+const psdData = this.P2P.getData("psd_key");
 
-    // "basePath" is where the PSD data is stored.
-    const psdPath = psdData.basePath;
+// "basePath" is where the PSD data is stored.
+const psdPath = psdData.basePath;
 
-    // "original" is the entire JSON blob. 
-    const psdWidth = psdData.original.width;
+// "original" is the entire JSON blob.
+const psdWidth = psdData.original.width;
+
+// Access initially loaded sprites
+const sprites = psdData.initialLoad.sprites;
+
+// Check if this was loaded via loadMultiple
+if (psdData.isMultiplePsd) {
+  console.log("Position offset:", psdData.positionOffset);
+}
 ```
 
 ### place()
@@ -173,7 +187,7 @@ const item = this.P2P.place(
 
 [](https://www.npmjs.com/package/psd-to-phaser#placedspritemethods)
 
-Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setActive', 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
 
 ```js
 // Set the alpha and rotation of a group.
@@ -348,9 +362,10 @@ NOTE : ZOOM BUG: By default, camera zoom will affects the preload boundaries of 
 this.lazyCamera = this.P2P.createCamera(this.cameras.main, ["lazyLoad"], {
   lazyLoad: {
     extendPreloadBounds: -30, // pull lazyLoad boundary in to debug
+    checkInterval: 300, // ms between visibility checks (default: 300)
     debug: {
       shape: true, // outline lazyLoad items
-      label: true, // label with filename 
+      label: true, // label with filename
       console: true, // show file loading in console
     },
   },
@@ -584,7 +599,7 @@ this.events.on("panToComplete", () => {
 
 [](https://www.npmjs.com/package/psd-to-phaser#fillzone-zone-sprite-)
 
-Randomly fills a zone with a sprite or texture. You can pass in items directly from the JSON or one you've already placed. An optional options object lets you control which frames to use (if using a spritesheet or atlas) as well as size and tint options.
+Randomly fills a zone with a sprite or texture. You can pass in items directly from the JSON or one you've already placed. An optional options object lets you control which frames to use (if using a spritesheet or atlas) as well as size, tint, and instance count options.
 
 ```js
 // Fill a zone with sprites.
@@ -592,8 +607,10 @@ this.P2P.use.fillZone(this.myZone, this.mySprite);
 
 this.P2P.use.fillZone(this.myZone, this.mySpritesheet, {
   useFrames: [1, 3], // optionally use only these frames from the spritesheet or atlas
-  scaleRange: [0.8, 1.1], // optionally randomly scale items within these bounds.
+  scaleRange: [0.8, 1.1], // optionally randomly scale items within these bounds
   tint: [0x15ae15, 0xdaaf3a, 0xda3a64], // optionally apply these tints to the placed items
+  minInstances: 5, // minimum number of sprites to place (default: 5)
+  maxInstances: 10, // maximum number of sprites to place (default: 10)
 });
 ```
 
@@ -608,7 +625,8 @@ Joystick allows you to move combine any sprite and zone to create a draggable "j
 this.P2P.use.joystick(this.mySprite, this.myZone, "joystickA");
 
 this.P2P.use.joystick(this.mySprite, this.myZone, "joystickB", {
-  bounceBack: true, //  On release, mySprite now bounces back to original position.
+  bounceBack: true, // on release, mySprite bounces back to original position
+  joystickRadius: 50, // radius constraint for joystick movement (default: 50)
 });
 ```
 
