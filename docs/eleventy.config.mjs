@@ -3,11 +3,24 @@ import {pathToFileURL} from "node:url";
 import {evaluate} from "@mdx-js/mdx";
 import {renderToStaticMarkup} from "react-dom/server";
 import * as runtime from "react/jsx-runtime";
+import fs from "node:fs";
+import nodePath from "node:path";
 
 export default function(eleventyConfig) {
   // Add syntax highlighting
   eleventyConfig.addPlugin(syntaxHighlight);
-  
+
+  // Helper function to load code from a file
+  function loadCodeFromFile(srcPath) {
+    const fullPath = nodePath.join(process.cwd(), 'src', srcPath);
+    try {
+      return fs.readFileSync(fullPath, 'utf-8').trim();
+    } catch (err) {
+      console.error(`Error loading interactive code from ${fullPath}:`, err.message);
+      return `// Error loading code from ${srcPath}`;
+    }
+  }
+
   // Helper function to extract code from MDX children
   function extractCodeFromChildren(children) {
     if (!children) return '';
@@ -51,9 +64,9 @@ export default function(eleventyConfig) {
   }
 
   // Interactive React component for MDX
-  const Interactive = ({ outputPath, psdKey, pixelArt = true, children }) => {
-    // Extract code from markdown code block
-    const code = extractCodeFromChildren(children);
+  const Interactive = ({ outputPath, psdKey, pixelArt = true, src, title, children }) => {
+    // Load code from file if src is provided, otherwise extract from children
+    const code = src ? loadCodeFromFile(src) : extractCodeFromChildren(children);
     const encodedCode = Buffer.from(code).toString('base64');
     const psdFilename = `${outputPath}/${outputPath.split('/').pop()}.psd`;
     const demoId = psdKey;
@@ -61,7 +74,10 @@ export default function(eleventyConfig) {
     // Static link to PSDs folder on GitHub
     const psdDownloadPath = `https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds`;
     
-    const htmlContent = `<div class="row mb-3">
+    // Add title header if provided (for tests page)
+    const titleHtml = title ? `<h3 class="mb-3">${title}</h3>` : '';
+
+    const htmlContent = `${titleHtml}<div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
@@ -217,9 +233,10 @@ export default function(eleventyConfig) {
   
   // PSD to Phaser is now loaded from unpkg CDN
   
-  // Watch for changes in JS and CSS
+  // Watch for changes in JS, CSS, and interactive examples
   eleventyConfig.addWatchTarget("./src/js/");
   eleventyConfig.addWatchTarget("./src/css/");
+  eleventyConfig.addWatchTarget("./src/interactive/");
   return {
     dir: {
       input: "src",

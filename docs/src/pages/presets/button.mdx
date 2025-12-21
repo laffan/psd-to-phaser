@@ -3,31 +3,7 @@ layout: base.njk
 title: button()
 ---
 
-<Interactive outputPath="demos/output/button" psdKey="button_key">
-
-```js
-// Place background
-this.P2P.place(this, "button_key", "background");
-
-// Place button sprites
-const btnNormal = this.P2P.place(this, "button_key", "buttons/buttonNormal");
-const btnHover = this.P2P.place(this, "button_key", "buttons/buttonHover");
-const btnActive = this.P2P.place(this, "button_key", "buttons/buttonActive");
-
-// Create button with all states
-this.P2P.use.button([
-  {
-    normal: btnNormal,
-    hover: btnHover,
-    active: btnActive
-  },
-  {
-    click: (btn) => console.log("Button clicked!")
-  }
-]);
-```
-
-</Interactive>
+<Interactive outputPath="demos/output/button" psdKey="button_key" src="interactive/presets/button.js" />
 
 Create interactive buttons with visual states and customizable callbacks. Accepts two objects: `images` (what is displayed) and `callbacks` (what happens on interaction).
 

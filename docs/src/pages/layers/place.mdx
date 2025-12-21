@@ -29,24 +29,7 @@ const item = this.P2P.place(
 
 In the following example, click the PSD Layers button to see how the PSD layers are named and nested.
 
-<Interactive outputPath="demos/output/placement" psdKey="p1_key" >
-
-```js 
-
-// Layer order is preserved regardless of when an item is placed.
-this.P2P.place(this, 'p1_key', 'background');
-
-// To access nested layers, use a "/"
-this.P2P.place(this, 'p1_key', 'face/nose');
-this.P2P.place(this, 'p1_key', 'face/rightEye');
-this.P2P.place(this, 'p1_key', 'face/leftEye/sketchDiamond');
-
-// Uncomment these lines to see other layers being added.
-// this.P2P.place(this, 'p1_key', 'face/leftEye/square');
-// this.P2P.place(this, 'p1_key', 'face/mouth');
-
-```
-</Interactive>
+<Interactive outputPath="demos/output/placement" psdKey="p1_key" src="interactive/layers/place-1.js" />
 
 
 ### Default Methods
@@ -60,23 +43,7 @@ depthTest.setAlpha(0.3);
 depthTest.setRotation(Math.PI / 4);
 ```
 
-<Interactive outputPath="demos/output/placement" psdKey="p2_key" >
-
-```js 
-
-// Place background
-this.P2P.place(this, 'p2_key', 'background');
-
-// Assign placed item to a variable
-const rightEye = this.P2P.place(this, 'p2_key', 'face/rightEye');
-
-// Use default methods to manipulate the placed item.
-rightEye.setAlpha(0.3);
-rightEye.setRotation(Math.PI / 4);
-
-
-```
-</Interactive>
+<Interactive outputPath="demos/output/placement" psdKey="p2_key" src="interactive/layers/place-2.js" />
 
 
 
@@ -115,26 +82,7 @@ this.bounce.updateAnimation({
 ```
 
 
-<Interactive outputPath="demos/output/placement" psdKey="p3_key" >
-
-```js 
-
-// Place background
-this.P2P.place(this, 'p3_key', 'background');
-this.P2P.place(this, 'p3_key', 'face/leftEye');
-this.P2P.place(this, 'p3_key', 'face/rightEye');
-
-// Default frameRate is set by the layer name
-this.talk = this.P2P.place(this, 'p3_key', 'face/mouthAnimated');
-
-// Uncomment this updateAnimation to trigger overrides.
-// this.talk.updateAnimation({
-//   frameRate: 15,
-//   yoyo: true
-// });
-
-```
-</Interactive>
+<Interactive outputPath="demos/output/placement" psdKey="p3_key" src="interactive/layers/place-3.js" />
 
 
 

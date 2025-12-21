@@ -132,6 +132,11 @@
           "title": "Gotchas",
           "url": "/pages/other/gotchas/",
           "file": "pages/other/gotchas"
+        },
+        {
+          "title": "Tests",
+          "url": "/tests/",
+          "file": "tests"
         }
       ]
     }

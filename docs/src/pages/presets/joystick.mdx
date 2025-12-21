@@ -3,36 +3,7 @@ layout: base.njk
 title: joystick()
 ---
 
-<Interactive outputPath="demos/output/joystick" psdKey="joystick_key">
-
-```js
-// Place background
-this.P2P.place(this, "joystick_key", "background");
-
-// Get player sprite
-const playerGroup = this.P2P.place(this, "joystick_key", "player");
-const player = playerGroup.getChildren()[0];
-
-// Place joystick components
-const joystickGroup = this.P2P.place(this, "joystick_key", "joystickArea");
-const children = joystickGroup.getChildren();
-const joyHandle = children.find(c => c.name === "joyHandle");
-const joyZone = children.find(c => c.name === "joyZone");
-
-// Add a tinted background for the joystick area
-const zoneBg = this.add.rectangle(150, 250, 110, 110, 0x000000, 0.3);
-zoneBg.setDepth(1);
-
-// Create joystick with bounceBack
-this.P2P.use.joystick(joyHandle, joyZone, "myJoystick", {
-  bounceBack: true
-}).control(player, {
-  type: "speed",
-  maxSpeed: 150
-});
-```
-
-</Interactive>
+<Interactive outputPath="demos/output/joystick" psdKey="joystick_key" src="interactive/presets/joystick.js" />
 
 Joystick allows you to move combine any sprite and zone to create a draggable "joystick" within the bounds of the zone that returns normalized x/y values. Because you may want to use multiple joysticks at once,
 each joystick requires its own key.

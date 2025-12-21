@@ -3,30 +3,7 @@ layout: base.njk
 title: panTo()
 ---
 
-<Interactive outputPath="demos/output/panTo" psdKey="panTo_key">
-
-```js
-// Place background
-this.P2P.place(this, "panTo_key", "background");
-
-// Place markers individually for better control
-const markerA = this.P2P.place(this, "panTo_key", "markers/markerA").getChildren()[0];
-const markerB = this.P2P.place(this, "panTo_key", "markers/markerB").getChildren()[0];
-const markerC = this.P2P.place(this, "panTo_key", "markers/markerC").getChildren()[0];
-
-let currentIdx = 0;
-const markers = [markerA, markerB, markerC];
-
-markers.forEach((marker, idx) => {
-  marker.setInteractive({ useHandCursor: true });
-  marker.on("pointerdown", () => {
-    currentIdx = (idx + 1) % markers.length;
-    this.P2P.use.panTo(this.cameras.main, markers[currentIdx], { speed: 500 });
-  });
-});
-```
-
-</Interactive>
+<Interactive outputPath="demos/output/panTo" psdKey="panTo_key" src="interactive/presets/pan-to.js" />
 
 Pass in an item or x/y and have the canvas pan to it.
 
