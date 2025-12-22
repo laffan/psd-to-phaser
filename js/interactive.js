@@ -173,7 +173,10 @@ class InteractiveExample {
           if (!userCode || userCode.trim() === '') {
             throw new Error('No code provided');
           }
-          
+
+          // Make psdKey available to user code as this.psdKey
+          this.psdKey = self.psdKey;
+
           // Create a function from the user's code and execute it in the scene context
           const userFunction = new Function(userCode);
           userFunction.call(this);
