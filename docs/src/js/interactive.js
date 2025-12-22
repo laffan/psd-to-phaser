@@ -3,7 +3,7 @@
  */
 
 class InteractiveExample {
-  constructor(button, psdName, psdFilename) {
+  constructor(button, psdName, psdFilename, autoRun = true) {
     this.button = button;
     this.psdName = psdName;
     this.psdFilename = psdFilename;
@@ -15,6 +15,7 @@ class InteractiveExample {
     this.game = null;
     this.editor = null;
     this.initialCode = '';
+    this.hasBeenRun = false;
 
     // Check for debug mode via URL parameter
     const urlParams = new URLSearchParams(window.location.search);
@@ -24,6 +25,13 @@ class InteractiveExample {
     this.setupEventListeners();
     this.loadLayerStructure();
     this.addDebugToggle();
+
+    // Only auto-run if specified (not on tests page)
+    if (autoRun) {
+      setTimeout(() => {
+        this.runExample();
+      }, 100);
+    }
   }
 
   addDebugToggle() {
@@ -54,12 +62,12 @@ class InteractiveExample {
       window.location.href = url.toString();
     });
   }
-  
+
   initializeEditor() {
     // Get initial code and decode it
     const encodedCode = this.button.getAttribute('data-initial-code');
     this.initialCode = encodedCode ? atob(encodedCode) : '';
-    
+
     // Initialize Ace editor
     if (typeof ace !== 'undefined') {
       this.editor = ace.edit(this.editorId);
@@ -73,30 +81,25 @@ class InteractiveExample {
       });
     }
   }
-  
+
   setupEventListeners() {
     // Run example button
     this.button.addEventListener('click', () => this.runExample());
-    
-    // Auto-run the initial example
-    setTimeout(() => {
-      this.runExample();
-    }, 100);
   }
-  
+
   getCurrentCode() {
     if (this.editor) {
       return this.editor.getValue();
     }
     return this.initialCode;
   }
-  
+
   runExample() {
     // Get the current code from editor or initial code
     const code = this.getCurrentCode();
-    
+
     console.log('Extracted code:', code); // Debug log
-    
+
     // Clear any existing game
     if (this.game) {
       this.game.destroy(true);
@@ -107,35 +110,50 @@ class InteractiveExample {
     } else {
       this.createGame(code);
     }
+
+    this.hasBeenRun = true;
   }
-  
+
+  destroyGame() {
+    if (this.game) {
+      console.log(`Destroying game for ${this.psdName}`);
+      this.game.destroy(true);
+      this.game = null;
+      // Clear the container
+      const container = document.getElementById(this.containerId);
+      if (container) {
+        container.innerHTML = '';
+      }
+    }
+  }
+
   createGame(userCode) {
     const container = document.getElementById(this.containerId);
     const containerRect = container.getBoundingClientRect();
     const self = this;
-    
+
     // Clear the container
     container.innerHTML = '';
-    
+
     // Match Ace editor height to Phaser container height
     this.matchEditorHeight();
-    
+
     // Generate unique plugin key with timestamp to avoid conflicts
     const uniquePluginKey = `PsdToPhaser_${self.psdName}_${Date.now()}`;
-    
+
     // Create a proper scene class
     class ExampleScene extends Phaser.Scene {
       constructor() {
         super({ key: 'ExampleScene' });
       }
-      
+
       preload() {
         // Plugin should already be loaded via game config
         console.log('Preload - P2P available:', !!this.P2P);
         if (this.P2P) {
           console.log('Preload - P2P object:', this.P2P);
           console.log('Preload - P2P methods:', Object.getOwnPropertyNames(this.P2P));
-          
+
           // Automatically load the PSD if outputPath and psdKey are provided
           if (self.outputPath && self.psdKey) {
             // Ensure outputPath is absolute from site root, handling pathprefix
@@ -148,7 +166,7 @@ class InteractiveExample {
           }
         }
       }
-      
+
       create() {
         try {
           // If we have auto-loading enabled, wait for PSD load completion
@@ -157,7 +175,7 @@ class InteractiveExample {
             setTimeout(() => {
               this.executeUserCode(userCode);
             }, 1000); // Wait 1 second then execute
-            
+
           } else {
             // No auto-loading, execute user code immediately
             this.executeUserCode(userCode);
@@ -166,7 +184,7 @@ class InteractiveExample {
           this.displayError(error);
         }
       }
-      
+
       executeUserCode(userCode) {
         try {
           // Validate that we have code to execute
@@ -180,13 +198,13 @@ class InteractiveExample {
           // Create a function from the user's code and execute it in the scene context
           const userFunction = new Function(userCode);
           userFunction.call(this);
-          
+
         } catch (error) {
           console.error('Error executing user code:', error);
           this.displayError(error);
         }
       }
-      
+
       displayError(error) {
         // Display error in the game container
         if (this.add && this.cameras) {
@@ -207,7 +225,7 @@ class InteractiveExample {
         }
       }
     }
-    
+
     // Basic game configuration
     const config = {
       type: Phaser.AUTO,
@@ -241,25 +259,25 @@ class InteractiveExample {
       },
       scene: ExampleScene
     };
-    
+
     this.game = new Phaser.Game(config);
   }
-  
+
   matchEditorHeight() {
     const phaserContainer = document.getElementById(this.containerId);
     const editorElement = document.getElementById(this.editorId);
-    
+
     if (phaserContainer && editorElement && this.editor) {
       const phaserHeight = phaserContainer.offsetHeight || 300;
       editorElement.style.height = `${phaserHeight}px`;
       this.editor.resize();
     }
   }
-  
+
   async loadLayerStructure() {
     const layerContainer = document.getElementById(`layers-${this.psdName}`);
     const psdPath = layerContainer.getAttribute('data-psd-path');
-    
+
     try {
       // Ensure the path is absolute from site root, handling pathprefix
       // Note: public/ folder contents are copied to root by Eleventy, so don't add public/ prefix
@@ -270,7 +288,7 @@ class InteractiveExample {
       if (!response.ok) {
         throw new Error(`Failed to load layer data: ${response.status}`);
       }
-      
+
       const data = await response.json();
       const layerHtml = this.renderLayerStructure(data.layers);
       layerContainer.innerHTML = layerHtml;
@@ -279,12 +297,12 @@ class InteractiveExample {
       layerContainer.innerHTML = `<p class="text-muted">Could not load layer structure</p>`;
     }
   }
-  
+
   renderLayerStructure(layers) {
     if (!layers || layers.length === 0) {
       return '<p class="text-muted">No layers found</p>';
     }
-    
+
     let html = '<ul>';
     layers.forEach(layer => {
       html += this.renderLayer(layer);
@@ -292,66 +310,66 @@ class InteractiveExample {
     html += '</ul>';
     return html;
   }
-  
+
   renderLayer(layer) {
     const originalName = this.reconstructOriginalName(layer);
     const categoryClass = `layer-${layer.category || 'unknown'}`;
     let html = `<li class="${categoryClass}">`;
-    
+
     // Display reconstructed original layer name with pipe structure
     html += `<span class="layer-name">${originalName}</span>`;
-    
+
     // Check if we need to render nested content (children or frames)
     const hasChildren = layer.children && layer.children.length > 0;
-    const hasFrames = layer.frames && Object.keys(layer.frames).length > 0 && 
+    const hasFrames = layer.frames && Object.keys(layer.frames).length > 0 &&
                      (layer.type === 'atlas' || layer.type === 'spritesheet');
-    
+
     if (hasChildren || hasFrames) {
       html += '<ul>';
-      
+
       // Render children if this is a group
       if (hasChildren) {
         layer.children.forEach(child => {
           html += this.renderLayer(child);
         });
       }
-      
+
       // Render frames if this is an atlas or spritesheet
       if (hasFrames) {
         Object.entries(layer.frames).forEach(([frameName, frameData]) => {
           html += this.renderFrame(frameName, frameData);
         });
       }
-      
+
       html += '</ul>';
     }
-    
+
     html += '</li>';
     return html;
   }
-  
+
   renderFrame(frameName, frameData) {
     const categoryClass = `layer-frame layer-sprite`;
     let html = `<li class="${categoryClass}">`;
-    
+
     // Display only the frame name with opacity styling
     html += `<span class="layer-name">${frameName}</span>`;
-    
+
     html += '</li>';
     return html;
   }
-  
+
   reconstructOriginalName(layer) {
     // Map data.json categories back to psd-to-json category letters
     const categoryMap = {
       'group': 'G',
-      'sprite': 'S', 
+      'sprite': 'S',
       'tile': 'T',
       'text': 'T', // Could be text, but T is used for Tile in psd-to-json
       'point': 'P',
       'zone': 'Z'
     };
-    
+
     const categoryLetter = categoryMap[layer.category] || 'S';
     const categoryName = {
       'G': 'Group',
@@ -360,16 +378,16 @@ class InteractiveExample {
       'P': 'Point',
       'Z': 'Zone'
     }[categoryLetter] || 'Unknown';
-    
+
     // Reconstruct the original PSD layer name format
     let display = `<span class="layer-category">${categoryLetter}</span>`;
     display += ` | <span class="layer-actual-name">${layer.name}</span>`;
-    
+
     // Add type info if available
     if (layer.type) {
       display += ` | <span class="layer-type">${layer.type}</span> |`;
     }
-    
+
     // Add attributes if they exist and are not empty
     if (layer.attributes && Object.keys(layer.attributes).length > 0) {
       const attributesArray = [];
@@ -386,34 +404,88 @@ class InteractiveExample {
         display += ` | <span class="layer-attributes">{${attributesArray.join(', ')}}</span>`;
       }
     }
-    
+
     return display;
   }
 }
 
+// Store references to all interactive examples for cleanup
+const interactiveExamples = new Map();
+
 // Initialize interactive examples when the page loads
 document.addEventListener('DOMContentLoaded', function() {
+  const isTestsPage = document.querySelector('.tests-accordion') !== null;
   const exampleButtons = document.querySelectorAll('.run-example');
-  
+
   exampleButtons.forEach(button => {
     const psdName = button.getAttribute('data-name');
     const psdFilename = button.getAttribute('data-psd');
-    
-    new InteractiveExample(button, psdName, psdFilename);
+
+    // On tests page, don't auto-run - wait for accordion to open
+    const autoRun = !isTestsPage;
+
+    const example = new InteractiveExample(button, psdName, psdFilename, autoRun);
+    interactiveExamples.set(psdName, example);
   });
-  
+
+  // Set up accordion listeners for tests page
+  if (isTestsPage) {
+    setupTestsAccordionListeners();
+  }
+
   // Handle window resize for responsive Phaser games
   window.addEventListener('resize', debounce(() => {
     document.querySelectorAll('.phaser-container canvas').forEach(canvas => {
       const container = canvas.parentElement;
       const rect = container.getBoundingClientRect();
-      
+
       if (canvas.game && canvas.game.scale) {
         canvas.game.scale.resize(rect.width, rect.height);
       }
     });
   }, 250));
 });
+
+// Set up accordion event listeners for the tests page
+function setupTestsAccordionListeners() {
+  const testsAccordion = document.getElementById('testsAccordion');
+  if (!testsAccordion) return;
+
+  // Listen for accordion show events (when section opens)
+  testsAccordion.addEventListener('shown.bs.collapse', function(event) {
+    const accordionBody = event.target.querySelector('.accordion-body');
+    if (!accordionBody) return;
+
+    // Find all interactive examples in this section and run them
+    const buttons = accordionBody.querySelectorAll('.run-example');
+    buttons.forEach(button => {
+      const psdName = button.getAttribute('data-name');
+      const example = interactiveExamples.get(psdName);
+      if (example && !example.hasBeenRun) {
+        console.log(`Running example: ${psdName}`);
+        example.runExample();
+      }
+    });
+  });
+
+  // Listen for accordion hide events (when section closes)
+  testsAccordion.addEventListener('hidden.bs.collapse', function(event) {
+    const accordionBody = event.target.querySelector('.accordion-body');
+    if (!accordionBody) return;
+
+    // Find all interactive examples in this section and destroy them
+    const buttons = accordionBody.querySelectorAll('.run-example');
+    buttons.forEach(button => {
+      const psdName = button.getAttribute('data-name');
+      const example = interactiveExamples.get(psdName);
+      if (example) {
+        console.log(`Destroying example: ${psdName}`);
+        example.destroyGame();
+        example.hasBeenRun = false; // Allow re-running when opened again
+      }
+    });
+  });
+}
 
 // Utility function for debouncing
 function debounce(func, wait) {
