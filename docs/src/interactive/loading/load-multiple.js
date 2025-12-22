@@ -1,25 +1,33 @@
-// loadMultiple() lets you load multiple PSDs with position offsets.
-// This demo shows the concept - in practice you'd have multiple PSD outputs.
+// loadMultiple() loads multiple PSDs with position offsets.
+// This demo loads two PSDs and displays content from both.
 
 // Status text
-const statusText = this.add.text(10, 10, 'PSDs loaded!', {
+const statusText = this.add.text(10, 10, 'Loading second PSD...', {
   fontSize: '12px',
   color: '#ffffff',
   backgroundColor: '#000000',
   padding: { x: 4, y: 2 }
 });
+statusText.setDepth(1000);
 
-// Place the content (PSD was auto-loaded by the demo system)
-// Simulate "background_psd" at position 0,0
-this.P2P.place(this, 'p1_key', 'background');
+// First PSD (placement) was auto-loaded by demo system
+// Now manually load the second PSD (parallax)
+const basePath = document.querySelector('base')?.getAttribute('href') || '/';
+const parallaxPath = basePath === '/' ? '/demos/output/parallax' : `${basePath}demos/output/parallax`;
 
-// Simulate "character_psd" - the face layer
-this.P2P.place(this, 'p1_key', 'face');
+this.P2P.load.load(this, 'parallax_key', parallaxPath);
+this.load.start();
 
-// In a real loadMultiple scenario, each PSD would have its own
-// position offset applied automatically during load:
-//
-// this.P2P.load.loadMultiple(this, [
-//   { key: "bg", path: "assets/bg", position: { x: 0, y: 0 } },
-//   { key: "char", path: "assets/char", position: { x: 100, y: 50 } }
-// ]);
+// When second PSD loads, place content from both
+this.events.once('psdLoadComplete', () => {
+  statusText.setText('Both PSDs loaded!');
+
+  // Place parallax background layers (scaled down to fit)
+  const bg = this.P2P.place(this, 'parallax_key', 'background');
+  bg.setScale(0.5);
+  bg.setPosition(0, 0);
+
+  // Place placement PSD face on top (offset to the right)
+  const face = this.P2P.place(this, 'p1_key', 'face');
+  face.setPosition(170, 30);
+});
