@@ -5,8 +5,8 @@ import { attachAttributes } from '../../../shared/attachAttributes';
 export function placeAnimation(
   scene: Phaser.Scene,
   layer: any,
-  plugin: PsdToPhaserPlugin,
-  psdKey: string,
+  _plugin: PsdToPhaserPlugin,
+  _psdKey: string,
   textureKey?: string,
   animationOptions?: Phaser.Types.Animations.Animation
 ): Phaser.GameObjects.Sprite {

@@ -7,7 +7,7 @@ export function placeZones(
   plugin: PsdToPhaserPlugin,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
-  psdKey: string
+  _psdKey: string
 ): void {
   const zoneObject = createZone(scene, layer);
   if (zoneObject) {

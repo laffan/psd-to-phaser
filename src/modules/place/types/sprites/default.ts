@@ -4,8 +4,8 @@ import { attachAttributes } from '../../../shared/attachAttributes';
 export function placeDefaultSprite(
   scene: Phaser.Scene,
   layer: any,
-  plugin: PsdToPhaserPlugin,
-  psdKey: string,
+  _plugin: PsdToPhaserPlugin,
+  _psdKey: string,
   textureKey?: string
 ): Phaser.GameObjects.Sprite {
   const gameObject = scene.add.sprite(layer.x, layer.y, textureKey || layer.name);

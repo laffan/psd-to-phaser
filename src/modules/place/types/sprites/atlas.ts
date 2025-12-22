@@ -2,8 +2,8 @@ import PsdToPhaserPlugin from '../../../../PsdToPhaser';
 export function placeAtlas(
   scene: Phaser.Scene,
   layer: any,
-  plugin: PsdToPhaserPlugin,
-  psdKey: string,
+  _plugin: PsdToPhaserPlugin,
+  _psdKey: string,
   textureKey?: string
 ): Phaser.GameObjects.Group {
   const group = scene.add.group();

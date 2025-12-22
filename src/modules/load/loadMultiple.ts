@@ -1,6 +1,4 @@
 import PsdToPhaserPlugin from '../../PsdToPhaser';
-import { loadSprites } from './loadSprites';
-import { loadTiles, loadSingleTile } from './loadTiles';
 
 export interface MultiplePsdConfig {
   key: string;
@@ -270,7 +268,7 @@ function loadSpritesWithNamespace(
 
 function loadAtlasWithNamespace(
   scene: Phaser.Scene,
-  originalKey: string,
+  _originalKey: string,
   namespacedKey: string,
   filePath: string,
   sprite: any,
@@ -319,7 +317,7 @@ function loadAtlasWithNamespace(
 
 function loadSpritesheetWithNamespace(
   scene: Phaser.Scene,
-  originalKey: string,
+  _originalKey: string,
   namespacedKey: string,
   filePath: string,
   sprite: any,
@@ -342,7 +340,7 @@ function loadSpritesheetWithNamespace(
 
 function loadImageWithNamespace(
   scene: Phaser.Scene,
-  originalKey: string,
+  _originalKey: string,
   namespacedKey: string,
   filePath: string,
   onProgress: () => void,

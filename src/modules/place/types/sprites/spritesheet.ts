@@ -5,7 +5,7 @@ export function placeSpritesheet(
   scene: Phaser.Scene,
   layer: any,
   plugin: PsdToPhaserPlugin,
-  psdKey: string,
+  _psdKey: string,
   textureKey?: string
 ): Phaser.GameObjects.Group {
   const group = scene.add.group();
@@ -25,7 +25,7 @@ export function placeSpritesheet(
     }, {} as Record<string, number>);
 
     if (layer.instances && Array.isArray(layer.instances)) {
-      layer.instances.forEach((instance: any, index: number) => {
+      layer.instances.forEach((instance: any) => {
         const { name, x, y } = instance;
         const frameIndex = frameMapping[name];
 

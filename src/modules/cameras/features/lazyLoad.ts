@@ -99,8 +99,7 @@ export function LazyLoadCamera(
 
   function createLazyLoadBounds() {
     const extend = options.extendPreloadBounds || 0;
-    const targetCamera = boundaryCamera || camera;
-    
+
     // If using boundary camera, calculate world position based on main camera's zoom
     if (boundaryCamera) {
       // Update boundary camera position to match main camera

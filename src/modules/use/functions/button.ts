@@ -1,9 +1,12 @@
 import PsdToPhaserPlugin from '../../../PsdToPhaser';
 
+// Type for game objects that support visibility
+type VisibleGameObject = Phaser.GameObjects.GameObject & { setVisible(value: boolean): void };
+
 interface ButtonImages {
-  normal: Phaser.GameObjects.GameObject;
-  hover?: Phaser.GameObjects.GameObject;
-  active?: Phaser.GameObjects.GameObject;
+  normal: VisibleGameObject;
+  hover?: VisibleGameObject;
+  active?: VisibleGameObject;
 }
 
 interface ButtonCallbacks {
@@ -13,9 +16,9 @@ interface ButtonCallbacks {
   mousePress?: (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void;
 }
 
-type ButtonInput = 
-  | [Phaser.GameObjects.GameObject, (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void]
-  | [Phaser.GameObjects.GameObject, Phaser.GameObjects.GameObject, (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void]
+type ButtonInput =
+  | [VisibleGameObject, (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void]
+  | [VisibleGameObject, VisibleGameObject, (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void]
   | [ButtonImages, ButtonCallbacks];
 
 export function button(_plugin: PsdToPhaserPlugin) {
@@ -28,7 +31,7 @@ export function button(_plugin: PsdToPhaserPlugin) {
       if (input.length === 2) {
         if (typeof input[1] === 'function') {
           // [normalImage, clickCallback]
-          images = { normal: input[0] };
+          images = { normal: input[0] as VisibleGameObject };
           callbacks = { click: input[1] };
         } else {
           // [images, callbacks] object form
@@ -68,13 +71,13 @@ export function button(_plugin: PsdToPhaserPlugin) {
         console.error('Button target group is empty');
         return;
       }
-      interactiveTarget = children[0] as Phaser.GameObjects.GameObject;
+      interactiveTarget = children[0] as VisibleGameObject;
     } else if (originalTarget instanceof Phaser.GameObjects.Container) {
       if (originalTarget.list.length === 0) {
         console.error('Button target container is empty');
         return;
       }
-      interactiveTarget = originalTarget.list[0] as Phaser.GameObjects.GameObject;
+      interactiveTarget = originalTarget.list[0] as VisibleGameObject;
     }
 
     const scene = interactiveTarget.scene;
@@ -165,7 +168,7 @@ export function button(_plugin: PsdToPhaserPlugin) {
       // If we had an active state, return to hover/normal based on mouse position
       // If no active state, maintain current state (should be hover if mouse is over)
       if (images.active) {
-        if (!isMobile && images.hover && interactiveRect.input?.isOver) {
+        if (!isMobile && images.hover && (interactiveRect.input as any)?.isOver) {
           showState('hover');
         } else {
           showState('normal');
