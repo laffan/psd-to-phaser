@@ -360,3 +360,49 @@ code:not([class*="language-"]) {
   font-size: 14px;
   color: #666;
 }
+
+/* Tests Page Accordion Styles */
+.tests-accordion {
+  margin-bottom: 2rem;
+}
+
+.tests-accordion .accordion-button {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+}
+
+.tests-accordion .accordion-button:not(.collapsed) {
+  background-color: #e7f1ff;
+  color: #0c63e4;
+}
+
+.tests-accordion .accordion-body {
+  padding: 1.5rem;
+  background-color: #fafafa;
+}
+
+.tests-accordion .interactive-example {
+  margin-bottom: 2rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  background-color: #fff;
+}
+
+.tests-accordion .interactive-example:last-child {
+  margin-bottom: 0;
+}
+
+.tests-accordion .interactive-example h3 {
+  margin-top: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.tests-intro {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.375rem;
+  border-left: 4px solid #0d6efd;
+}
