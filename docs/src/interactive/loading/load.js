@@ -1,32 +1,34 @@
 // The PSD is auto-loaded by the interactive demo system.
-// This demo shows how to listen for load events.
+// This demo shows what happens after loading completes.
 
 // Create a progress bar background
 const barBg = this.add.rectangle(150, 140, 200, 20, 0x333333);
 barBg.setOrigin(0, 0.5);
 
-// Create progress bar fill
-const barFill = this.add.rectangle(150, 140, 0, 16, 0x00ff00);
+// Create progress bar fill (shown as complete since PSD was auto-loaded)
+const barFill = this.add.rectangle(150, 140, 200, 16, 0x00ff00);
 barFill.setOrigin(0, 0.5);
 
 // Status text
-const statusText = this.add.text(150, 160, 'Loading...', {
+const statusText = this.add.text(150, 160, 'Load complete!', {
   fontSize: '12px',
   color: '#ffffff'
 });
 
-// Listen for loading progress
-this.events.on('psdLoadProgress', (progress) => {
-  barFill.width = 200 * progress;
-  statusText.setText(`Loading: ${(progress * 100).toFixed(0)}%`);
-});
+// PSD was auto-loaded by the demo system - place the content
+this.P2P.place(this, 'p1_key', 'background');
+this.P2P.place(this, 'p1_key', 'face');
 
-// Listen for load completion
-this.events.once('psdLoadComplete', () => {
-  statusText.setText('Load complete!');
-  barFill.setFillStyle(0x00ff00);
-
-  // Now place the content
-  this.P2P.place(this, 'p1_key', 'background');
-  this.P2P.place(this, 'p1_key', 'face');
-});
+// In your own code, you would load and listen for events like this:
+//
+// // In preload():
+// this.P2P.load.load(this, 'p1_key', 'assets/psd');
+//
+// // In create():
+// this.events.on('psdLoadProgress', (progress) => {
+//   console.log(`Loading: ${(progress * 100).toFixed(0)}%`);
+// });
+//
+// this.events.once('psdLoadComplete', () => {
+//   this.P2P.place(this, 'p1_key', 'background');
+// });
