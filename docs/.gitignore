@@ -6,9 +6,6 @@ _dist/
 _site/
 dist/
 
-# Local plugin copy (built from root)
-src/js/psd-to-phaser.umd.js
-
 # 11ty cache
 .cache/
 
