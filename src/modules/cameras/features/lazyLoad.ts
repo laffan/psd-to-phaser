@@ -121,12 +121,16 @@ export function LazyLoadCamera(
         worldHeight + extend * 2
       );
     } else {
-      // Original behavior when not using boundary camera
+      // Calculate world dimensions accounting for camera zoom
+      // This ensures layers under the camera load immediately even when all are lazyLoad
+      const worldWidth = camera.width / camera.zoom;
+      const worldHeight = camera.height / camera.zoom;
+
       lazyLoadBounds = new Phaser.Geom.Rectangle(
         camera.scrollX - extend,
         camera.scrollY - extend,
-        camera.width + extend * 2,
-        camera.height + extend * 2
+        worldWidth + extend * 2,
+        worldHeight + extend * 2
       );
     }
   }

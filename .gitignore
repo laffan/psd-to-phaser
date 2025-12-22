@@ -1,8 +1,2 @@
-# Dependencies
 node_modules/
-
-# Build output
 dist/
-
-# Lock files (root level - docs has its own)
-package-lock.json
