@@ -1,8 +1,8 @@
 // Place layers individually
-const bg = this.P2P.place(this, "parallax_key", "background");
-const stars = this.P2P.place(this, "parallax_key", "stars");
-const mid = this.P2P.place(this, "parallax_key", "midground");
-const fg = this.P2P.place(this, "parallax_key", "foreground");
+const bg = this.P2P.place(this, this.psdKey, "background");
+const stars = this.P2P.place(this, this.psdKey, "stars");
+const mid = this.P2P.place(this, this.psdKey, "midground");
+const fg = this.P2P.place(this, this.psdKey, "foreground");
 
 // Get the sprites from the groups
 const bgSprite = bg.getChildren()[0];

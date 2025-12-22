@@ -15,19 +15,19 @@ statusText.setDepth(1000);
 const basePath = document.querySelector('base')?.getAttribute('href') || '/';
 const parallaxPath = basePath === '/' ? '/demos/output/parallax' : `${basePath}demos/output/parallax`;
 
-this.P2P.load.load(this, 'parallax_key', parallaxPath);
-this.load.start();
-
-// When second PSD loads, place content from both
+// Set up listener BEFORE starting the load to avoid race condition
 this.events.once('psdLoadComplete', () => {
   statusText.setText('Both PSDs loaded!');
 
   // Place parallax background layers (scaled down to fit)
-  const bg = this.P2P.place(this, 'parallax_key', 'background');
+  const bg = this.P2P.place(this, 'parallax_multi_key', 'background');
   bg.setScale(0.5);
   bg.setPosition(0, 0);
 
   // Place placement PSD face on top (offset to the right)
-  const face = this.P2P.place(this, 'p1_key', 'face');
+  const face = this.P2P.place(this, this.psdKey, 'face');
   face.setPosition(170, 30);
 });
+
+// Now start loading the second PSD
+this.P2P.load.load(this, 'parallax_multi_key', parallaxPath);

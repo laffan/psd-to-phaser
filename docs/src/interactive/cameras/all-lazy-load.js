@@ -21,9 +21,9 @@ this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable', 'lazyLoad'
 
 // Place the layers - with all layers set to lazyLoad,
 // only those visible in the camera viewport will load immediately
-this.P2P.place(this, 'all_lazy_key', 'background');
-this.P2P.place(this, 'all_lazy_key', 'dots');
-this.shapes = this.P2P.place(this, 'all_lazy_key', 'shapes');
+this.P2P.place(this, this.psdKey, 'background');
+this.P2P.place(this, this.psdKey, 'dots');
+this.shapes = this.P2P.place(this, this.psdKey, 'shapes');
 
 // Listen for lazy load events to show activity
 this.events.on('lazyLoadStart', (count) => {

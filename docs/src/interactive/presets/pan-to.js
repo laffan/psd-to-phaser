@@ -1,10 +1,10 @@
 // Place background
-this.P2P.place(this, "panTo_key", "background");
+this.P2P.place(this, this.psdKey, "background");
 
 // Place markers individually for better control
-const markerA = this.P2P.place(this, "panTo_key", "markers/markerA").getChildren()[0];
-const markerB = this.P2P.place(this, "panTo_key", "markers/markerB").getChildren()[0];
-const markerC = this.P2P.place(this, "panTo_key", "markers/markerC").getChildren()[0];
+const markerA = this.P2P.place(this, this.psdKey, "markers/markerA").getChildren()[0];
+const markerB = this.P2P.place(this, this.psdKey, "markers/markerB").getChildren()[0];
+const markerC = this.P2P.place(this, this.psdKey, "markers/markerC").getChildren()[0];
 
 let currentIdx = 0;
 const markers = [markerA, markerB, markerC];

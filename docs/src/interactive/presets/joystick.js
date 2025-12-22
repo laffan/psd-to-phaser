@@ -1,12 +1,12 @@
 // Place background
-this.P2P.place(this, "joystick_key", "background");
+this.P2P.place(this, this.psdKey, "background");
 
 // Get player sprite
-const playerGroup = this.P2P.place(this, "joystick_key", "player");
+const playerGroup = this.P2P.place(this, this.psdKey, "player");
 const player = playerGroup.getChildren()[0];
 
 // Place joystick components
-const joystickGroup = this.P2P.place(this, "joystick_key", "joystickArea");
+const joystickGroup = this.P2P.place(this, this.psdKey, "joystickArea");
 const children = joystickGroup.getChildren();
 const joyHandle = children.find(c => c.name === "joyHandle");
 const joyZone = children.find(c => c.name === "joyZone");

@@ -1,7 +1,7 @@
 // Place background
-this.P2P.place(this, 'p8_key', 'background');
-this.P2P.place(this, 'p8_key', 'dots');
-this.shapes = this.P2P.place(this, 'p8_key', 'shapes');
+this.P2P.place(this, this.psdKey, 'background');
+this.P2P.place(this, this.psdKey, 'dots');
+this.shapes = this.P2P.place(this, this.psdKey, 'shapes');
 
 // Create simple draggable cam
 this.dragCam = this.P2P.createCamera(this.cameras.main, ['draggable']);

@@ -16,8 +16,8 @@ const statusText = this.add.text(150, 160, 'Load complete!', {
 });
 
 // PSD was auto-loaded by the demo system - place the content
-this.P2P.place(this, 'p1_key', 'background');
-this.P2P.place(this, 'p1_key', 'face');
+this.P2P.place(this, this.psdKey, 'background');
+this.P2P.place(this, this.psdKey, 'face');
 
 // In your own code, you would load and listen for events like this:
 //

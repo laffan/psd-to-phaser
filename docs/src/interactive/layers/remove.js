@@ -1,6 +1,6 @@
 // Initially place everything
-this.P2P.place(this, 'p5_key', 'background');
-const rings = this.P2P.place(this, 'p5_key', 'outer');
+this.P2P.place(this, this.psdKey, 'background');
+const rings = this.P2P.place(this, this.psdKey, 'outer');
 
 // Remove the center group.
 rings.remove("inner1/inner2/center");

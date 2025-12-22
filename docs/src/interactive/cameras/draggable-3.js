@@ -1,7 +1,7 @@
 // Place background
-this.P2P.place(this, 'p7_key', 'background');
-this.P2P.place(this, 'p7_key', 'dots');
-this.shapes = this.P2P.place(this, 'p7_key', 'shapes');
+this.P2P.place(this, this.psdKey, 'background');
+this.P2P.place(this, this.psdKey, 'dots');
+this.shapes = this.P2P.place(this, this.psdKey, 'shapes');
 
 // Make shapes interactive and draggable
 this.shapes.getChildren().forEach(child => {

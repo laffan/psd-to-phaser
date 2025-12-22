@@ -1,9 +1,9 @@
 // Initial placement
-this.P2P.place(this, 'p7_key', 'background');
-this.P2P.place(this, 'p7_key', 'atlasBob');
+this.P2P.place(this, this.psdKey, 'background');
+this.P2P.place(this, this.psdKey, 'atlasBob');
 
 // Get the texture from atlasBob
-const texture = this.P2P.getTexture(this, "p7_key", 'atlasBob');
+const texture = this.P2P.getTexture(this, this.psdKey, 'atlasBob');
 
 // Use bob's arm and leg to create idea particles.
 const bobsIdea = this.add.particles(150, 110, texture, {

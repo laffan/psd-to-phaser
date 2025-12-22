@@ -1,10 +1,10 @@
 // Place background
-this.P2P.place(this, "button_key", "background");
+this.P2P.place(this, this.psdKey, "background");
 
 // Place button sprites
-const btnNormal = this.P2P.place(this, "button_key", "buttons/buttonNormal");
-const btnHover = this.P2P.place(this, "button_key", "buttons/buttonHover");
-const btnActive = this.P2P.place(this, "button_key", "buttons/buttonActive");
+const btnNormal = this.P2P.place(this, this.psdKey, "buttons/buttonNormal");
+const btnHover = this.P2P.place(this, this.psdKey, "buttons/buttonHover");
+const btnActive = this.P2P.place(this, this.psdKey, "buttons/buttonActive");
 
 // Create button with all states
 this.P2P.use.button([

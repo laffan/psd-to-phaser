@@ -1,6 +1,6 @@
 // Place background
-this.P2P.place(this, 'p4_key', 'background');
-this.face = this.P2P.place(this, 'p4_key', 'face');
+this.P2P.place(this, this.psdKey, 'background');
+this.face = this.P2P.place(this, this.psdKey, 'face');
 
 // Use target to apply method to portion of target
 const rightEye = this.face.target("rightEye");
