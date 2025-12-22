@@ -458,6 +458,63 @@
         <div class="phaser-container" id="phaser-p9_key"></div>
       </div>
     </div></div>
+<h2>All Layers LazyLoad</h2>
+<p>When ALL layers in your PSD are set to <code>lazyLoad</code>, layers that are directly under the camera will load immediately. This demo demonstrates this behavior - drag around to see more items load as they enter the viewport.</p>
+<div class="interactive-example"><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-all_lazy_key">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-all_lazy_key">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-all_lazy_key" aria-expanded="false" 
+                          aria-controls="collapse-all_lazy_key">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-all_lazy_key" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-all_lazy_key" data-bs-parent="#accordion-all_lazy_key">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-all_lazy_key" 
+                         data-psd-path="public/demos/output/allLazyLoad">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-all_lazy_key"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/allLazyLoad/allLazyLoad.psd" 
+                  data-name="all_lazy_key"
+                  data-output-path="demos/output/allLazyLoad"
+                  data-psd-key="all_lazy_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gRGVtbzogQWxsIGxheWVycyBzZXQgdG8gbGF6eUxvYWQKLy8gVGhpcyBkZW1vbnN0cmF0ZXMgdGhhdCBsYXllcnMgZGlyZWN0bHkgdW5kZXIgdGhlIGNhbWVyYSBsb2FkIGltbWVkaWF0ZWx5Ci8vIGV2ZW4gd2hlbiBBTEwgbGF5ZXJzIGluIHRoZSBQU0QgYXJlIG1hcmtlZCBhcyBsYXp5TG9hZAoKLy8gQ2hlY2sgZm9yIGRlYnVnIG1vZGUgdmlhIFVSTCBwYXJhbWV0ZXIKY29uc3QgdXJsUGFyYW1zID0gbmV3IFVSTFNlYXJjaFBhcmFtcyh3aW5kb3cubG9jYXRpb24uc2VhcmNoKTsKY29uc3QgZGVidWdNb2RlID0gdXJsUGFyYW1zLmdldCgnZGVidWcnKSA9PT0gJ3RydWUnOwoKLy8gQ3JlYXRlIGRyYWdnYWJsZSArIGxhenlMb2FkIGNhbWVyYSBCRUZPUkUgcGxhY2luZwovLyBUaGlzIGlzIGltcG9ydGFudDogdGhlIGxhenlMb2FkIGNhbWVyYSBtdXN0IGV4aXN0IHRvIGhhbmRsZSBsYXp5IGxvYWRlZCBpdGVtcwp0aGlzLmRyYWdDYW0gPSB0aGlzLlAyUC5jcmVhdGVDYW1lcmEodGhpcy5jYW1lcmFzLm1haW4sIFsnZHJhZ2dhYmxlJywgJ2xhenlMb2FkJ10sIHsKICBsYXp5TG9hZDogewogICAgZXh0ZW5kUHJlbG9hZEJvdW5kczogNTAsIC8vIHNsaWdodCBleHRlbnNpb24gdG8gZW5zdXJlIGl0ZW1zIGF0IGVkZ2VzIGxvYWQKICAgIGRlYnVnOiBkZWJ1Z01vZGUgPyB7CiAgICAgIHNoYXBlOiB0cnVlLAogICAgICBsYWJlbDogdHJ1ZSwKICAgICAgY29uc29sZTogdHJ1ZSwKICAgIH0gOiB1bmRlZmluZWQsCiAgfSwKfSk7CgovLyBQbGFjZSB0aGUgbGF5ZXJzIC0gd2l0aCBhbGwgbGF5ZXJzIHNldCB0byBsYXp5TG9hZCwKLy8gb25seSB0aG9zZSB2aXNpYmxlIGluIHRoZSBjYW1lcmEgdmlld3BvcnQgd2lsbCBsb2FkIGltbWVkaWF0ZWx5CnRoaXMuUDJQLnBsYWNlKHRoaXMsICdhbGxfbGF6eV9rZXknLCAnYmFja2dyb3VuZCcpOwp0aGlzLlAyUC5wbGFjZSh0aGlzLCAnYWxsX2xhenlfa2V5JywgJ2RvdHMnKTsKdGhpcy5zaGFwZXMgPSB0aGlzLlAyUC5wbGFjZSh0aGlzLCAnYWxsX2xhenlfa2V5JywgJ3NoYXBlcycpOwoKLy8gTGlzdGVuIGZvciBsYXp5IGxvYWQgZXZlbnRzIHRvIHNob3cgYWN0aXZpdHkKdGhpcy5ldmVudHMub24oJ2xhenlMb2FkU3RhcnQnLCAoY291bnQpID0+IHsKICBjb25zb2xlLmxvZyhgTGF6eUxvYWQ6IFN0YXJ0aW5nIHRvIGxvYWQgJHtjb3VudH0gaXRlbXNgKTsKfSk7Cgp0aGlzLmV2ZW50cy5vbignbGF6eUxvYWRQcm9ncmVzcycsIChwcm9ncmVzcykgPT4gewogIGNvbnNvbGUubG9nKGBMYXp5TG9hZDogJHsocHJvZ3Jlc3MgKiAxMDApLnRvRml4ZWQoMCl9JSBjb21wbGV0ZWApOwp9KTsKCnRoaXMuZXZlbnRzLm9uKCdsYXp5TG9hZGluZ0NvbXBsZXRlJywgKCkgPT4gewogIGNvbnNvbGUubG9nKCdMYXp5TG9hZDogQWxsIGl0ZW1zIGxvYWRlZCcpOwp9KTs=">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-all_lazy_key"></div>
+      </div>
+    </div></div>
 <p>This camera works in conjunction with the <code>lazyLoad</code> attribute, which you can set to true on any sprite or tile layer. Sprite or tile layers that have been given the <code>lazyLoad</code> attribute will not loaded during load() but later, when they enter the camera. This gives you the ability to load assets only when they&#x27;re needed, potentially keeping load times much (much) smaller.</p>
 <pre><code class="language-js">// Initialize a lazyLoad camera (applies to all PSDs by default)
 this.lazyCamera = this.P2P.createCamera(this.cameras.main, [&quot;lazyLoad&quot;], {
@@ -492,7 +549,7 @@ this.lazyCamera = this.P2P.createCamera(this.cameras.main, [&quot;lazyLoad&quot;
   },
 });
 </code></pre>
-<p><strong>NOTE : ZOOM BUG</strong>: By default, camera zoom will affects the preload boundaries of your lazyLoad camera, so if you zoom out, the boundary zooms out too.  It turns out this is a difficult fix. As a stopgap, you can set <code>createBoundaryCamera: true</code> in your lazy load options. This creates an invisible secondary camera that maintains accurate preload boundaries regardless of the main camera&#x27;s zoom level. This is a tradeoff: it works, but   will increase processor load somewhat.</p>
+<p><strong>Note on Zoom</strong>: The lazyLoad camera now correctly handles camera zoom by default. The <code>createBoundaryCamera: true</code> option is still available if you need a separate camera for boundary calculations, but it&#x27;s no longer required for zoom to work correctly.</p>
 <p>Now P2P is keeping track of where the camera is and whether there is any overlap with the location of sprites or tiles. If there is overlap, it will trigger a load sequence. When lazyLoad items load, they trigger loadProgress events, so you can listen for &quot;lazyLoadStart&quot;, &quot;lazyLoadProgress&quot;, &quot;lazyLoadingComplete&quot;.</p>
 <pre><code class="language-js">// Simple lazyLoad camera for all PSDs
 this.lazyCamera = this.P2P.createCamera(this.cameras.main, [&quot;lazyLoad&quot;]);
@@ -641,8 +698,8 @@ this.events.on(&quot;lazyLoadingComplete&quot;, () =&gt; {
     <!-- Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
     
-    <!-- PSD to Phaser -->
-    <script src="https://unpkg.com/psd-to-phaser"></script>
+    <!-- PSD to Phaser (local build) -->
+    <script src="/psd-to-phaser/js/psd-to-phaser.umd.js"></script>
     <script>
       // Debug: Check if PsdToPhaserPlugin is loaded (UMD export name)
       if (typeof window.PsdToPhaserPlugin !== 'undefined') {

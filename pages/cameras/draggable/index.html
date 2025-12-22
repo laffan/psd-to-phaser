@@ -458,23 +458,40 @@
         <div class="phaser-container" id="phaser-p7_key"></div>
       </div>
     </div></div>
+<p>The draggable camera lets you click and drag around the canvas. That&#x27;s about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.</p>
+<pre><code class="language-js">// Initialize a draggable camera (no psdKey needed)
+this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;]);
+
+// Initialize a draggable camera with options
+this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;], {
+  draggable: {
+    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+    easeDragging: true,
+    friction: 0.95,
+    minSpeed: 0.1,
+  },
+});
+</code></pre>
+<p>Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.</p>
+<h3>Events</h3>
+<p>Dragging triggers events, so you can listen for &quot;draggableStart&quot;, &quot;draggableActive&quot; and &quot;draggableComplete&quot;.</p>
 <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
-            <div class="accordion" id="accordion-p8_key">
+            <div class="accordion" id="accordion-draggable-events">
               <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-p8_key">
+                <h2 class="accordion-header" id="heading-draggable-events">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                          data-bs-target="#collapse-p8_key" aria-expanded="false" 
-                          aria-controls="collapse-p8_key">
+                          data-bs-target="#collapse-draggable-events" aria-expanded="false" 
+                          aria-controls="collapse-draggable-events">
                     PSD Layers
                   </button>
                 </h2>
-                <div id="collapse-p8_key" class="accordion-collapse collapse" 
-                     aria-labelledby="heading-p8_key" data-bs-parent="#accordion-p8_key">
+                <div id="collapse-draggable-events" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-draggable-events" data-bs-parent="#accordion-draggable-events">
                   <div class="accordion-body">
-                    <div class="layer-structure" id="layers-p8_key" 
+                    <div class="layer-structure" id="layers-draggable-events" 
                          data-psd-path="public/demos/output/dragging">
                       Loading layer structure...
                     </div>
@@ -497,10 +514,10 @@
     <div class="row">
       <div class="col-8">
         <div class="code-editor-container">
-          <div class="ace-editor" id="editor-p8_key"></div>
+          <div class="ace-editor" id="editor-draggable-events"></div>
           <button class="btn btn-primary btn-sm run-example" 
                   data-psd="demos/output/dragging/dragging.psd" 
-                  data-name="p8_key"
+                  data-name="draggable-events"
                   data-output-path="demos/output/dragging"
                   data-psd-key="p8_key"
                   data-pixel-art="true"
@@ -510,25 +527,9 @@
         </div>
       </div>
       <div class="col-4">
-        <div class="phaser-container" id="phaser-p8_key"></div>
+        <div class="phaser-container" id="phaser-draggable-events"></div>
       </div>
     </div></div>
-<p>The draggable camera lets you click and drag around the canvas. That&#x27;s about it. It should work with desktop and mobile and has an easing feature that you can switch on and off.</p>
-<pre><code class="language-js">// Initialize a draggable camera (no psdKey needed)
-this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;]);
-
-// Initialize a draggable camera with options
-this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;], {
-  draggable: {
-    useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
-    easeDragging: true,
-    friction: 0.95,
-    minSpeed: 0.1,
-  },
-});
-</code></pre>
-<p>Just like the lazyLoad feature, you can create the camera with defaults and set specific parameters later on.</p>
-<p>Dragging triggers events, so you can listen for &quot;dragOnStart&quot;, &quot;isDragging&quot; and &quot;dragOnComplete&quot;.</p>
 <pre><code class="language-js">this.dragCam = this.P2P.createCamera(this.cameras.main, [&quot;draggable&quot;]);
 
 this.events.on(&quot;draggableStart&quot;, () =&gt; {
@@ -543,6 +544,152 @@ this.events.on(&quot;draggableComplete&quot;, () =&gt; {
   console.log(`Drag has completed.`);
 });
 </code></pre>
+<h3>Pause and Resume</h3>
+<p>You can pause and resume the draggable camera, which is useful when you need to interact with objects in the scene without the camera moving.</p>
+<div class="interactive-example"><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-draggable-pause">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-draggable-pause">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-draggable-pause" aria-expanded="false" 
+                          aria-controls="collapse-draggable-pause">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-draggable-pause" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-draggable-pause" data-bs-parent="#accordion-draggable-pause">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-draggable-pause" 
+                         data-psd-path="public/demos/output/dragging">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-draggable-pause"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/dragging/dragging.psd" 
+                  data-name="draggable-pause"
+                  data-output-path="demos/output/dragging"
+                  data-psd-key="p8_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDhfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A4X2tleScsICdkb3RzJyk7CnRoaXMuc2hhcGVzID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A4X2tleScsICdzaGFwZXMnKTsKCi8vIENyZWF0ZSBkcmFnZ2FibGUgY2FtZXJhCnRoaXMuZHJhZ0NhbSA9IHRoaXMuUDJQLmNyZWF0ZUNhbWVyYSh0aGlzLmNhbWVyYXMubWFpbiwgWydkcmFnZ2FibGUnXSwgewogIGRyYWdnYWJsZTogewogICAgdXNlQm91bmRzOiB7IHg6IDAsIHk6IDAsIHdpZHRoOiAxMDAwLCBoZWlnaHQ6IDEwMDAgfQogIH0KfSk7CgovLyBBZGQgc3RhdHVzIHRleHQKdGhpcy5zdGF0dXNUZXh0ID0gdGhpcy5hZGQudGV4dCgxMCwgMTAsICdDYW1lcmE6IEFDVElWRSAoY2xpY2sgc2hhcGVzIHRvIHRvZ2dsZSknLCB7CiAgZm9udFNpemU6ICcxNHB4JywKICBiYWNrZ3JvdW5kQ29sb3I6ICcjMDAwJywKICBwYWRkaW5nOiB7IHg6IDgsIHk6IDQgfQp9KS5zZXRTY3JvbGxGYWN0b3IoMCkuc2V0RGVwdGgoMTAwMCk7CgovLyBNYWtlIHNoYXBlcyBjbGlja2FibGUgdG8gdG9nZ2xlIHBhdXNlCnRoaXMuc2hhcGVzLmdldENoaWxkcmVuKCkuZm9yRWFjaChjaGlsZCA9PiB7CiAgaWYgKGNoaWxkLnNldEludGVyYWN0aXZlKSB7CiAgICBjaGlsZC5zZXRJbnRlcmFjdGl2ZSgpOwogICAgY2hpbGQub24oJ3BvaW50ZXJkb3duJywgKCkgPT4gewogICAgICBpZiAodGhpcy5kcmFnQ2FtLmlzUGF1c2VkKCkpIHsKICAgICAgICB0aGlzLmRyYWdDYW0ucmVzdW1lKCk7CiAgICAgICAgdGhpcy5zdGF0dXNUZXh0LnNldFRleHQoJ0NhbWVyYTogQUNUSVZFIChjbGljayBzaGFwZXMgdG8gdG9nZ2xlKScpOwogICAgICAgIHRoaXMuc3RhdHVzVGV4dC5zZXRDb2xvcignIzAwZmYwMCcpOwogICAgICB9IGVsc2UgewogICAgICAgIHRoaXMuZHJhZ0NhbS5wYXVzZSgpOwogICAgICAgIHRoaXMuc3RhdHVzVGV4dC5zZXRUZXh0KCdDYW1lcmE6IFBBVVNFRCAoY2xpY2sgc2hhcGVzIHRvIHRvZ2dsZSknKTsKICAgICAgICB0aGlzLnN0YXR1c1RleHQuc2V0Q29sb3IoJyNmZjY2NjYnKTsKICAgICAgfQogICAgfSk7CiAgfQp9KTs=">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-draggable-pause"></div>
+      </div>
+    </div></div>
+<pre><code class="language-js">this.dragCam = this.P2P.createCamera(this.cameras.main, [&quot;draggable&quot;]);
+
+// Pause camera dragging
+this.dragCam.pause();
+
+// Resume camera dragging
+this.dragCam.resume();
+
+// Check if currently paused
+if (this.dragCam.isPaused()) {
+  console.log(&quot;Camera dragging is paused&quot;);
+}
+</code></pre>
+<h3>Ignore Objects</h3>
+<p>You can specify paths to ignore when dragging. When the user clicks on an ignored interactive object, the camera drag won&#x27;t start, allowing the object itself to be dragged or interacted with. This is perfect for having draggable objects within a draggable camera view.</p>
+<div class="interactive-example"><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-draggable-ignore">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-draggable-ignore">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-draggable-ignore" aria-expanded="false" 
+                          aria-controls="collapse-draggable-ignore">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-draggable-ignore" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-draggable-ignore" data-bs-parent="#accordion-draggable-ignore">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-draggable-ignore" 
+                         data-psd-path="public/demos/output/dragging">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-draggable-ignore"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/dragging/dragging.psd" 
+                  data-name="draggable-ignore"
+                  data-output-path="demos/output/dragging"
+                  data-psd-key="p7_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgYmFja2dyb3VuZAp0aGlzLlAyUC5wbGFjZSh0aGlzLCAncDdfa2V5JywgJ2JhY2tncm91bmQnKTsKdGhpcy5QMlAucGxhY2UodGhpcywgJ3A3X2tleScsICdkb3RzJyk7CnRoaXMuc2hhcGVzID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3A3X2tleScsICdzaGFwZXMnKTsKCi8vIE1ha2Ugc2hhcGVzIGludGVyYWN0aXZlIGFuZCBkcmFnZ2FibGUKdGhpcy5zaGFwZXMuZ2V0Q2hpbGRyZW4oKS5mb3JFYWNoKGNoaWxkID0+IHsKICBpZiAoY2hpbGQuc2V0SW50ZXJhY3RpdmUpIHsKICAgIGNoaWxkLnNldEludGVyYWN0aXZlKHsgZHJhZ2dhYmxlOiB0cnVlIH0pOwogICAgdGhpcy5pbnB1dC5zZXREcmFnZ2FibGUoY2hpbGQpOwogIH0KfSk7CgovLyBTZXQgdXAgb2JqZWN0IGRyYWdnaW5nCnRoaXMuaW5wdXQub24oJ2RyYWcnLCAocG9pbnRlciwgZ2FtZU9iamVjdCwgZHJhZ1gsIGRyYWdZKSA9PiB7CiAgZ2FtZU9iamVjdC54ID0gZHJhZ1g7CiAgZ2FtZU9iamVjdC55ID0gZHJhZ1k7Cn0pOwoKLy8gQ3JlYXRlIGRyYWdnYWJsZSBjYW1lcmEgdGhhdCBpZ25vcmVzIHRoZSBzaGFwZXMgZ3JvdXAKdGhpcy5kcmFnQ2FtID0gdGhpcy5QMlAuY3JlYXRlQ2FtZXJhKHRoaXMuY2FtZXJhcy5tYWluLCBbJ2RyYWdnYWJsZSddLCB7CiAgZHJhZ2dhYmxlOiB7CiAgICB1c2VCb3VuZHM6IHsgeDogMCwgeTogMCwgd2lkdGg6IDEwMDAsIGhlaWdodDogMTAwMCB9LAogICAgaWdub3JlOiBbJ3NoYXBlcyddICAvLyBDYW1lcmEgd29uJ3QgZHJhZyB3aGVuIGNsaWNraW5nIG9uIHNoYXBlcwogIH0KfSk7">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-draggable-ignore"></div>
+      </div>
+    </div></div>
+<pre><code class="language-js">// Make shapes draggable
+this.shapes.getChildren().forEach(child =&gt; {
+  child.setInteractive({ draggable: true });
+  this.input.setDraggable(child);
+});
+
+// Camera ignores shapes group - drag the shapes, not the camera!
+this.dragCam = this.P2P.createCamera(this.cameras.main, [&#x27;draggable&#x27;], {
+  draggable: {
+    ignore: [&#x27;shapes&#x27;]
+  }
+});
+</code></pre>
+<p>The <code>ignore</code> array uses path matching similar to <code>place()</code>:</p>
+<ul>
+<li>Exact name match: <code>&quot;button&quot;</code> matches any object named &quot;button&quot;</li>
+<li>Full path match: <code>&quot;ui/buttons&quot;</code> matches that exact path</li>
+<li>Path prefix: <code>&quot;ui/buttons&quot;</code> also matches <code>&quot;ui/buttons/ok&quot;</code></li>
+</ul>
                 </div>
         </main>
     </div>
@@ -673,8 +820,8 @@ this.events.on(&quot;draggableComplete&quot;, () =&gt; {
     <!-- Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
     
-    <!-- PSD to Phaser -->
-    <script src="https://unpkg.com/psd-to-phaser"></script>
+    <!-- PSD to Phaser (local build) -->
+    <script src="/psd-to-phaser/js/psd-to-phaser.umd.js"></script>
     <script>
       // Debug: Check if PsdToPhaserPlugin is loaded (UMD export name)
       if (typeof window.PsdToPhaserPlugin !== 'undefined') {

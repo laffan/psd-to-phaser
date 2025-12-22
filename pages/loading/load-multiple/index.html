@@ -403,12 +403,67 @@
                 </header>
 
                 <div class="content">
-                    <p>When you need to load multiple PSDs at once with position offsets, use P2P.loadMultiple(). This method takes an array of configuration objects, each specifying the key, path, position, and optional lazyLoad settings.</p>
+                    <div class="interactive-example"><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-p1_key">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-p1_key">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-p1_key" aria-expanded="false" 
+                          aria-controls="collapse-p1_key">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-p1_key" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-p1_key" data-bs-parent="#accordion-p1_key">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-p1_key" 
+                         data-psd-path="public/demos/output/placement">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-p1_key"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/placement/placement.psd" 
+                  data-name="p1_key"
+                  data-output-path="demos/output/placement"
+                  data-psd-key="p1_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gbG9hZE11bHRpcGxlKCkgbGV0cyB5b3UgbG9hZCBtdWx0aXBsZSBQU0RzIHdpdGggcG9zaXRpb24gb2Zmc2V0cy4KLy8gVGhpcyBkZW1vIHNob3dzIHRoZSBjb25jZXB0IC0gaW4gcHJhY3RpY2UgeW91J2QgaGF2ZSBtdWx0aXBsZSBQU0Qgb3V0cHV0cy4KCi8vIFN0YXR1cyB0ZXh0CmNvbnN0IHN0YXR1c1RleHQgPSB0aGlzLmFkZC50ZXh0KDEwLCAxMCwgJ0xvYWRpbmcgUFNEcy4uLicsIHsKICBmb250U2l6ZTogJzEycHgnLAogIGNvbG9yOiAnI2ZmZmZmZicsCiAgYmFja2dyb3VuZENvbG9yOiAnIzAwMDAwMCcsCiAgcGFkZGluZzogeyB4OiA0LCB5OiAyIH0KfSk7CgovLyBUcmFjayBsb2FkaW5nIHByb2dyZXNzCnRoaXMuZXZlbnRzLm9uKCdwc2RMb2FkUHJvZ3Jlc3MnLCAocHJvZ3Jlc3MpID0+IHsKICBzdGF0dXNUZXh0LnNldFRleHQoYExvYWRpbmc6ICR7KHByb2dyZXNzICogMTAwKS50b0ZpeGVkKDApfSVgKTsKfSk7CgovLyBXaGVuIGNvbXBsZXRlLCBwbGFjZSBjb250ZW50IGF0IGRpZmZlcmVudCBwb3NpdGlvbnMgdG8gc2ltdWxhdGUgbXVsdGlwbGUgUFNEcwp0aGlzLmV2ZW50cy5vbmNlKCdwc2RMb2FkQ29tcGxldGUnLCAoKSA9PiB7CiAgc3RhdHVzVGV4dC5zZXRUZXh0KCdBbGwgUFNEcyBsb2FkZWQhJyk7CgogIC8vIFNpbXVsYXRlICJiYWNrZ3JvdW5kX3BzZCIgYXQgcG9zaXRpb24gMCwwCiAgdGhpcy5QMlAucGxhY2UodGhpcywgJ3AxX2tleScsICdiYWNrZ3JvdW5kJyk7CgogIC8vIFNpbXVsYXRlICJjaGFyYWN0ZXJfcHNkIiBhdCBvZmZzZXQgcG9zaXRpb24KICBjb25zdCBmYWNlID0gdGhpcy5QMlAucGxhY2UodGhpcywgJ3AxX2tleScsICdmYWNlJyk7CgogIC8vIEluIGEgcmVhbCBsb2FkTXVsdGlwbGUgc2NlbmFyaW8sIGVhY2ggUFNEIHdvdWxkIGhhdmUgaXRzIG93bgogIC8vIHBvc2l0aW9uIG9mZnNldCBhcHBsaWVkIGF1dG9tYXRpY2FsbHkgZHVyaW5nIGxvYWQ6CiAgLy8KICAvLyB0aGlzLlAyUC5sb2FkLmxvYWRNdWx0aXBsZSh0aGlzLCBbCiAgLy8gICB7IGtleTogImJnIiwgcGF0aDogImFzc2V0cy9iZyIsIHBvc2l0aW9uOiB7IHg6IDAsIHk6IDAgfSB9LAogIC8vICAgeyBrZXk6ICJjaGFyIiwgcGF0aDogImFzc2V0cy9jaGFyIiwgcG9zaXRpb246IHsgeDogMTAwLCB5OiA1MCB9IH0KICAvLyBdKTsKfSk7">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-p1_key"></div>
+      </div>
+    </div></div>
+<p>When you need to load multiple PSDs at once with position offsets, use P2P.load.loadMultiple(). This method takes an array of configuration objects, each specifying the key, path, position, and optional lazyLoad settings.</p>
 <pre><code class="language-js">// Load multiple PSDs with position offsets
-this.P2P.loadMultiple(this, [
+this.P2P.load.loadMultiple(this, [
   {
     key: &quot;background_psd&quot;,
-    path: &quot;assets/background&quot;, 
+    path: &quot;assets/background&quot;,
     position: { x: 0, y: 0 }
   },
   {
@@ -423,16 +478,18 @@ this.P2P.loadMultiple(this, [
     lazyLoad: true // Set all layers in this PSD to lazy load
   },
   {
-    key: &quot;effects_psd&quot;, 
+    key: &quot;effects_psd&quot;,
     path: &quot;assets/effects&quot;,
     position: { x: 200, y: 100 },
     lazyLoad: [&quot;particles&quot;, &quot;glow&quot;] // Set specific layers to lazy load
   }
 ]);
-
-// Listen for combined loading progress
+</code></pre>
+<h3>Loading Events</h3>
+<p>The same loading events work with loadMultiple - progress is combined across all PSDs:</p>
+<pre><code class="language-js">// Listen for combined loading progress
 this.events.on(&quot;psdLoadProgress&quot;, (value) =&gt; {
-  console.log(`Multi-PSD loading: ${(value * 100).toFixed(2)}% complete`);
+  console.log(`Multi-PSD loading: ${(value * 100).toFixed(0)}% complete`);
 });
 
 // Listen for completion of all PSDs
@@ -570,8 +627,8 @@ this.events.once(&quot;psdLoadComplete&quot;, () =&gt; {
     <!-- Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
     
-    <!-- PSD to Phaser -->
-    <script src="https://unpkg.com/psd-to-phaser"></script>
+    <!-- PSD to Phaser (local build) -->
+    <script src="/psd-to-phaser/js/psd-to-phaser.umd.js"></script>
     <script>
       // Debug: Check if PsdToPhaserPlugin is loaded (UMD export name)
       if (typeof window.PsdToPhaserPlugin !== 'undefined') {

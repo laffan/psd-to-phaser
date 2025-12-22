@@ -458,23 +458,27 @@
         <div class="phaser-container" id="phaser-p6_key"></div>
       </div>
     </div></div>
+<p>Once a sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.</p>
+<p>Note : When placing new items, remember the <a href="/pages/other/gotchas">depth gotchya</a>.</p>
+<h3>Using with Particles</h3>
+<p>Once you have access to the texture you can use the frames in any normal Phaser context, like emitting particles.</p>
 <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
           <div class="flex-grow-1">
-            <div class="accordion" id="accordion-p7_key">
+            <div class="accordion" id="accordion-get-texture-particles">
               <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-p7_key">
+                <h2 class="accordion-header" id="heading-get-texture-particles">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                          data-bs-target="#collapse-p7_key" aria-expanded="false" 
-                          aria-controls="collapse-p7_key">
+                          data-bs-target="#collapse-get-texture-particles" aria-expanded="false" 
+                          aria-controls="collapse-get-texture-particles">
                     PSD Layers
                   </button>
                 </h2>
-                <div id="collapse-p7_key" class="accordion-collapse collapse" 
-                     aria-labelledby="heading-p7_key" data-bs-parent="#accordion-p7_key">
+                <div id="collapse-get-texture-particles" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-get-texture-particles" data-bs-parent="#accordion-get-texture-particles">
                   <div class="accordion-body">
-                    <div class="layer-structure" id="layers-p7_key" 
+                    <div class="layer-structure" id="layers-get-texture-particles" 
                          data-psd-path="public/demos/output/getting">
                       Loading layer structure...
                     </div>
@@ -497,10 +501,10 @@
     <div class="row">
       <div class="col-8">
         <div class="code-editor-container">
-          <div class="ace-editor" id="editor-p7_key"></div>
+          <div class="ace-editor" id="editor-get-texture-particles"></div>
           <button class="btn btn-primary btn-sm run-example" 
                   data-psd="demos/output/getting/getting.psd" 
-                  data-name="p7_key"
+                  data-name="get-texture-particles"
                   data-output-path="demos/output/getting"
                   data-psd-key="p7_key"
                   data-pixel-art="true"
@@ -510,12 +514,9 @@
         </div>
       </div>
       <div class="col-4">
-        <div class="phaser-container" id="phaser-p7_key"></div>
+        <div class="phaser-container" id="phaser-get-texture-particles"></div>
       </div>
     </div></div>
-<p>Once as sprite has been loaded, you can easily grab its texture and use it elsewhere, like particle emitters or placing individual frames of an atlas or spritesheet.</p>
-<p>Note : When placing new items, remember the <a href="/pages/gotchas">depth gotchya</a>.</p>
-<p>Once you have access to the texture you can use the frames in any normal Phaser context, like emitting particles.</p>
                 </div>
         </main>
     </div>
@@ -646,8 +647,8 @@
     <!-- Phaser -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
     
-    <!-- PSD to Phaser -->
-    <script src="https://unpkg.com/psd-to-phaser"></script>
+    <!-- PSD to Phaser (local build) -->
+    <script src="/psd-to-phaser/js/psd-to-phaser.umd.js"></script>
     <script>
       // Debug: Check if PsdToPhaserPlugin is loaded (UMD export name)
       if (typeof window.PsdToPhaserPlugin !== 'undefined') {
