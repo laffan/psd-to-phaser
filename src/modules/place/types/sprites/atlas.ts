@@ -1,5 +1,6 @@
 import PsdToPhaserPlugin from '../../../../PsdToPhaser';
 import { attachAttributes } from '../../../shared/attachAttributes';
+import { applyMaskToGameObject } from '../../../shared/applyMask';
 
 import type { AtlasSpriteLayer, SpriteInstance } from '../../../../types';
 
@@ -38,6 +39,13 @@ export function placeAtlas(
 
   group.setDepth(layer.initialDepth ?? 0);
   attachAttributes(layer, group);
+
+  // Apply bitmap mask to all children in the group if layer has one
+  if (layer.mask && layer.maskPath) {
+    group.getChildren().forEach((child) => {
+      applyMaskToGameObject(scene, layer, child as Phaser.GameObjects.Sprite);
+    });
+  }
 
   return group;
 }

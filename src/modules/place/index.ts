@@ -11,9 +11,10 @@ import {
   checkIfLazyLoaded,
   createLazyLoadPlaceholder,
 } from "../shared/lazyLoadUtils";
+import { applyMaskToGameObject } from "../shared/applyMask";
 
 import type { PsdLayer, PlaceOptions } from "../../types";
-import { isGroupLayer, isSpriteLayer, isTilesetLayer, isZoneLayer, isPointLayer } from "../../types";
+import { isGroupLayer, isSpriteLayer, isTilesetLayer, isZoneLayer, isPointLayer, hasMask } from "../../types";
 
 export default function placeModule(plugin: PsdToPhaserPlugin) {
   return function place(
@@ -89,6 +90,15 @@ function placeLayer(
           newGroup.add(childObject);
         }
       });
+
+      // Apply bitmap mask to all children in the group if the group has a mask
+      // Note: Groups don't support masks directly, so we apply to each child
+      if (hasMask(layer)) {
+        newGroup.getChildren().forEach((child) => {
+          applyMaskToGameObject(scene, layer, child as Phaser.GameObjects.Sprite);
+        });
+      }
+
       group.add(newGroup as unknown as Phaser.GameObjects.GameObject);
       return newGroup;
     }

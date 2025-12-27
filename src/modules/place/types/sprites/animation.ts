@@ -1,5 +1,6 @@
 import PsdToPhaserPlugin from '../../../../PsdToPhaser';
 import { attachAttributes } from '../../../shared/attachAttributes';
+import { applyMaskToGameObject } from '../../../shared/applyMask';
 
 import type { AnimationSpriteLayer } from '../../../../types';
 
@@ -17,6 +18,9 @@ export function placeAnimation(
   gameObject.setOrigin(0, 0);
   gameObject.setDepth(layer.initialDepth ?? 0);
   attachAttributes(layer, gameObject);
+
+  // Apply bitmap mask if layer has one
+  applyMaskToGameObject(scene, layer, gameObject);
 
   if (layer.frame_width && layer.frame_height) {
     const animConfig: Phaser.Types.Animations.Animation = {

@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import loadModule from "./modules/load";
 import placeModule from "./modules/place";
 import getTextureModule from "./modules/getTexture";
+import getMaskModule from "./modules/getMask";
 import { createCamera } from "./modules/cameras/create";
 import useModule from "./modules/use";
 
@@ -22,6 +23,7 @@ export default class PsdToPhaser extends Phaser.Plugins.BasePlugin {
   public load: ReturnType<typeof loadModule>;
   public place: ReturnType<typeof placeModule>;
   public getTexture: ReturnType<typeof getTextureModule>;
+  public getMask: ReturnType<typeof getMaskModule>;
   public use: ReturnType<typeof useModule>;
 
   public createCamera: (
@@ -42,6 +44,7 @@ console.log(
     this.load = loadModule(this);
     this.place = placeModule(this);
     this.getTexture = getTextureModule(this);
+    this.getMask = getMaskModule(this);
     this.use = useModule(this); // Initialize the presets module
     this.createCamera = (
       camera: Phaser.Cameras.Scene2D.Camera,

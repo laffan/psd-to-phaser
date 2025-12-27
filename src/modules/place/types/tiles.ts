@@ -4,6 +4,7 @@ import {
   createLazyLoadPlaceholder,
 } from "../../shared/lazyLoadUtils";
 import { attachAttributes } from "../../shared/attachAttributes";
+import { applyMaskToContainer } from "../../shared/applyMask";
 
 import type { TilesetLayer, TilePlacementData } from "../../../types";
 
@@ -52,6 +53,9 @@ export function placeTiles(
     const useNamespacedKeys = pluginData?.isMultiplePsd || false;
     placeTilesInContainer(scene, tileContainer, layer, tileSliceSize, useNamespacedKeys, psdKey);
   }
+
+  // Apply bitmap mask to the tile container if layer has one
+  applyMaskToContainer(scene, layer, tileContainer);
 
   group.add(tileContainer);
 

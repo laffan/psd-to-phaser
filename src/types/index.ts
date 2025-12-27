@@ -45,6 +45,7 @@ export {
   isSpritesheetSprite,
   isAnimationSprite,
   isDefaultSprite,
+  hasMask,
 } from './psd';
 
 // Plugin types

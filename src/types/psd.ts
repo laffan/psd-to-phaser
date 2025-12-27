@@ -53,6 +53,9 @@ export interface BaseLayer {
   lazyLoad?: boolean;
   hidden?: boolean;
   alpha?: number;
+  // Mask properties - applied from layer/group masks in PSD
+  mask?: boolean;
+  maskPath?: string;
 }
 
 // =============================================================================
@@ -254,4 +257,8 @@ export function isAnimationSprite(layer: SpriteLayer): layer is AnimationSpriteL
 
 export function isDefaultSprite(layer: SpriteLayer): layer is DefaultSpriteLayer {
   return !layer.type || layer.type === 'default';
+}
+
+export function hasMask(layer: PsdLayer): layer is PsdLayer & { mask: true; maskPath: string } {
+  return layer.mask === true && typeof layer.maskPath === 'string';
 }

@@ -7,6 +7,7 @@ import type {
   AnimationSpriteLayer,
   AtlasJsonData,
 } from '../../types';
+import { hasMask } from '../../types';
 
 export function loadSprites(
   scene: Phaser.Scene,
@@ -28,6 +29,11 @@ export function loadSprites(
         }
       };
 
+      // Also load mask if present
+      if (hasMask(sprite)) {
+        loadMaskImage(scene, sprite.name, basePath, sprite.maskPath, onProgress, debug);
+      }
+
       if (sprite.type === "atlas") {
         loadAtlas(scene, key, filePath, sprite, loadHandler, debug);
       } else if (sprite.type === "spritesheet" || sprite.type === "animation") {
@@ -41,6 +47,36 @@ export function loadSprites(
       resolve();
     }
   });
+}
+
+/**
+ * Load a mask image for a layer
+ */
+export function loadMaskImage(
+  scene: Phaser.Scene,
+  layerName: string,
+  basePath: string,
+  maskPath: string,
+  onProgress: () => void,
+  debug: boolean
+): void {
+  const maskKey = `${layerName}_mask`;
+  const fullMaskPath = `${basePath}/${maskPath}`;
+
+  if (!scene.textures.exists(maskKey)) {
+    scene.load.image(maskKey, fullMaskPath);
+    scene.load.once(`filecomplete-image-${maskKey}`, () => {
+      if (debug) {
+        console.log(`🎭 Loaded mask: ${maskKey} from ${fullMaskPath}`);
+      }
+      onProgress();
+    });
+  } else {
+    onProgress();
+    if (debug) {
+      console.log(`Mask already loaded: ${maskKey}`);
+    }
+  }
 }
 
 function loadAtlas(

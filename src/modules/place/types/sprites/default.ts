@@ -1,5 +1,6 @@
 import PsdToPhaserPlugin from '../../../../PsdToPhaser';
 import { attachAttributes } from '../../../shared/attachAttributes';
+import { applyMaskToGameObject } from '../../../shared/applyMask';
 
 import type { DefaultSpriteLayer } from '../../../../types';
 
@@ -20,6 +21,9 @@ export function placeDefaultSprite(
   if (layer.frame !== undefined) {
     gameObject.setFrame(layer.frame);
   }
+
+  // Apply bitmap mask if layer has one
+  applyMaskToGameObject(scene, layer, gameObject);
 
   return gameObject;
 }
