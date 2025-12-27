@@ -1,9 +1,14 @@
+import type { PsdLayer } from '../../types';
+import { isGroupLayer } from '../../types';
 
-export function findLayer(layers: any[], pathParts: string[]): any {
-  if (pathParts.length === 0) return layers;
+export function findLayer(layers: PsdLayer[], pathParts: string[]): PsdLayer | null {
+  if (pathParts.length === 0) return null;
   const [current, ...rest] = pathParts;
-  const found = layers.find((layer: any) => layer.name === current);
+  const found = layers.find((layer) => layer.name === current);
   if (!found) return null;
   if (rest.length === 0) return found;
-  return findLayer(found.children || [], rest);
+  if (isGroupLayer(found)) {
+    return findLayer(found.children, rest);
+  }
+  return null;
 }

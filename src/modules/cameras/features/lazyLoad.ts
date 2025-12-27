@@ -5,17 +5,10 @@ import { loadItems } from "../../load/loadItems";
 import { placeSprites } from "../../place/types/sprites";
 import { placeSingleTile } from "../../place/types/tiles";
 
-export interface LazyLoadOptions {
-  targetKeys?: string[]; // Specific PSD keys to target, defaults to all PSDs
-  extendPreloadBounds?: number;
-  checkInterval?: number;
-  createBoundaryCamera?: boolean; // Create invisible camera unaffected by zoom for boundary calculations
-  debug?: {
-    shape?: boolean;
-    label?: boolean;
-    console?: boolean;
-  };
-}
+import type { LazyLoadCameraOptions } from "../../../types";
+
+// Re-export for backwards compatibility
+export type LazyLoadOptions = LazyLoadCameraOptions;
 
 export function LazyLoadCamera(
   plugin: PsdToPhaserPlugin,
@@ -47,8 +40,9 @@ export function LazyLoadCamera(
         });
       }
       if (psdData.lazyLoad.tiles) {
+        const tileSliceSize = psdData.original.tile_slice_size ?? 150;
         psdData.lazyLoad.tiles.forEach((tileset: any) => {
-          tileToLazyObjects(tileset, psdData.original.tile_slice_size).forEach((tile: any) => {
+          tileToLazyObjects(tileset, tileSliceSize).forEach((tile: any) => {
             allLazyLoadData.push({ ...tile, _psdKey: psdKey });
           });
         });
@@ -229,6 +223,10 @@ export function LazyLoadCamera(
     // Format the data for loadItems
     const formattedData = {
       sprites: data.category === "sprite" ? [data] : [],
+      tiles: [],
+      zones: [],
+      points: [],
+      groups: [],
       singleTiles:
         data.category === "tile" || data.category === "tileset" ? [data] : [],
     };
@@ -386,7 +384,5 @@ export function LazyLoadCamera(
 }
 
 function getAllPsdKeys(plugin: PsdToPhaserPlugin): string[] {
-  // Access the private psdData property to get all keys
-  const psdData = (plugin as any).psdData;
-  return Object.keys(psdData || {});
+  return plugin.getAllKeys();
 }

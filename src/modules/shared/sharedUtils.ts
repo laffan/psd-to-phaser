@@ -1,4 +1,4 @@
-import { DebugOptions } from '../../PsdToPhaser';
+import type { DebugOptions } from '../../types';
 
 export function getDebugOptions(localDebug: boolean | DebugOptions | undefined, globalDebug: boolean | DebugOptions): DebugOptions {
     const defaultOptions: DebugOptions = { console: false, shape: false, label: false };

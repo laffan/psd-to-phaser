@@ -1,10 +1,10 @@
 import PsdToPhaserPlugin from '../../PsdToPhaser';
 import { processJSON } from './processJSON';
-import { loadMultiple, MultiplePsdConfig } from './loadMultiple';
+import { loadMultiple } from './loadMultiple';
 
-export interface LoadOptions {
-  lazyLoad?: boolean | string[];
-}
+import type { LoadOptions, MultiplePsdConfig, PsdDocument } from '../../types';
+
+export type { LoadOptions };
 
 export default function loadModule(plugin: PsdToPhaserPlugin) {
   return {
@@ -13,7 +13,7 @@ export default function loadModule(plugin: PsdToPhaserPlugin) {
 
       scene.load.json(key, jsonPath);
 
-      scene.load.once(`filecomplete-json-${key}`, (_key: string, _type: string, data: any) => {
+      scene.load.once(`filecomplete-json-${key}`, (_key: string, _type: string, data: PsdDocument) => {
         if (data) {
           processJSON(scene, key, data, psdFolderPath, plugin, options);
         } else {

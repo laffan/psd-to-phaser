@@ -1,21 +1,20 @@
-
 import PsdToPhaserPlugin from '../../../../PsdToPhaser';
-import { attachAttributes } from '../../../shared/attachAttributes';
+import { setupSprite, getTextureKey } from '../../../shared/spriteSetup';
+
+import type { AnimationSpriteLayer } from '../../../../types';
 
 export function placeAnimation(
   scene: Phaser.Scene,
-  layer: any,
+  layer: AnimationSpriteLayer,
   _plugin: PsdToPhaserPlugin,
   _psdKey: string,
   textureKey?: string,
   animationOptions?: Phaser.Types.Animations.Animation
 ): Phaser.GameObjects.Sprite {
-  const actualTextureKey = textureKey || layer.name;
+  const actualTextureKey = getTextureKey(layer, textureKey);
   const gameObject = scene.add.sprite(layer.x, layer.y, actualTextureKey, 0);
-  gameObject.setName(layer.name);
-  gameObject.setOrigin(0, 0);
-  gameObject.setDepth(layer.initialDepth || 0);
-  attachAttributes( layer, gameObject)
+
+  setupSprite(scene, layer, gameObject);
 
   if (layer.frame_width && layer.frame_height) {
     const animConfig: Phaser.Types.Animations.Animation = {

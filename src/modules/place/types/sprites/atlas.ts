@@ -1,29 +1,34 @@
 import PsdToPhaserPlugin from '../../../../PsdToPhaser';
+import {
+  setupSpriteGroup,
+  setupSpriteInstance,
+  applyMaskToGroupChildren,
+  getTextureKey,
+} from '../../../shared/spriteSetup';
+
+import type { AtlasSpriteLayer, SpriteInstance } from '../../../../types';
+
 export function placeAtlas(
   scene: Phaser.Scene,
-  layer: any,
+  layer: AtlasSpriteLayer,
   _plugin: PsdToPhaserPlugin,
   _psdKey: string,
   textureKey?: string
 ): Phaser.GameObjects.Group {
   const group = scene.add.group();
-  group.name = layer.name;
+  const actualTextureKey = getTextureKey(layer, textureKey);
 
-  const actualTextureKey = textureKey || layer.name;
   if (scene.textures.exists(actualTextureKey)) {
     const texture = scene.textures.get(actualTextureKey);
     const frames = texture.getFrameNames();
 
-    if (layer.instances && Array.isArray(layer.instances)) {
-      layer.instances.forEach((instance: any) => {
+    if (layer.instances) {
+      layer.instances.forEach((instance: SpriteInstance) => {
         const { name, x, y } = instance;
         if (frames.includes(name)) {
           const spriteObject = scene.add.sprite(x, y, actualTextureKey, name);
-          spriteObject.setName(name);
-          spriteObject.setOrigin(0, 0);
+          setupSpriteInstance(spriteObject, name, layer.initialDepth ?? 0);
           group.add(spriteObject);
-          spriteObject.setDepth(layer.initialDepth || 0);
-
         } else {
           console.warn(`Frame "${name}" not found in atlas "${actualTextureKey}"`);
         }
@@ -33,8 +38,8 @@ export function placeAtlas(
     console.error(`Texture "${actualTextureKey}" not found. Make sure the atlas is loaded correctly.`);
   }
 
-  group.setDepth(layer.initialDepth || 0);
-  // attachAttributes( layer, group)
+  setupSpriteGroup(layer, group);
+  applyMaskToGroupChildren(scene, layer, group);
 
   return group;
 }
