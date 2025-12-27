@@ -1,34 +1,16 @@
 // src/modules/load/loadSprites.ts
-interface AtlasFrame {
-  frame: {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  };
-  rotated: boolean;
-  trimmed: boolean;
-  sourceSize: {
-    w: number;
-    h: number;
-  };
-  spriteSourceSize: {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  };
-}
 
-interface AtlasData {
-  frames: {
-    [key: string]: AtlasFrame;
-  };
-}
+import type {
+  SpriteLayer,
+  AtlasSpriteLayer,
+  SpritesheetLayer,
+  AnimationSpriteLayer,
+  AtlasJsonData,
+} from '../../types';
 
 export function loadSprites(
   scene: Phaser.Scene,
-  sprites: any[],
+  sprites: SpriteLayer[],
   basePath: string,
   onProgress: () => void,
   debug: boolean
@@ -65,34 +47,32 @@ function loadAtlas(
   scene: Phaser.Scene,
   key: string,
   filePath: string,
-  sprite: any,
+  sprite: AtlasSpriteLayer,
   onProgress: () => void,
   debug: boolean
-) {
+): void {
   console.log(`[${Date.now()}] Starting loadAtlas for key: ${key}`);
 
-  const atlasData: AtlasData = { frames: {} };
-  Object.entries(sprite.frames).forEach(
-    ([frameName, frameData]: [string, any]) => {
-      atlasData.frames[frameName] = {
-        frame: {
-          x: frameData.x,
-          y: frameData.y,
-          w: frameData.width,
-          h: frameData.height,
-        },
-        rotated: false,
-        trimmed: false,
-        sourceSize: { w: frameData.width, h: frameData.height },
-        spriteSourceSize: {
-          x: 0,
-          y: 0,
-          w: frameData.width,
-          h: frameData.height,
-        },
-      };
-    }
-  );
+  const atlasData: AtlasJsonData = { frames: {} };
+  Object.entries(sprite.frames).forEach(([frameName, frameData]) => {
+    atlasData.frames[frameName] = {
+      frame: {
+        x: frameData.x,
+        y: frameData.y,
+        w: frameData.width,
+        h: frameData.height,
+      },
+      rotated: false,
+      trimmed: false,
+      sourceSize: { w: frameData.width, h: frameData.height },
+      spriteSourceSize: {
+        x: 0,
+        y: 0,
+        w: frameData.width,
+        h: frameData.height,
+      },
+    };
+  });
 
   scene.load.atlas(key, filePath, atlasData);
 
@@ -104,13 +84,13 @@ function loadAtlas(
       scene.load.off("complete", checkAtlasLoaded);
       onProgress();
     } else {
-      setTimeout(checkAtlasLoaded, 100); // Check again after 100ms
+      setTimeout(checkAtlasLoaded, 100);
     }
   };
 
   scene.load.on("complete", checkAtlasLoaded);
 
-  scene.load.on("loaderror", (fileObj: any) => {
+  scene.load.on("loaderror", (fileObj: Phaser.Loader.File) => {
     console.error(`Error loading file: `, fileObj);
     scene.load.off("complete", checkAtlasLoaded);
   });
@@ -120,10 +100,10 @@ function loadSpritesheet(
   scene: Phaser.Scene,
   key: string,
   filePath: string,
-  sprite: any,
+  sprite: SpritesheetLayer | AnimationSpriteLayer,
   onProgress: () => void,
   debug: boolean
-) {
+): void {
   scene.load.spritesheet(key, filePath, {
     frameWidth: sprite.frame_width,
     frameHeight: sprite.frame_height,
@@ -132,7 +112,7 @@ function loadSpritesheet(
     if (debug) {
       console.log(`💥 Loaded spritesheet: ${key} from ${filePath}`);
     }
-    for (let i = 0; i < (sprite.frame_count || 1); i++) {
+    for (let i = 0; i < (sprite.frame_count ?? 1); i++) {
       onProgress();
     }
   });

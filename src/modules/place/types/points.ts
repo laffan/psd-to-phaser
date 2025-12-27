@@ -1,18 +1,20 @@
 import PsdToPhaserPlugin from "../../../PsdToPhaser";
 import { attachAttributes } from "../../shared/attachAttributes";
 
+import type { PointLayer } from "../../../types";
+
 export function placePoints(
   scene: Phaser.Scene,
-  layer: any,
+  layer: PointLayer,
   plugin: PsdToPhaserPlugin,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
   _psdKey: string
 ): void {
-  const pointObject = createPoint(scene, layer, plugin);
+  const pointObject = createPoint(scene, layer);
   if (pointObject) {
     group.add(pointObject);
-    
+
     // Create a separate debug group
     const debugGroup = scene.add.group();
     addDebugVisualization(scene, layer, debugGroup, plugin);
@@ -24,25 +26,19 @@ export function placePoints(
 
 function createPoint(
   scene: Phaser.Scene,
-  layer: any,
-  _plugin: PsdToPhaserPlugin
-): Phaser.GameObjects.Container | null {
-  if (layer.children) {
-    return null; 
-  }
-
+  layer: PointLayer
+): Phaser.GameObjects.Container {
   const pointObject = scene.add.container(layer.x, layer.y);
   pointObject.setData("pointData", layer);
   pointObject.setName(layer.name);
-  attachAttributes( layer, pointObject)
+  attachAttributes(layer, pointObject);
 
   return pointObject;
 }
 
-
 function addDebugVisualization(
   scene: Phaser.Scene,
-  layer: any,
+  layer: PointLayer,
   group: Phaser.GameObjects.Group,
   plugin: PsdToPhaserPlugin
 ): void {

@@ -2,23 +2,21 @@ import Phaser from "phaser";
 import loadModule from "./modules/load";
 import placeModule from "./modules/place";
 import getTextureModule from "./modules/getTexture";
-import { createCamera, CameraOptions } from "./modules/cameras/create";
-import useModule from "./modules/use"; // Updated import
+import { createCamera } from "./modules/cameras/create";
+import useModule from "./modules/use";
 
-export interface DebugOptions {
-  shape?: boolean;
-  label?: boolean;
-  console?: boolean;
-}
+import type {
+  DebugOptions,
+  PluginOptions,
+  ProcessedPsdData,
+  CameraOptions,
+} from "./types";
 
-export interface PluginOptions {
-  debug?: boolean | DebugOptions;
-  applyAlphaAll?: boolean;
-  applyBlendModesAll?: boolean;
-}
+// Re-export types for external consumers
+export type { DebugOptions, PluginOptions } from "./types";
 
 export default class PsdToPhaser extends Phaser.Plugins.BasePlugin {
-  private psdData: Record<string, any> = {};
+  private psdData: Record<string, ProcessedPsdData> = {};
   public options: PluginOptions;
   
   public load: ReturnType<typeof loadModule>;
@@ -72,15 +70,22 @@ console.log(
     }
   }
 
-  setData(key: string, data: any): void {
+  setData(key: string, data: ProcessedPsdData): void {
     this.psdData[key] = data;
     if (this.isDebugEnabled("console")) {
       console.log(`Data set for key "${key}":`, data);
     }
   }
 
-  getData(key: string): any {
+  getData(key: string): ProcessedPsdData | undefined {
     return this.psdData[key];
+  }
+
+  /**
+   * Get all registered PSD keys
+   */
+  getAllKeys(): string[] {
+    return Object.keys(this.psdData);
   }
 
   isDebugEnabled(option: keyof DebugOptions): boolean {

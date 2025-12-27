@@ -1,18 +1,29 @@
-// src/modules/load/initLoad.ts
+// src/modules/load/loadItems.ts
 
 import PsdToPhaserPlugin from '../../PsdToPhaser';
 import { loadSprites } from './loadSprites';
 import { loadTiles, loadSingleTile } from './loadTiles';
 
-export function loadItems(scene: Phaser.Scene, key: string, data: any, plugin: PsdToPhaserPlugin): void {
+import type { CategorizedLayers, SpriteLayer, TileLoadData } from '../../types';
+
+interface ExtendedCategorizedLayers extends CategorizedLayers {
+  singleTiles?: TileLoadData[];
+}
+
+export function loadItems(
+  scene: Phaser.Scene,
+  key: string,
+  data: ExtendedCategorizedLayers,
+  plugin: PsdToPhaserPlugin
+): void {
   const psdData = plugin.getData(key);
   if (!psdData || !psdData.basePath) {
     console.error(`Invalid PSD data for key: ${key}`);
     return;
   }
-  
+
   const basePath = psdData.basePath;
-  const tileSliceSize = psdData.original.tile_slice_size || 150;
+  const tileSliceSize = psdData.original.tile_slice_size ?? 150;
 
   // Count assets to load
   const assetCounts = countAssets(data);
@@ -54,7 +65,7 @@ export function loadItems(scene: Phaser.Scene, key: string, data: any, plugin: P
 
   // Load single tiles
   if (data.singleTiles && data.singleTiles.length > 0) {
-    data.singleTiles.forEach((tileData: any) => {
+    data.singleTiles.forEach((tileData) => {
       loadSingleTile(scene, tileData, basePath, tileSliceSize, updateProgress, plugin.isDebugEnabled('console'));
     });
   }
@@ -69,7 +80,14 @@ export function loadItems(scene: Phaser.Scene, key: string, data: any, plugin: P
   }
 }
 
-function countAssets(data: any): { tiles: number, sprites: number, singleTiles: number, atlases: number } {
+interface AssetCounts {
+  tiles: number;
+  sprites: number;
+  singleTiles: number;
+  atlases: number;
+}
+
+function countAssets(data: ExtendedCategorizedLayers): AssetCounts {
   let tileCount = 0;
   let spriteCount = 0;
   let singleTileCount = 0;
@@ -77,7 +95,7 @@ function countAssets(data: any): { tiles: number, sprites: number, singleTiles: 
 
   // Count tiles
   if (data.tiles) {
-    data.tiles.forEach((tile: any) => {
+    data.tiles.forEach((tile) => {
       if (!tile.lazyLoad) {
         tileCount += tile.columns * tile.rows;
       }
@@ -90,20 +108,16 @@ function countAssets(data: any): { tiles: number, sprites: number, singleTiles: 
   }
 
   // Count sprites and atlases
-  const countSpritesRecursively = (sprites: any[]) => {
-    sprites.forEach((sprite: any) => {
+  const countSpritesRecursively = (sprites: SpriteLayer[]) => {
+    sprites.forEach((sprite) => {
       if (!sprite.lazyLoad) {
         if (sprite.type === 'atlas') {
           atlasCount++;
         } else if (sprite.type === 'spritesheet') {
-          spriteCount += sprite.frame_count || 1;
+          spriteCount += (sprite as { frame_count?: number }).frame_count ?? 1;
         } else {
           spriteCount++;
         }
-      }
-
-      if (sprite.children) {
-        countSpritesRecursively(sprite.children);
       }
     });
   };

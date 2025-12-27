@@ -1,8 +1,14 @@
+import type { LayerAttributes } from '../../types';
+
+interface LayerWithAttributes {
+  attributes?: LayerAttributes;
+}
+
 export function attachAttributes(
-  layerData: { attributes?: Record<string, any> },
-  gameObject: { [key: string]: any } 
+  layerData: LayerWithAttributes,
+  gameObject: object
 ): void {
-  if (layerData.hasOwnProperty("attributes")) {
-    gameObject.attributes = layerData.attributes;
+  if (layerData.attributes) {
+    (gameObject as Record<string, unknown>).attributes = layerData.attributes;
   }
 }

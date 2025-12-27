@@ -3,12 +3,13 @@ import {
   checkIfLazyLoaded,
   createLazyLoadPlaceholder,
 } from "../../shared/lazyLoadUtils";
-
 import { attachAttributes } from "../../shared/attachAttributes";
+
+import type { TilesetLayer, TilePlacementData } from "../../../types";
 
 export function placeTiles(
   scene: Phaser.Scene,
-  layer: any,
+  layer: TilesetLayer,
   plugin: PsdToPhaserPlugin,
   tileSliceSize: number,
   group: Phaser.GameObjects.Group,
@@ -22,8 +23,8 @@ export function placeTiles(
   tileContainer.setData("tileData", layer);
   tileContainer.setData("tileSliceSize", tileSliceSize);
   tileContainer.setData("psdKey", psdKey);
-  tileContainer.setDepth(layer.initialDepth)
-    attachAttributes( layer, tileContainer)
+  tileContainer.setDepth(layer.initialDepth ?? 0);
+  attachAttributes(layer, tileContainer);
   
 
   const methodsToOverride = [
@@ -66,7 +67,7 @@ export function placeTiles(
 export function placeTilesInContainer(
   scene: Phaser.Scene,
   container: Phaser.GameObjects.Container,
-  layer: any,
+  layer: TilesetLayer,
   tileSliceSize: number,
   useNamespacedKeys: boolean = false,
   psdKey?: string
@@ -146,15 +147,7 @@ function overrideContainerMethod(
 
 export function placeSingleTile(
   scene: Phaser.Scene,
-  tileData: {
-    x: number;
-    y: number;
-    key: string;
-    initialDepth: number;
-    tilesetName: string;
-    col: number;
-    row: number;
-  },
+  tileData: TilePlacementData,
   parent: Phaser.GameObjects.Container | Phaser.GameObjects.Group
 ): Phaser.GameObjects.Image | null {
   if (scene.textures.exists(tileData.key)) {
@@ -177,7 +170,7 @@ export function placeSingleTile(
 
 function addDebugVisualization(
   scene: Phaser.Scene,
-  tileData: any,
+  tileData: TilesetLayer,
   tileSliceSize: number,
   group: Phaser.GameObjects.Group,
   plugin: PsdToPhaserPlugin

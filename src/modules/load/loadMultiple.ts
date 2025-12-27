@@ -120,7 +120,9 @@ export function loadMultiple(plugin: PsdToPhaserPlugin) {
       // Load assets for each PSD
       configs.forEach(config => {
         const psdData = plugin.getData(config.key);
-        loadPsdAssets(scene, config.key, psdData.initialLoad, plugin, updateMultiProgress);
+        if (psdData) {
+          loadPsdAssets(scene, config.key, psdData.initialLoad, plugin, updateMultiProgress);
+        }
       });
 
       if (!scene.load.isLoading()) {

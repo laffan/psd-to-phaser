@@ -5,9 +5,11 @@ import { placeAtlas } from "./atlas";
 import { placeAnimation } from "./animation";
 import { createLazyLoadPlaceholder } from "../../../shared/lazyLoadUtils";
 
+import type { SpriteLayer } from "../../../../types";
+
 export function placeSprites(
   scene: Phaser.Scene,
-  spriteData: any,
+  spriteData: SpriteLayer,
   plugin: PsdToPhaserPlugin,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
@@ -76,7 +78,7 @@ export function placeSprites(
 
 function addDebugVisualization(
   scene: Phaser.Scene,
-  spriteData: any,
+  spriteData: SpriteLayer,
   group: Phaser.GameObjects.Group,
   plugin: PsdToPhaserPlugin
 ): void {

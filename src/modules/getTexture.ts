@@ -2,6 +2,7 @@
 
 import PsdToPhaserPlugin from '../PsdToPhaser';
 import { findLayer } from './shared/findLayer';
+import { isSpriteLayer } from '../types';
 
 export default function getTextureModule(plugin: PsdToPhaserPlugin) {
   return function getTexture(scene: Phaser.Scene, psdKey: string, spritePath: string): Phaser.Textures.Texture | null {
@@ -16,7 +17,13 @@ export default function getTextureModule(plugin: PsdToPhaserPlugin) {
 
     if (!spriteData) {
       console.log(`Sprite not found: ${spritePath}`);
-      console.log(`Available sprites: ${JSON.stringify(psdData.original.layers.map((s: any) => s.name))}`);
+      console.log(`Available sprites: ${JSON.stringify(psdData.original.layers.map((s) => s.name))}`);
+      return null;
+    }
+
+    // getTexture only works with sprite layers that have a filePath
+    if (!isSpriteLayer(spriteData)) {
+      console.log(`Layer "${spritePath}" is not a sprite layer`);
       return null;
     }
 

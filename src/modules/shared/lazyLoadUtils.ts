@@ -1,21 +1,37 @@
-// src/modules/lazyLoad/utils.ts
+// src/modules/shared/lazyLoadUtils.ts
 
 import PsdToPhaserPlugin from '../../PsdToPhaser';
+import type { PsdLayer, BaseLayer, CategorizedLayers } from '../../types';
 
+type LayerCategoryKey = keyof CategorizedLayers;
 
-export function checkIfLazyLoaded(plugin: PsdToPhaserPlugin, psdKey: string, layer: any): boolean {
+export function checkIfLazyLoaded(plugin: PsdToPhaserPlugin, psdKey: string, layer: PsdLayer): boolean {
   const psdData = plugin.getData(psdKey);
   if (!psdData || !psdData.lazyLoad) return false;
 
-  const lazyLoadCategory = psdData.lazyLoad[layer.category + 's']; // e.g., 'sprites', 'tiles'
+  // Map category to plural form used in CategorizedLayers
+  const categoryMap: Record<string, LayerCategoryKey> = {
+    sprite: 'sprites',
+    tileset: 'tiles',
+    zone: 'zones',
+    point: 'points',
+    group: 'groups',
+  };
+
+  const categoryKey = categoryMap[layer.category];
+  if (!categoryKey) return false;
+
+  const lazyLoadCategory = psdData.lazyLoad[categoryKey];
   if (!lazyLoadCategory) return false;
 
-  return lazyLoadCategory.some((lazyLayer: any) => lazyLayer.name === layer.name);
+  return lazyLoadCategory.some((lazyLayer) => lazyLayer.name === layer.name);
 }
 
-// src/modules/lazyLoad/utils.ts
-
-export function createLazyLoadPlaceholder(scene: Phaser.Scene, layerData: any, plugin: PsdToPhaserPlugin): Phaser.GameObjects.Container {
+export function createLazyLoadPlaceholder(
+  scene: Phaser.Scene,
+  layerData: BaseLayer,
+  plugin: PsdToPhaserPlugin
+): Phaser.GameObjects.Container {
   const container = scene.add.container(layerData.x, layerData.y);
 
   if (plugin.isDebugEnabled('shape')) {

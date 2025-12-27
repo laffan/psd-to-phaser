@@ -1,9 +1,11 @@
 import PsdToPhaserPlugin from "../../../../PsdToPhaser";
 import { attachAttributes } from "../../../shared/attachAttributes";
 
+import type { SpritesheetLayer, SpriteInstance } from "../../../../types";
+
 export function placeSpritesheet(
   scene: Phaser.Scene,
-  layer: any,
+  layer: SpritesheetLayer,
   plugin: PsdToPhaserPlugin,
   _psdKey: string,
   textureKey?: string
@@ -24,8 +26,8 @@ export function placeSpritesheet(
       return map;
     }, {} as Record<string, number>);
 
-    if (layer.instances && Array.isArray(layer.instances)) {
-      layer.instances.forEach((instance: any) => {
+    if (layer.instances) {
+      layer.instances.forEach((instance: SpriteInstance) => {
         const { name, x, y } = instance;
         const frameIndex = frameMapping[name];
 
@@ -35,7 +37,7 @@ export function placeSpritesheet(
           spriteObject.setName(name);
           spriteObject.setOrigin(0, 0);
           group.add(spriteObject);
-          spriteObject.setDepth(layer.initialDepth || 0);
+          spriteObject.setDepth(layer.initialDepth ?? 0);
 
           if (plugin.isDebugEnabled("console")) {
             console.log(
@@ -55,8 +57,8 @@ export function placeSpritesheet(
     );
   }
 
-  group.setDepth(layer.initialDepth || 0);
-  attachAttributes( layer, group)
-  
+  group.setDepth(layer.initialDepth ?? 0);
+  attachAttributes(layer, group);
+
   return group;
 }

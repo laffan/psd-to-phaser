@@ -1,9 +1,11 @@
 import PsdToPhaserPlugin from '../../../PsdToPhaser';
 import { attachAttributes } from '../../shared/attachAttributes';
 
+import type { ZoneLayer } from '../../../types';
+
 export function placeZones(
   scene: Phaser.Scene,
-  layer: any,
+  layer: ZoneLayer,
   plugin: PsdToPhaserPlugin,
   group: Phaser.GameObjects.Group,
   resolve: () => void,
@@ -22,11 +24,7 @@ export function placeZones(
   resolve();
 }
 
-function createZone(scene: Phaser.Scene, zone: any): Phaser.GameObjects.Zone | null {
-  if (!zone || zone.children) {
-    return null; // Don't create zones for groups
-  }
-
+function createZone(scene: Phaser.Scene, zone: ZoneLayer): Phaser.GameObjects.Zone | null {
   const shape = createZoneShape(zone);
   let zoneObject: Phaser.GameObjects.Zone;
   let points: Phaser.Geom.Point[];
@@ -46,22 +44,28 @@ function createZone(scene: Phaser.Scene, zone: any): Phaser.GameObjects.Zone | n
   }
 
   zoneObject.setName(zone.name || "unnamed_zone");
-  attachAttributes( zone, zoneObject)
+  attachAttributes(zone, zoneObject);
 
   // Set the points array as a custom property
   zoneObject.setData('points', points);
 
-  // Set custom properties
-  Object.keys(zone).forEach((key) => {
-    if (!["name", "subpaths", "bbox", "children"].includes(key)) {
-      zoneObject.setData(key, zone[key]);
-    }
-  });
+  // Set custom properties from zone data
+  zoneObject.setData('category', zone.category);
+  zoneObject.setData('x', zone.x);
+  zoneObject.setData('y', zone.y);
+  zoneObject.setData('width', zone.width);
+  zoneObject.setData('height', zone.height);
+  if (zone.initialDepth !== undefined) {
+    zoneObject.setData('initialDepth', zone.initialDepth);
+  }
+  if (zone.attributes) {
+    zoneObject.setData('attributes', zone.attributes);
+  }
 
   return zoneObject;
 }
 
-function createZoneShape(zone: any): Phaser.Geom.Polygon | Phaser.Geom.Rectangle {
+function createZoneShape(zone: ZoneLayer): Phaser.Geom.Polygon | Phaser.Geom.Rectangle {
   if (zone.subpaths && Array.isArray(zone.subpaths) && zone.subpaths.length > 0 && Array.isArray(zone.subpaths[0])) {
     const points = zone.subpaths[0].flatMap((point: number[]) => new Phaser.Geom.Point(point[0], point[1]));
     return new Phaser.Geom.Polygon(points);
@@ -76,7 +80,7 @@ function createZoneShape(zone: any): Phaser.Geom.Polygon | Phaser.Geom.Rectangle
 }
 function addDebugVisualization(
   scene: Phaser.Scene,
-  zoneData: any,
+  zoneData: ZoneLayer,
   group: Phaser.GameObjects.Group,
   plugin: PsdToPhaserPlugin
 ): void {
