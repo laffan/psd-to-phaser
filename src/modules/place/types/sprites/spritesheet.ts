@@ -1,6 +1,10 @@
 import PsdToPhaserPlugin from "../../../../PsdToPhaser";
-import { attachAttributes } from "../../../shared/attachAttributes";
-import { applyMaskToGameObject } from "../../../shared/applyMask";
+import {
+  setupSpriteGroup,
+  setupSpriteInstance,
+  applyMaskToGroupChildren,
+  getTextureKey,
+} from "../../../shared/spriteSetup";
 
 import type { SpritesheetLayer, SpriteInstance } from "../../../../types";
 
@@ -12,9 +16,8 @@ export function placeSpritesheet(
   textureKey?: string
 ): Phaser.GameObjects.Group {
   const group = scene.add.group();
-  group.name = layer.name;
+  const actualTextureKey = getTextureKey(layer, textureKey);
 
-  const actualTextureKey = textureKey || layer.name;
   if (scene.textures.exists(actualTextureKey)) {
     const texture = scene.textures.get(actualTextureKey);
     const textureFrames = texture.getFrameNames();
@@ -35,10 +38,8 @@ export function placeSpritesheet(
         if (frameIndex !== undefined && frameIndex < textureFrames.length) {
           const frameName = textureFrames[frameIndex];
           const spriteObject = scene.add.sprite(x, y, actualTextureKey, frameName);
-          spriteObject.setName(name);
-          spriteObject.setOrigin(0, 0);
+          setupSpriteInstance(spriteObject, name, layer.initialDepth ?? 0);
           group.add(spriteObject);
-          spriteObject.setDepth(layer.initialDepth ?? 0);
 
           if (plugin.isDebugEnabled("console")) {
             console.log(
@@ -58,15 +59,8 @@ export function placeSpritesheet(
     );
   }
 
-  group.setDepth(layer.initialDepth ?? 0);
-  attachAttributes(layer, group);
-
-  // Apply bitmap mask to all children in the group if layer has one
-  if (layer.mask && layer.maskPath) {
-    group.getChildren().forEach((child) => {
-      applyMaskToGameObject(scene, layer, child as Phaser.GameObjects.Sprite);
-    });
-  }
+  setupSpriteGroup(layer, group);
+  applyMaskToGroupChildren(scene, layer, group);
 
   return group;
 }

@@ -1,6 +1,5 @@
 import PsdToPhaserPlugin from '../../../../PsdToPhaser';
-import { attachAttributes } from '../../../shared/attachAttributes';
-import { applyMaskToGameObject } from '../../../shared/applyMask';
+import { setupSprite, getTextureKey } from '../../../shared/spriteSetup';
 
 import type { DefaultSpriteLayer } from '../../../../types';
 
@@ -11,19 +10,14 @@ export function placeDefaultSprite(
   _psdKey: string,
   textureKey?: string
 ): Phaser.GameObjects.Sprite {
-  const gameObject = scene.add.sprite(layer.x, layer.y, textureKey || layer.name);
-  gameObject.setName(layer.name);
-  gameObject.setOrigin(0, 0);
-  gameObject.setDepth(layer.initialDepth ?? 0);
+  const actualTextureKey = getTextureKey(layer, textureKey);
+  const gameObject = scene.add.sprite(layer.x, layer.y, actualTextureKey);
 
-  attachAttributes(layer, gameObject);
+  setupSprite(scene, layer, gameObject);
 
   if (layer.frame !== undefined) {
     gameObject.setFrame(layer.frame);
   }
-
-  // Apply bitmap mask if layer has one
-  applyMaskToGameObject(scene, layer, gameObject);
 
   return gameObject;
 }
