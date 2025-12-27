@@ -4,6 +4,7 @@ import { placeSpritesheet } from "./spritesheet";
 import { placeAtlas } from "./atlas";
 import { placeAnimation } from "./animation";
 import { createLazyLoadPlaceholder } from "../../../shared/lazyLoadUtils";
+import { addDebugVisualization } from "../../../shared/debugVisualizer";
 
 import type { SpriteLayer } from "../../../../types";
 
@@ -26,7 +27,7 @@ export function placeSprites(
   // Check if this PSD was loaded via loadMultiple and use namespaced texture key
   const plugin_data = plugin.getData(psdKey);
   const textureKey = plugin_data?.isMultiplePsd ? `${psdKey}_${spriteData.name}` : spriteData.name;
-  
+
   if (scene.textures.exists(textureKey)) {
     let spriteObject:
       | Phaser.GameObjects.Sprite
@@ -63,7 +64,14 @@ export function placeSprites(
 
       // Create a separate debug group
       const debugGroup = scene.add.group();
-      addDebugVisualization(scene, spriteData, debugGroup, plugin);
+      addDebugVisualization(scene, plugin, debugGroup, {
+        type: 'sprite',
+        name: spriteData.name,
+        x: spriteData.x,
+        y: spriteData.y,
+        width: spriteData.width,
+        height: spriteData.height,
+      });
       // Add the debug group as a child of the main group, but don't include it in the group's children array
       (group as any).debugGroup = debugGroup;
     } else {
@@ -74,43 +82,4 @@ export function placeSprites(
   }
 
   resolve();
-}
-
-function addDebugVisualization(
-  scene: Phaser.Scene,
-  spriteData: SpriteLayer,
-  group: Phaser.GameObjects.Group,
-  plugin: PsdToPhaserPlugin
-): void {
-  const debugDepth = 1000;
-
-  if (plugin.isDebugEnabled("shape")) {
-    const graphics = scene.add.graphics();
-    graphics.setDepth(debugDepth);
-    graphics.lineStyle(2, 0x00ff00, 1);
-    graphics.strokeRect(
-      spriteData.x,
-      spriteData.y,
-      spriteData.width,
-      spriteData.height
-    );
-    (graphics as any).isDebugObject = true;
-    group.add(graphics);
-  }
-
-  if (plugin.isDebugEnabled("label")) {
-    const text = scene.add.text(
-      spriteData.x,
-      spriteData.y - 20,
-      spriteData.name,
-      {
-        fontSize: "16px",
-        color: "#00ff00",
-        backgroundColor: "#ffffff",
-      }
-    );
-    text.setDepth(debugDepth);
-    (text as any).isDebugObject = true;
-    group.add(text);
-  }
 }

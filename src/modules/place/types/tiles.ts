@@ -5,6 +5,7 @@ import {
 } from "../../shared/lazyLoadUtils";
 import { attachAttributes } from "../../shared/attachAttributes";
 import { applyMaskToContainer } from "../../shared/applyMask";
+import { addDebugVisualization } from "../../shared/debugVisualizer";
 
 import type { TilesetLayer, TilePlacementData } from "../../../types";
 
@@ -61,7 +62,14 @@ export function placeTiles(
 
   // Create a separate debug group
   const debugGroup = scene.add.group();
-  addDebugVisualization(scene, layer, tileSliceSize, debugGroup, plugin);
+  addDebugVisualization(scene, plugin, debugGroup, {
+    type: 'tileset',
+    name: layer.name,
+    x: layer.x,
+    y: layer.y,
+    width: layer.columns * tileSliceSize,
+    height: layer.rows * tileSliceSize,
+  });
   // Add the debug group as a child of the main group, but don't include it in the group's children array
   (group as any).debugGroup = debugGroup;
 
@@ -169,41 +177,6 @@ export function placeSingleTile(
   } else {
     console.warn(`Texture not found for tile: ${tileData.key}`);
     return null;
-  }
-}
-
-function addDebugVisualization(
-  scene: Phaser.Scene,
-  tileData: TilesetLayer,
-  tileSliceSize: number,
-  group: Phaser.GameObjects.Group,
-  plugin: PsdToPhaserPlugin
-): void {
-  const debugDepth = 1000;
-
-  if (plugin.isDebugEnabled("shape")) {
-    const graphics = scene.add.graphics();
-    graphics.setDepth(debugDepth);
-    graphics.lineStyle(2, 0xff0000, 1);
-    graphics.strokeRect(
-      tileData.x,
-      tileData.y,
-      tileData.columns * tileSliceSize,
-      tileData.rows * tileSliceSize
-    );
-    (graphics as any).isDebugObject = true;
-    group.add(graphics);
-  }
-
-  if (plugin.isDebugEnabled("label")) {
-    const text = scene.add.text(tileData.x, tileData.y - 20, tileData.name, {
-      fontSize: "16px",
-      color: "#ff0000",
-      backgroundColor: "#ffffff",
-    });
-    text.setDepth(debugDepth);
-    (text as any).isDebugObject = true;
-    group.add(text);
   }
 }
 
