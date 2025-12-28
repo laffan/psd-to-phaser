@@ -11,7 +11,7 @@ import {
   checkIfLazyLoaded,
   createLazyLoadPlaceholder,
 } from "../shared/lazyLoadUtils";
-import { applyMaskToGameObject } from "../shared/applyMask";
+import { applySharedMaskToGroup } from "../shared/applyMask";
 
 import type { PsdLayer, PlaceOptions } from "../../types";
 import { isGroupLayer, isSpriteLayer, isTilesetLayer, isZoneLayer, isPointLayer, hasMask } from "../../types";
@@ -91,12 +91,10 @@ function placeLayer(
         }
       });
 
-      // Apply bitmap mask to all children in the group if the group has a mask
-      // Note: Groups don't support masks directly, so we apply to each child
+      // Apply a shared bitmap mask to all children if the group has a mask
+      // Creates ONE mask and applies it to ALL children (masks are global in Phaser)
       if (hasMask(layer)) {
-        newGroup.getChildren().forEach((child) => {
-          applyMaskToGameObject(scene, layer, child as Phaser.GameObjects.Sprite);
-        });
+        applySharedMaskToGroup(scene, layer, newGroup);
       }
 
       group.add(newGroup as unknown as Phaser.GameObjects.GameObject);
