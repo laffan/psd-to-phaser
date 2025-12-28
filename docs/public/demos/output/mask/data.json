@@ -1,0 +1,80 @@
+{
+  "name": "mask",
+  "width": 600,
+  "height": 400,
+  "tile_slice_size": 500,
+  "tile_scaled_versions": [
+    100
+  ],
+  "layers": [
+    {
+      "name": "maskedShape",
+      "category": "group",
+      "x": -14,
+      "y": -13,
+      "width": 626,
+      "height": 428,
+      "initialDepth": 5,
+      "attributes": {},
+      "children": [
+        {
+          "name": "foreground",
+          "category": "sprite",
+          "x": 1,
+          "y": 280,
+          "width": 599,
+          "height": 120,
+          "attributes": {},
+          "filePath": "sprites/foreground.png",
+          "initialDepth": 4
+        },
+        {
+          "name": "midground",
+          "category": "sprite",
+          "x": -10,
+          "y": 162,
+          "width": 599,
+          "height": 250,
+          "attributes": {},
+          "filePath": "sprites/midground.png",
+          "initialDepth": 3
+        },
+        {
+          "name": "moon",
+          "category": "sprite",
+          "x": 342,
+          "y": 63,
+          "width": 64,
+          "height": 64,
+          "attributes": {},
+          "filePath": "sprites/moon.png",
+          "initialDepth": 2
+        },
+        {
+          "name": "sky",
+          "category": "sprite",
+          "x": -14,
+          "y": -13,
+          "width": 626,
+          "height": 428,
+          "attributes": {},
+          "filePath": "sprites/sky.png",
+          "initialDepth": 1
+        }
+      ],
+      "mask": true,
+      "maskPath": "masks/maskedShape_mask.png"
+    },
+    {
+      "name": "backgroundScribble",
+      "category": "sprite",
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "height": 400,
+      "attributes": {},
+      "filePath": "sprites/backgroundScribble.png",
+      "initialDepth": 0
+    }
+  ]
+}
