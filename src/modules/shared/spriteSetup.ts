@@ -1,7 +1,7 @@
 // src/modules/shared/spriteSetup.ts
 
 import { attachAttributes } from './attachAttributes';
-import { applyMaskToGameObject } from './applyMask';
+import { applyMaskToGameObject, applySharedMaskToGroup } from './applyMask';
 
 import type { SpriteLayer } from '../../types';
 
@@ -42,7 +42,8 @@ export function setupSpriteGroup(
 }
 
 /**
- * Apply mask to all children in a group if the layer has a mask.
+ * Apply a shared mask to all children in a group if the layer has a mask.
+ * Creates ONE mask and applies it to ALL children (masks are global in Phaser).
  *
  * @param scene - The Phaser scene
  * @param layer - The sprite layer data
@@ -54,9 +55,7 @@ export function applyMaskToGroupChildren(
   group: Phaser.GameObjects.Group
 ): void {
   if (layer.mask && layer.maskPath) {
-    group.getChildren().forEach((child) => {
-      applyMaskToGameObject(scene, layer, child as Phaser.GameObjects.Sprite);
-    });
+    applySharedMaskToGroup(scene, layer, group);
   }
 }
 

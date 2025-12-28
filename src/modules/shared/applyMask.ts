@@ -83,3 +83,49 @@ export function applyMaskToContainer(
 
   return maskImage;
 }
+
+/**
+ * Apply a SHARED bitmap mask to all children in a Phaser Group.
+ * Creates ONE mask image and ONE bitmap mask, then applies it to all children.
+ * This is more efficient and correct - masks in Phaser are positioned in global space
+ * and can be shared across multiple game objects.
+ *
+ * @param scene - The Phaser scene
+ * @param layer - The layer data that contains mask information
+ * @param group - The Phaser group whose children should receive the mask
+ * @returns The created mask image (hidden), or null if no mask was applied
+ */
+export function applySharedMaskToGroup(
+  scene: Phaser.Scene,
+  layer: PsdLayer,
+  group: Phaser.GameObjects.Group
+): Phaser.GameObjects.Image | null {
+  if (!hasMask(layer)) {
+    return null;
+  }
+
+  const maskKey = `${layer.name}_mask`;
+
+  if (!scene.textures.exists(maskKey)) {
+    console.warn(`Mask texture not found: ${maskKey}`);
+    return null;
+  }
+
+  // Create ONE mask image at the layer position
+  // Masks are positioned in global space, not relative to game objects
+  const maskImage = scene.add.image(layer.x, layer.y, maskKey);
+  maskImage.setOrigin(0, 0);
+  maskImage.setVisible(false);
+
+  // Create ONE bitmap mask from the image
+  const bitmapMask = maskImage.createBitmapMask();
+
+  // Apply the SAME bitmap mask to ALL children in the group
+  group.getChildren().forEach((child) => {
+    if ('setMask' in child && typeof child.setMask === 'function') {
+      (child as Phaser.GameObjects.Sprite).setMask(bitmapMask);
+    }
+  });
+
+  return maskImage;
+}
