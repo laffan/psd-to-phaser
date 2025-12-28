@@ -91,18 +91,29 @@ Groups can have layer masks applied, which clip all children to a shape defined 
 
 <Interactive outputPath="demos/output/mask" psdKey="mask_key" id="place-mask" src="interactive/layers/place-mask.js" />
 
-In the PSD, a group layer with a mask will export with `mask: true` and a `maskPath` property pointing to the mask image. The mask uses Phaser's bitmap mask system - white areas are visible, black areas are hidden.
+In the demo above, notice how the moon and mountains move independently while the circular mask stays fixed. This is because Phaser's bitmap masks are positioned in global space - sprites move "underneath" the mask.
+
+In the PSD, a group layer with a mask will export with `mask: true`, position properties (`maskX`, `maskY`), and a `maskPath` pointing to the mask image. The mask uses Phaser's bitmap mask system - white areas are visible, black areas are hidden.
 
 ```js
 // Place a group with a layer mask
-// Children are only visible within the mask shape
 const maskedGroup = this.P2P.place(this, "psd_key", "maskedShape");
+
+// Sprites can be animated independently - the mask stays fixed
+const moon = maskedGroup.target('moon');
+this.tweens.add({
+  targets: moon.getChildren(),
+  x: '-=80',
+  duration: 3000,
+  yoyo: true,
+  repeat: -1
+});
 ```
 
 The mask is applied automatically when the group is placed. All sprites within the masked group will be clipped to the mask shape. This is useful for creating:
 
 - Circular or custom-shaped viewports
-- Reveal effects
+- Reveal effects with animated content
+- Parallax scenes within shaped windows
 - Complex clipping regions
 
-Note: The mask image should be the same dimensions as the group bounds, with white (visible) and black (hidden) areas defining the clipping shape.
