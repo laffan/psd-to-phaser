@@ -623,6 +623,75 @@ this.bounce.updateAnimation({
   yoyo: true,
 });
 </code></pre>
+<h3>Layer Masks</h3>
+<p>Groups can have layer masks applied, which clip all children to a shape defined by a mask image. When a group with a mask is placed, the mask is automatically applied to all sprites within that group.</p>
+<div class="interactive-example"><div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex align-items-start gap-2">
+          <div class="flex-grow-1">
+            <div class="accordion" id="accordion-place-mask">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-place-mask">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                          data-bs-target="#collapse-place-mask" aria-expanded="false" 
+                          aria-controls="collapse-place-mask">
+                    PSD Layers
+                  </button>
+                </h2>
+                <div id="collapse-place-mask" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-place-mask" data-bs-parent="#accordion-place-mask">
+                  <div class="accordion-body">
+                    <div class="layer-structure" id="layers-place-mask" 
+                         data-psd-path="public/demos/output/mask">
+                      Loading layer structure...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-start">
+            <a href="https://github.com/laffan/psd-to-phaser/tree/main/docs/public/demos/psds" class="btn btn-primary d-flex align-items-center justify-content-center" style="min-height: 3rem; padding: 0.75rem;" download title="Download this PSD">
+              <svg width="20" height="20" fill="white" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-8">
+        <div class="code-editor-container">
+          <div class="ace-editor" id="editor-place-mask"></div>
+          <button class="btn btn-primary btn-sm run-example" 
+                  data-psd="demos/output/mask/mask.psd" 
+                  data-name="place-mask"
+                  data-output-path="demos/output/mask"
+                  data-psd-key="mask_key"
+                  data-pixel-art="true"
+                  data-initial-code="Ly8gUGxhY2UgdGhlIGJhY2tncm91bmQgc2NyaWJibGUgcGF0dGVybgp0aGlzLlAyUC5wbGFjZSh0aGlzLCB0aGlzLnBzZEtleSwgJ2JhY2tncm91bmRTY3JpYmJsZScpOwoKLy8gUGxhY2UgYSBncm91cCB3aXRoIGEgbGF5ZXIgbWFzawovLyBUaGUgIm1hc2tlZFNoYXBlIiBncm91cCBoYXMgYSBjaXJjdWxhciBtYXNrIGFwcGxpZWQuCi8vIEFsbCBjaGlsZHJlbiAoc2t5LCBtb29uLCBtaWRncm91bmQsIGZvcmVncm91bmQpIGFyZQovLyB2aXNpYmxlIG9ubHkgd2l0aGluIHRoZSBtYXNrIHNoYXBlLgp0aGlzLlAyUC5wbGFjZSh0aGlzLCB0aGlzLnBzZEtleSwgJ21hc2tlZFNoYXBlJyk7">
+            Run Example
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="phaser-container" id="phaser-place-mask"></div>
+      </div>
+    </div></div>
+<p>In the PSD, a group layer with a mask will export with <code>mask: true</code> and a <code>maskPath</code> property pointing to the mask image. The mask uses Phaser&#x27;s bitmap mask system - white areas are visible, black areas are hidden.</p>
+<pre><code class="language-js">// Place a group with a layer mask
+// Children are only visible within the mask shape
+const maskedGroup = this.P2P.place(this, &quot;psd_key&quot;, &quot;maskedShape&quot;);
+</code></pre>
+<p>The mask is applied automatically when the group is placed. All sprites within the masked group will be clipped to the mask shape. This is useful for creating:</p>
+<ul>
+<li>Circular or custom-shaped viewports</li>
+<li>Reveal effects</li>
+<li>Complex clipping regions</li>
+</ul>
+<p>Note: The mask image should be the same dimensions as the group bounds, with white (visible) and black (hidden) areas defining the clipping shape.</p>
                 </div>
         </main>
     </div>
