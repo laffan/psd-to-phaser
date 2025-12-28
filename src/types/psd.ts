@@ -56,6 +56,10 @@ export interface BaseLayer {
   // Mask properties - applied from layer/group masks in PSD
   mask?: boolean;
   maskPath?: string;
+  maskX?: number;
+  maskY?: number;
+  maskWidth?: number;
+  maskHeight?: number;
 }
 
 // =============================================================================
@@ -259,6 +263,13 @@ export function isDefaultSprite(layer: SpriteLayer): layer is DefaultSpriteLayer
   return !layer.type || layer.type === 'default';
 }
 
-export function hasMask(layer: PsdLayer): layer is PsdLayer & { mask: true; maskPath: string } {
+export function hasMask(layer: PsdLayer): layer is PsdLayer & {
+  mask: true;
+  maskPath: string;
+  maskX: number;
+  maskY: number;
+  maskWidth: number;
+  maskHeight: number;
+} {
   return layer.mask === true && typeof layer.maskPath === 'string';
 }
