@@ -127,9 +127,13 @@ export function applySharedMaskToGroup(
     }
   }
 
-  // Create ONE mask image at the layer position
+  // Use mask-specific position if available, otherwise fall back to layer position
+  const maskX = layer.maskX ?? layer.x;
+  const maskY = layer.maskY ?? layer.y;
+
+  // Create ONE mask image at the mask position
   // Masks are positioned in global space, not relative to game objects
-  const maskImage = scene.add.image(layer.x, layer.y, finalMaskKey);
+  const maskImage = scene.add.image(maskX, maskY, finalMaskKey);
   maskImage.setOrigin(0, 0);
   maskImage.setVisible(false);
 
@@ -138,7 +142,7 @@ export function applySharedMaskToGroup(
 
   // Apply the SAME bitmap mask to ALL children in the group
   const children = group.getChildren();
-  console.log(`🎭 Applying mask "${maskKey}" to ${children.length} children at position (${layer.x}, ${layer.y})`);
+  console.log(`🎭 Applying mask "${maskKey}" to ${children.length} children at position (${maskX}, ${maskY})`);
 
   children.forEach((child, index) => {
     if ('setMask' in child && typeof child.setMask === 'function') {
