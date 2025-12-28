@@ -671,7 +671,7 @@ this.bounce.updateAnimation({
                   data-output-path="demos/output/mask"
                   data-psd-key="mask_key"
                   data-pixel-art="true"
-                  data-initial-code="Ly8gUGxhY2UgdGhlIGJhY2tncm91bmQgc2NyaWJibGUgcGF0dGVybgp0aGlzLlAyUC5wbGFjZSh0aGlzLCB0aGlzLnBzZEtleSwgJ2JhY2tncm91bmRTY3JpYmJsZScpOwoKLy8gUGxhY2UgYSBncm91cCB3aXRoIGEgbGF5ZXIgbWFzawovLyBUaGUgIm1hc2tlZFNoYXBlIiBncm91cCBoYXMgYSBjaXJjdWxhciBtYXNrIGFwcGxpZWQuCi8vIEFsbCBjaGlsZHJlbiAoc2t5LCBtb29uLCBtaWRncm91bmQsIGZvcmVncm91bmQpIGFyZQovLyB2aXNpYmxlIG9ubHkgd2l0aGluIHRoZSBtYXNrIHNoYXBlLgp0aGlzLlAyUC5wbGFjZSh0aGlzLCB0aGlzLnBzZEtleSwgJ21hc2tlZFNoYXBlJyk7">
+                  data-initial-code="Ly8gUGxhY2UgdGhlIGJhY2tncm91bmQgc2NyaWJibGUgcGF0dGVybgp0aGlzLlAyUC5wbGFjZSh0aGlzLCB0aGlzLnBzZEtleSwgJ2JhY2tncm91bmRTY3JpYmJsZScpOwoKLy8gUGxhY2UgYSBncm91cCB3aXRoIGEgbGF5ZXIgbWFzawovLyBUaGUgIm1hc2tlZFNoYXBlIiBncm91cCBoYXMgYSBjaXJjdWxhciBtYXNrIGFwcGxpZWQuCi8vIEFsbCBjaGlsZHJlbiAoc2t5LCBtb29uLCBtaWRncm91bmQsIGZvcmVncm91bmQpIGFyZQovLyB2aXNpYmxlIG9ubHkgd2l0aGluIHRoZSBtYXNrIHNoYXBlLgpjb25zdCBtYXNrZWRHcm91cCA9IHRoaXMuUDJQLnBsYWNlKHRoaXMsIHRoaXMucHNkS2V5LCAnbWFza2VkU2hhcGUnKTsKCi8vIEdldCBpbmRpdmlkdWFsIGxheWVycyB0byBhbmltYXRlIHRoZW0KY29uc3QgbWlkZ3JvdW5kID0gbWFza2VkR3JvdXAudGFyZ2V0KCdtaWRncm91bmQnKTsKCi8vIEFuaW1hdGUgbWlkZ3JvdW5kCnRoaXMudHdlZW5zLmFkZCh7CiAgdGFyZ2V0czogbWlkZ3JvdW5kLAogIHg6ICcrPTEwMCcsCiAgZHVyYXRpb246IDMwMDAsCiAgeW95bzogdHJ1ZSwKICByZXBlYXQ6IC0xLAogIGVhc2U6ICdTaW5lLmVhc2VJbk91dCcKfSk7">
             Run Example
           </button>
         </div>
@@ -680,18 +680,28 @@ this.bounce.updateAnimation({
         <div class="phaser-container" id="phaser-place-mask"></div>
       </div>
     </div></div>
-<p>In the PSD, a group layer with a mask will export with <code>mask: true</code> and a <code>maskPath</code> property pointing to the mask image. The mask uses Phaser&#x27;s bitmap mask system - white areas are visible, black areas are hidden.</p>
+<p>In the demo above, notice how the moon and mountains move independently while the circular mask stays fixed. This is because Phaser&#x27;s bitmap masks are positioned in global space - sprites move &quot;underneath&quot; the mask.</p>
+<p>In the PSD, a group layer with a mask will export with <code>mask: true</code>, position properties (<code>maskX</code>, <code>maskY</code>), and a <code>maskPath</code> pointing to the mask image. The mask uses Phaser&#x27;s bitmap mask system - white areas are visible, black areas are hidden.</p>
 <pre><code class="language-js">// Place a group with a layer mask
-// Children are only visible within the mask shape
 const maskedGroup = this.P2P.place(this, &quot;psd_key&quot;, &quot;maskedShape&quot;);
+
+// Sprites can be animated independently - the mask stays fixed
+const moon = maskedGroup.target(&#x27;moon&#x27;);
+this.tweens.add({
+  targets: moon,
+  x: &#x27;-=80&#x27;,
+  duration: 3000,
+  yoyo: true,
+  repeat: -1
+});
 </code></pre>
 <p>The mask is applied automatically when the group is placed. All sprites within the masked group will be clipped to the mask shape. This is useful for creating:</p>
 <ul>
 <li>Circular or custom-shaped viewports</li>
-<li>Reveal effects</li>
+<li>Reveal effects with animated content</li>
+<li>Parallax scenes within shaped windows</li>
 <li>Complex clipping regions</li>
 </ul>
-<p>Note: The mask image should be the same dimensions as the group bounds, with white (visible) and black (hidden) areas defining the clipping shape.</p>
                 </div>
         </main>
     </div>
