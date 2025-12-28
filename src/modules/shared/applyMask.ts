@@ -121,9 +121,13 @@ export function applySharedMaskToGroup(
   const bitmapMask = maskImage.createBitmapMask();
 
   // Apply the SAME bitmap mask to ALL children in the group
-  group.getChildren().forEach((child) => {
+  const children = group.getChildren();
+  console.log(`🎭 Applying mask "${maskKey}" to ${children.length} children at position (${layer.x}, ${layer.y})`);
+
+  children.forEach((child, index) => {
     if ('setMask' in child && typeof child.setMask === 'function') {
       (child as Phaser.GameObjects.Sprite).setMask(bitmapMask);
+      console.log(`  - Applied mask to child ${index}: ${child.name || 'unnamed'}`);
     }
   });
 
