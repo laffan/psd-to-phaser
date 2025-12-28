@@ -14,7 +14,7 @@ const midground = maskedGroup.target('midground');
 // Animate the moon moving back and forth
 // The mask stays fixed while the sprite moves underneath
 this.tweens.add({
-  targets: moon.getChildren(),
+  targets: moon,
   x: '-=80',
   duration: 3000,
   yoyo: true,
@@ -24,7 +24,7 @@ this.tweens.add({
 
 // Animate midground at a different speed for parallax effect
 this.tweens.add({
-  targets: midground.getChildren(),
+  targets: midground,
   x: '+=40',
   duration: 4000,
   yoyo: true,

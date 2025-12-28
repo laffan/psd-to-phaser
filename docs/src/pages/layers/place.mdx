@@ -102,7 +102,7 @@ const maskedGroup = this.P2P.place(this, "psd_key", "maskedShape");
 // Sprites can be animated independently - the mask stays fixed
 const moon = maskedGroup.target('moon');
 this.tweens.add({
-  targets: moon.getChildren(),
+  targets: moon,
   x: '-=80',
   duration: 3000,
   yoyo: true,
