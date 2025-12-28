@@ -63,6 +63,10 @@
         }
       ],
       "mask": true,
+      "maskX": 35,
+      "maskY": 35,
+      "maskWidth": 229,
+      "maskHeight": 230,
       "maskPath": "masks/maskedShape_mask.png"
     },
     {
