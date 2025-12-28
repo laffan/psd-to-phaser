@@ -1,7 +1,7 @@
 {
   "name": "mask",
-  "width": 600,
-  "height": 400,
+  "width": 300,
+  "height": 300,
   "tile_slice_size": 500,
   "tile_scaled_versions": [
     100
@@ -10,20 +10,20 @@
     {
       "name": "maskedShape",
       "category": "group",
-      "x": -14,
-      "y": -13,
-      "width": 626,
-      "height": 428,
+      "x": -50,
+      "y": 17,
+      "width": 395,
+      "height": 268,
       "initialDepth": 5,
       "attributes": {},
       "children": [
         {
           "name": "foreground",
           "category": "sprite",
-          "x": 1,
-          "y": 280,
-          "width": 599,
-          "height": 120,
+          "x": -38,
+          "y": 200,
+          "width": 376,
+          "height": 75,
           "attributes": {},
           "filePath": "sprites/foreground.png",
           "initialDepth": 4
@@ -31,10 +31,10 @@
         {
           "name": "midground",
           "category": "sprite",
-          "x": -10,
-          "y": 162,
-          "width": 599,
-          "height": 250,
+          "x": -50,
+          "y": 126,
+          "width": 376,
+          "height": 157,
           "attributes": {},
           "filePath": "sprites/midground.png",
           "initialDepth": 3
@@ -42,10 +42,10 @@
         {
           "name": "moon",
           "category": "sprite",
-          "x": 342,
-          "y": 63,
-          "width": 64,
-          "height": 64,
+          "x": 176,
+          "y": 64,
+          "width": 41,
+          "height": 41,
           "attributes": {},
           "filePath": "sprites/moon.png",
           "initialDepth": 2
@@ -53,10 +53,10 @@
         {
           "name": "sky",
           "category": "sprite",
-          "x": -14,
-          "y": -13,
-          "width": 626,
-          "height": 428,
+          "x": -47,
+          "y": 17,
+          "width": 392,
+          "height": 268,
           "attributes": {},
           "filePath": "sprites/sky.png",
           "initialDepth": 1
@@ -68,10 +68,10 @@
     {
       "name": "backgroundScribble",
       "category": "sprite",
-      "x": 0,
+      "x": -75,
       "y": 0,
-      "width": 600,
-      "height": 400,
+      "width": 450,
+      "height": 300,
       "attributes": {},
       "filePath": "sprites/backgroundScribble.png",
       "initialDepth": 0
