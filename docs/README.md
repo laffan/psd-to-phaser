@@ -1,5 +1,7 @@
 # PSD to Phaser
 
+> **Phaser 4 compatible.** This plugin targets Phaser 4.x. If you need Phaser 3.x support, use version 0.0.6.
+
 psd-to-phaser is a Phaser plugin that reads the JSON manifest created by [psd-to-json](https://pypi.org/project/psd-to-json/), loads the files and then does the work of rebuilding the PSD. 
 
 
@@ -172,7 +174,9 @@ const item = this.P2P.place(
 
 #### [placed].[spriteMethods]()
 
-Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setOrigin', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+
+> **Note (Phaser 4):** `setMask` and `setPipeline` have been removed. In Phaser 4, masks are applied via the Filter system and pipelines have been replaced by the RenderNode architecture.
 
 ```js
 // Set the alpha and rotation of a group.
@@ -723,6 +727,21 @@ this.P2P.use
 
 Because the plugin is maintaining layer order with setDepth() it is very likely that new items will be hidden behind something. When placing something of your own, make sure you set its depth to something higher than the number of layers you're bringing in from the PSD.
 
+
+## Phaser 4 Migration Notes
+
+This plugin has been updated for Phaser 4.0. Key changes from Phaser 3:
+
+- **Masks**: Now use Phaser 4's Filter system (`gameObject.filters.internal.addMask()`) instead of BitmapMask/`setMask()`. Masks applied via `place()` are handled automatically. If using `getMask()` manually, apply the returned `maskImage` via filters:
+  ```js
+  const mask = this.P2P.getMask(this, 'psd_key', 'GroupName/LayerName');
+  if (mask) {
+    mySprite.filters.internal.addMask(mask.maskImage);
+  }
+  ```
+- **Removed methods**: `setPipeline` (replaced by RenderNode architecture) and `setMask` (replaced by Filter system) are no longer in the attached sprite methods list.
+- **Tint behavior**: `setTint()` now purely affects color in Phaser 4. Use `setTintMode()` for fill effects.
+- **Round pixels**: Phaser 4 defaults `roundPixels` to `false`. For pixel-art projects, set `roundPixels: true` in your game config.
 
 ## Development
 
