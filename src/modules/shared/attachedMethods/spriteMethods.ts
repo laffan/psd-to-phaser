@@ -5,17 +5,15 @@ import PsdToPhaserPlugin from '../../../PsdToPhaser';
 type MethodName = string;
 ;
 
-const methodsToAttach: MethodName[] = [  'setAlpha',
+const methodsToAttach: MethodName[] = [
+  'setAlpha',
   'setAngle',
   'setActive',
-  'setAlpha',
   'setBlendMode',
   'setDepth',
   'setDisplaySize',
   'setFlip',
-  'setMask',
   'setOrigin',
-  'setPipeline',
   'setPosition',
   'setRotation',
   'setScale',

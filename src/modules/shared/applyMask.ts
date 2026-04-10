@@ -1,11 +1,16 @@
 // src/modules/shared/applyMask.ts
+// Phaser 4: BitmapMask replaced by Filter system
+// v3: maskImage.createBitmapMask() + gameObject.setMask(mask)
+// v4: gameObject.filters.internal.addMask(maskImage)
 
 import type { PsdLayer } from '../../types';
 import { hasMask } from '../../types';
 
 /**
- * Apply a bitmap mask to a game object if the layer has a mask defined.
+ * Apply a mask filter to a game object if the layer has a mask defined.
  * The mask texture should already be loaded with key `${layerName}_mask`.
+ *
+ * Phaser 4 uses the Filter system instead of BitmapMask.
  *
  * @param scene - The Phaser scene
  * @param layer - The layer data that may contain mask information
@@ -15,7 +20,7 @@ import { hasMask } from '../../types';
 export function applyMaskToGameObject(
   scene: Phaser.Scene,
   layer: PsdLayer,
-  gameObject: Phaser.GameObjects.GameObject & { setMask?: (mask: Phaser.Display.Masks.BitmapMask) => void }
+  gameObject: Phaser.GameObjects.GameObject
 ): Phaser.GameObjects.Image | null {
   if (!hasMask(layer)) {
     return null;
@@ -29,25 +34,23 @@ export function applyMaskToGameObject(
   }
 
   // Create the mask image at the layer position
-  // The mask image needs to be positioned to align with the masked object
   const maskImage = scene.add.image(layer.x, layer.y, maskKey);
   maskImage.setOrigin(0, 0);
-  maskImage.setVisible(false); // The mask image should be invisible
+  maskImage.setVisible(false);
 
-  // Create the bitmap mask from the image
-  const bitmapMask = maskImage.createBitmapMask();
-
-  // Apply the mask to the game object
-  if (gameObject.setMask) {
-    gameObject.setMask(bitmapMask);
+  // Phaser 4: Apply mask via the Filter system
+  if ('filters' in gameObject && (gameObject as any).filters?.internal) {
+    (gameObject as any).filters.internal.addMask(maskImage);
   }
 
   return maskImage;
 }
 
 /**
- * Apply a bitmap mask to a container and all its children.
+ * Apply a mask filter to a container and all its children.
  * Useful for group layers with masks.
+ *
+ * Phaser 4 uses the Filter system instead of BitmapMask.
  *
  * @param scene - The Phaser scene
  * @param layer - The layer data that may contain mask information
@@ -75,23 +78,20 @@ export function applyMaskToContainer(
   maskImage.setOrigin(0, 0);
   maskImage.setVisible(false);
 
-  // Create the bitmap mask from the image
-  const bitmapMask = maskImage.createBitmapMask();
-
-  // Apply the mask to the container (which affects all children)
-  container.setMask(bitmapMask);
+  // Phaser 4: Apply mask via the Filter system on the container
+  if ('filters' in container && (container as any).filters?.internal) {
+    (container as any).filters.internal.addMask(maskImage);
+  }
 
   return maskImage;
 }
 
 /**
- * Apply a SHARED bitmap mask to all children in a Phaser Group.
- * Creates ONE mask image and ONE bitmap mask, then applies it to all children.
- * This is more efficient and correct - masks in Phaser are positioned in global space
- * and can be shared across multiple game objects.
+ * Apply a SHARED mask filter to all children in a Phaser Group.
+ * Creates ONE mask image and applies it to all children via the Filter system.
  *
- * Note: Mask images are converted from luminance to alpha, so grayscale masks
- * (white=visible, black=hidden) work correctly with Phaser's BitmapMask.
+ * Note: In Phaser 4, masks are applied via filters.internal.addMask()
+ * Mask images are converted from luminance to alpha for proper masking.
  *
  * @param scene - The Phaser scene
  * @param layer - The layer data that contains mask information
@@ -118,7 +118,7 @@ export function applySharedMaskToGroup(
   // Check if we already created the alpha-converted texture
   let finalMaskKey = alphaKeyMaskKey;
   if (!scene.textures.exists(alphaKeyMaskKey)) {
-    // Convert luminance to alpha for the mask to work with Phaser's BitmapMask
+    // Convert luminance to alpha for the mask to work properly
     const converted = convertLuminanceToAlpha(scene, maskKey, alphaKeyMaskKey);
     if (!converted) {
       // Fallback to original texture if conversion fails
@@ -132,21 +132,17 @@ export function applySharedMaskToGroup(
   const maskY = layer.maskY ?? layer.y;
 
   // Create ONE mask image at the mask position
-  // Masks are positioned in global space, not relative to game objects
   const maskImage = scene.add.image(maskX, maskY, finalMaskKey);
   maskImage.setOrigin(0, 0);
   maskImage.setVisible(false);
 
-  // Create ONE bitmap mask from the image
-  const bitmapMask = maskImage.createBitmapMask();
-
-  // Apply the SAME bitmap mask to ALL children in the group
+  // Phaser 4: Apply the mask filter to ALL children in the group
   const children = group.getChildren();
   console.log(`🎭 Applying mask "${maskKey}" to ${children.length} children at position (${maskX}, ${maskY})`);
 
   children.forEach((child, index) => {
-    if ('setMask' in child && typeof child.setMask === 'function') {
-      (child as Phaser.GameObjects.Sprite).setMask(bitmapMask);
+    if ('filters' in child && (child as any).filters?.internal) {
+      (child as any).filters.internal.addMask(maskImage);
       console.log(`  - Applied mask to child ${index}: ${child.name || 'unnamed'}`);
     }
   });
@@ -156,7 +152,7 @@ export function applySharedMaskToGroup(
 
 /**
  * Convert a grayscale/luminance mask image to use alpha channel.
- * Phaser's BitmapMask uses alpha, but many mask images are grayscale
+ * Phaser 4's mask filter uses alpha, but many mask images are grayscale
  * (white=visible, black=hidden). This converts luminance to alpha.
  *
  * @param scene - The Phaser scene
@@ -195,12 +191,10 @@ function convertLuminanceToAlpha(
     const data = imageData.data;
 
     // Convert luminance to alpha
-    // For each pixel: alpha = luminance (average of RGB)
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i];
       const g = data[i + 1];
       const b = data[i + 2];
-      // Calculate luminance (simple average, could use weighted formula)
       const luminance = (r + g + b) / 3;
       // Set alpha to luminance, keep RGB as white for clean masking
       data[i] = 255;     // R

@@ -36,7 +36,6 @@ export function placeTiles(
     "setBlendMode",
     "setAlpha",
     "setDepth",
-    "setMask",
   ];
 
   methodsToOverride.forEach((method) => {

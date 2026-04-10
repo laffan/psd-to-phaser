@@ -1,33 +1,38 @@
 // src/modules/getMask.ts
+// Phaser 4: BitmapMask replaced by Filter system
 
 import PsdToPhaserPlugin from '../PsdToPhaser';
 import { findLayer } from './shared/findLayer';
 import { hasMask } from '../types';
 
 /**
- * Result object from getMask containing the mask image and bitmap mask
+ * Result object from getMask containing the mask image.
+ *
+ * Phaser 4 migration: The bitmapMask field has been replaced with the maskImage.
+ * Users should apply the mask via the Filter system:
+ *   gameObject.filters.internal.addMask(result.maskImage)
  */
 export interface MaskResult {
   /** The hidden image used to create the mask */
   maskImage: Phaser.GameObjects.Image;
-  /** The bitmap mask that can be applied to game objects */
-  bitmapMask: Phaser.Display.Masks.BitmapMask;
 }
 
 export default function getMaskModule(plugin: PsdToPhaserPlugin) {
   /**
-   * Get a bitmap mask for a layer. The mask texture should already be loaded.
+   * Get a mask image for a layer. The mask texture should already be loaded.
+   *
+   * In Phaser 4, apply the returned maskImage via the Filter system:
+   *   gameObject.filters.internal.addMask(result.maskImage)
    *
    * @param scene - The Phaser scene
    * @param psdKey - The key used when loading the PSD
    * @param layerPath - Path to the layer (e.g., "GroupName/LayerName")
-   * @returns MaskResult with the mask image and bitmap mask, or null if no mask exists
+   * @returns MaskResult with the mask image, or null if no mask exists
    *
    * @example
-   * // Get a mask for a layer
    * const mask = psd.getMask(this, 'myPsd', 'Background/Trees');
    * if (mask) {
-   *   mySprite.setMask(mask.bitmapMask);
+   *   mySprite.filters.internal.addMask(mask.maskImage);
    * }
    */
   return function getMask(
@@ -72,7 +77,6 @@ export default function getMaskModule(plugin: PsdToPhaserPlugin) {
       scene.load.start();
 
       // Since loading is asynchronous, return null for now
-      // The user should call getMask again after the load completes
       console.log(`Mask texture "${maskKey}" is being loaded. Call getMask again after load completes.`);
       return null;
     }
@@ -80,14 +84,10 @@ export default function getMaskModule(plugin: PsdToPhaserPlugin) {
     // Create the mask image at the layer position
     const maskImage = scene.add.image(layerData.x, layerData.y, maskKey);
     maskImage.setOrigin(0, 0);
-    maskImage.setVisible(false); // The mask image should be invisible
-
-    // Create the bitmap mask from the image
-    const bitmapMask = maskImage.createBitmapMask();
+    maskImage.setVisible(false);
 
     return {
       maskImage,
-      bitmapMask,
     };
   };
 }

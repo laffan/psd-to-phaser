@@ -34,11 +34,12 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "phaser": "^4.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.0",
     "vite-plugin-dts": "^4.5.4"
   },
   "peerDependencies": {
-    "phaser": "^3.8"
+    "phaser": "^4.0"
   }
 }
