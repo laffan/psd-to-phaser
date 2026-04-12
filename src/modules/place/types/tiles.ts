@@ -1,3 +1,14 @@
+/**
+ * Tileset layer placement – renders pre-sliced tile grids inside Phaser Containers.
+ *
+ * Each tileset in the PSD is represented as a grid of image slices generated
+ * by psd-to-json. This module places them into a Container that preserves
+ * the original position and supports lazy loading, masks, and method overrides
+ * so that operations like `setAlpha()` propagate to every child tile.
+ *
+ * @module place/types/tiles
+ */
+
 import PsdToPhaserPlugin from "../../../PsdToPhaser";
 import {
   checkIfLazyLoaded,
@@ -9,6 +20,23 @@ import { addDebugVisualization } from "../../shared/debugVisualizer";
 
 import type { TilesetLayer, TilePlacementData } from "../../../types";
 
+/**
+ * Place a tileset layer into the scene.
+ *
+ * Creates a Container at the tileset's position, populates it with tile
+ * images (or lazy-load placeholders), applies masks, and overrides
+ * container methods so operations propagate to child tiles.
+ *
+ * @param scene - The Phaser scene
+ * @param layer - Tileset layer definition
+ * @param plugin - Plugin instance
+ * @param tileSliceSize - Pixel size of each tile slice
+ * @param group - Parent group to add the tile container to
+ * @param resolve - Callback to signal placement is complete
+ * @param psdKey - PSD key for namespace resolution
+ *
+ * @internal
+ */
 export function placeTiles(
   scene: Phaser.Scene,
   layer: TilesetLayer,
@@ -75,6 +103,18 @@ export function placeTiles(
   resolve();
 }
 
+/**
+ * Populate a container with tile images for every column/row in a tileset.
+ *
+ * @param scene - The Phaser scene
+ * @param container - Target container to fill
+ * @param layer - Tileset layer definition
+ * @param tileSliceSize - Pixel size of each tile slice
+ * @param useNamespacedKeys - Whether to prefix texture keys with the PSD key
+ * @param psdKey - PSD key (used when `useNamespacedKeys` is true)
+ *
+ * @internal
+ */
 export function placeTilesInContainer(
   scene: Phaser.Scene,
   container: Phaser.GameObjects.Container,
@@ -111,6 +151,16 @@ export function placeTilesInContainer(
   }
 }
 
+/**
+ * Override a Container method so it propagates to all child tiles.
+ *
+ * Position methods (`setX`, `setY`, `setPosition`) apply deltas to children.
+ * Other methods (e.g. `setAlpha`, `setBlendMode`) are forwarded directly.
+ * Every call is also recorded in `pendingMethodCalls` data so lazy-loaded
+ * tiles can replay them when they arrive.
+ *
+ * @internal
+ */
 function overrideContainerMethod(
   container: Phaser.GameObjects.Container,
   method: string
@@ -156,6 +206,16 @@ function overrideContainerMethod(
   };
 }
 
+/**
+ * Place a single tile image at a given position within a container or group.
+ *
+ * @param scene - The Phaser scene
+ * @param tileData - Tile placement data (position, texture key, grid coords)
+ * @param parent - Container or Group to add the tile image to
+ * @returns The created Image, or `null` if the texture was not found
+ *
+ * @internal
+ */
 export function placeSingleTile(
   scene: Phaser.Scene,
   tileData: TilePlacementData,
@@ -179,10 +239,19 @@ export function placeSingleTile(
   }
 }
 
+/** A recorded method call to replay on newly loaded tiles. */
 interface PendingMethodCall {
   method: string;
   args: any[];
 }
+
+/**
+ * Replay all recorded method calls on a tile container.
+ * Used after lazy-loaded tiles arrive to bring them up to date with
+ * any `setAlpha()`, `setBlendMode()`, etc. calls made before they loaded.
+ *
+ * @internal
+ */
 export function applyPendingMethodCalls(container: Phaser.GameObjects.Container): void {
   const pendingMethodCalls = container.getData("pendingMethodCalls") || [];
   pendingMethodCalls.forEach(({ method, args }: PendingMethodCall) => {

@@ -1,4 +1,8 @@
-// src/modules/load/processJSON.ts
+/**
+ * JSON processing – parses a PSD document manifest and categorises its layers.
+ *
+ * @module load/processJSON
+ */
 
 import PsdToPhaserPlugin from '../../PsdToPhaser';
 import { loadItems } from './loadItems';
@@ -17,6 +21,21 @@ import {
   isGroupLayer,
 } from '../../types';
 
+/**
+ * Parse a raw PSD JSON document and split its layers into `initialLoad`
+ * and `lazyLoad` buckets based on layer attributes and caller options.
+ *
+ * After categorisation the initial-load assets are queued via {@link loadItems}.
+ *
+ * @param scene - The Phaser scene
+ * @param key - PSD key for storage in the plugin
+ * @param data - The raw PSD document from `data.json`
+ * @param psdFolderPath - Base path to the asset folder
+ * @param plugin - Plugin instance
+ * @param options - Optional load configuration (lazyLoad settings)
+ *
+ * @internal
+ */
 export function processJSON(
   scene: Phaser.Scene,
   key: string,
@@ -60,6 +79,16 @@ export function processJSON(
   loadItems(scene, key, processedData.initialLoad, plugin);
 }
 
+/**
+ * Walk the layer tree, assigning each leaf to the correct load bucket.
+ *
+ * A layer is marked lazy when any of the following are true:
+ * 1. Its parent was already lazy (`parentLazyLoad`)
+ * 2. It has `lazyLoad: true` in its PSD attributes
+ * 3. The caller passed `lazyLoad: true` or included its name in the array
+ *
+ * @internal
+ */
 function processLayersRecursively(
   layers: PsdLayer[],
   processedData: ProcessedPsdData,

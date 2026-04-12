@@ -1,4 +1,9 @@
-// src/modules/load/loadSprites.ts
+/**
+ * Sprite asset loading – queues images, spritesheets, atlases, and their
+ * associated mask textures with Phaser's loader.
+ *
+ * @module load/loadSprites
+ */
 
 import type {
   SpriteLayer,
@@ -9,6 +14,21 @@ import type {
 } from '../../types';
 import { hasMask } from '../../types';
 
+/**
+ * Queue all sprite assets for loading, dispatching to the correct loader
+ * method based on sprite type (image, atlas, spritesheet, animation).
+ *
+ * Also loads any associated mask images.
+ *
+ * @param scene - The Phaser scene
+ * @param sprites - Array of sprite layer definitions
+ * @param basePath - Base path to the PSD assets folder
+ * @param onProgress - Callback invoked each time an asset finishes loading
+ * @param debug - Whether to log loading events to the console
+ * @returns Promise that resolves when all sprites are loaded
+ *
+ * @internal
+ */
 export function loadSprites(
   scene: Phaser.Scene,
   sprites: SpriteLayer[],
@@ -50,7 +70,19 @@ export function loadSprites(
 }
 
 /**
- * Load a mask image for a layer
+ * Load a mask image for a layer.
+ *
+ * Mask textures are stored with the key `<layerName>_mask` and are used
+ * later by the Filter system (Phaser 4) to apply bitmap masks.
+ *
+ * @param scene - The Phaser scene
+ * @param layerName - Name of the layer that owns this mask
+ * @param basePath - Base path to the PSD assets folder
+ * @param maskPath - Relative path to the mask image within the assets folder
+ * @param onProgress - Callback invoked when the mask finishes loading
+ * @param debug - Whether to log loading events to the console
+ *
+ * @internal
  */
 export function loadMaskImage(
   scene: Phaser.Scene,
@@ -79,6 +111,12 @@ export function loadMaskImage(
   }
 }
 
+/**
+ * Load an atlas sprite. Converts the psd-to-json frame data into the
+ * Phaser atlas JSON format and queues it with `scene.load.atlas()`.
+ *
+ * @internal
+ */
 function loadAtlas(
   scene: Phaser.Scene,
   key: string,
@@ -132,6 +170,12 @@ function loadAtlas(
   });
 }
 
+/**
+ * Load a spritesheet or animation sprite. Uses `scene.load.spritesheet()`
+ * with the frame dimensions from the layer definition.
+ *
+ * @internal
+ */
 function loadSpritesheet(
   scene: Phaser.Scene,
   key: string,
@@ -154,6 +198,11 @@ function loadSpritesheet(
   });
 }
 
+/**
+ * Load a simple single-frame image sprite.
+ *
+ * @internal
+ */
 function loadImage(
   scene: Phaser.Scene,
   key: string,

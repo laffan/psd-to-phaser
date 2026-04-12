@@ -1,4 +1,9 @@
-// src/modules/place/index.ts
+/**
+ * Place module – instantiates loaded PSD layers as Phaser game objects,
+ * preserving the original PSD hierarchy, positions, and depth ordering.
+ *
+ * @module place
+ */
 
 import PsdToPhaserPlugin from "../../PsdToPhaser";
 import { placeTiles } from "./types/tiles";
@@ -16,7 +21,43 @@ import { applySharedMaskToGroup } from "../shared/applyMask";
 import type { PsdLayer, PlaceOptions } from "../../types";
 import { isGroupLayer, isSpriteLayer, isTilesetLayer, isZoneLayer, isPointLayer, hasMask } from "../../types";
 
+/**
+ * Factory that creates the public `place()` function bound to the plugin.
+ *
+ * @param plugin - The PsdToPhaser plugin instance
+ * @returns The `place()` function
+ *
+ * @internal
+ */
 export default function placeModule(plugin: PsdToPhaserPlugin) {
+  /**
+   * Place a layer (or layer group) into the scene.
+   *
+   * Supports slash-delimited paths to target nested layers. When placing a
+   * group, all descendants are placed recursively unless limited by `depth`.
+   * The returned object has attached helper methods: `target()`, `remove()`,
+   * `setAlpha()`, `setScale()`, etc.
+   *
+   * Emits a `"layerPlaced"` event on the scene when placement finishes.
+   *
+   * @param scene - The Phaser scene to place objects into
+   * @param psdKey - The key used when loading the PSD
+   * @param layerPath - Slash-delimited path to the layer (e.g. `"root"` or `"groupName/spriteName"`)
+   * @param options - Optional placement settings (depth limit, animation overrides)
+   * @returns The placed game object or group, with attached helper methods
+   *
+   * @example
+   * ```js
+   * // Place an entire layer tree
+   * const psd = this.P2P.place(this, "psd_key", "root");
+   *
+   * // Place a specific nested sprite
+   * const sprite = this.P2P.place(this, "psd_key", "root/spriteName");
+   *
+   * // Limit recursion depth
+   * const shallow = this.P2P.place(this, "psd_key", "group", { depth: 1 });
+   * ```
+   */
   return function place(
     scene: Phaser.Scene,
     psdKey: string,
@@ -59,6 +100,15 @@ export default function placeModule(plugin: PsdToPhaserPlugin) {
   };
 }
 
+/**
+ * Recursively place a single layer, dispatching to the correct handler
+ * based on layer category (group, tileset, sprite, zone, point).
+ *
+ * Groups are expanded recursively (respecting the `depth` option).
+ * Lazy-loaded layers get a placeholder instead of a real game object.
+ *
+ * @internal
+ */
 function placeLayer(
   scene: Phaser.Scene,
   layer: PsdLayer,

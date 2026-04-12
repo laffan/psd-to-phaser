@@ -1,7 +1,35 @@
-// src/modules/shared/attachedMethods/remove.ts
+/**
+ * Remove method – enables destroying placed items by path, with optional
+ * depth limiting.
+ *
+ * @module shared/attachedMethods/remove
+ *
+ * @example
+ * ```js
+ * const group = this.P2P.place(this, "psd_key", "placedGroup");
+ *
+ * // Remove only immediate children of innerGroup
+ * group.remove("innerGroup", { depth: 1 });
+ *
+ * // Remove innerGroup and all descendants
+ * group.remove("innerGroup");
+ * ```
+ */
 
 import PsdToPhaserPlugin from "../../../PsdToPhaser";
 
+/**
+ * Create the `remove()` method implementation.
+ *
+ * Supports two call signatures:
+ * - `remove("path", { depth })` – find and destroy a specific descendant
+ * - `remove({ depth })` – destroy the object itself (with depth limit)
+ *
+ * @param _plugin - Plugin instance (unused, reserved for consistency)
+ * @returns The `remove()` function to be bound to a game object
+ *
+ * @internal
+ */
 export function createRemoveMethod(_plugin: PsdToPhaserPlugin) {
   return function remove(
     this: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group,
@@ -92,6 +120,14 @@ export function createRemoveMethod(_plugin: PsdToPhaserPlugin) {
   };
 }
 
+/**
+ * Attach the `remove()` method to a placed game object or group.
+ *
+ * @param plugin - Plugin instance
+ * @param gameObject - The placed object to enhance
+ *
+ * @internal
+ */
 export function attachRemoveMethod(
   plugin: PsdToPhaserPlugin,
   gameObject: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group

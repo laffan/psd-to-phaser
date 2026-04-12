@@ -1,7 +1,45 @@
-// src/modules/shared/attachedMethods/target.ts
+/**
+ * Target method – enables sub-selecting items within a placed group
+ * using slash-delimited paths, similar to `place()`.
+ *
+ * The returned object receives the same attached methods as any placed
+ * item (setAlpha, setScale, target, remove, etc.), enabling chaining.
+ *
+ * @module shared/attachedMethods/target
+ *
+ * @example
+ * ```js
+ * const group = this.P2P.place(this, "psd_key", "placedGroup");
+ *
+ * // Target and modify a child
+ * group.target("iAmAtlas").setAlpha(0.3);
+ *
+ * // Chain methods
+ * group.target("surround").setAlpha(0.3).setX(200);
+ *
+ * // Assign to variable
+ * const text = group.target("depthTest/Level1/Level1Text");
+ * text.setAlpha(0.3);
+ *
+ * // Get zone points
+ * const zone = group.target("depthTest/zone1");
+ * const points = zone.getData('points');
+ * ```
+ */
 import PsdToPhaserPlugin from '../../../PsdToPhaser';
 import { attachMethods } from './index';
 
+/**
+ * Create the `target()` method implementation bound to the plugin.
+ *
+ * Searches recursively through Groups and Containers, skipping debug
+ * objects, to find the child matching the given path.
+ *
+ * @param plugin - Plugin instance (used to attach methods to the result)
+ * @returns The `target()` function to be bound to a game object
+ *
+ * @internal
+ */
 export function createTargetMethod(plugin: PsdToPhaserPlugin) {
   return function get(this: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group, path?: string, options: { depth?: number } = {}): Phaser.GameObjects.GameObject | Phaser.GameObjects.Group | null {
     if (!path) {
@@ -66,6 +104,14 @@ export function createTargetMethod(plugin: PsdToPhaserPlugin) {
 }
 
 
+/**
+ * Attach the `target()` method to a placed game object or group.
+ *
+ * @param plugin - Plugin instance
+ * @param gameObject - The placed object to enhance
+ *
+ * @internal
+ */
 export function attachTargetMethod(plugin: PsdToPhaserPlugin, gameObject: Phaser.GameObjects.GameObject | Phaser.GameObjects.Group): void {
   (gameObject as any).target = createTargetMethod(plugin);
 }

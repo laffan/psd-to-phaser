@@ -1,26 +1,79 @@
+/**
+ * Button preset – creates interactive buttons with visual states (normal,
+ * hover, active) and customisable callbacks.
+ *
+ * Accepts three input formats:
+ * 1. `[normalImage, clickCallback]` – simplest form
+ * 2. `[normalImage, hoverImage, clickCallback]` – with hover state
+ * 3. `[{ normal, hover?, active? }, { click?, mouseOver?, mouseOut?, mousePress? }]` – full form
+ *
+ * Hover states are automatically disabled on mobile/touch devices.
+ *
+ * @module use/functions/button
+ *
+ * @example
+ * ```js
+ * // Simple click
+ * this.P2P.use.button([mySprite, (btn) => console.log("clicked")]);
+ *
+ * // With hover
+ * this.P2P.use.button([normalImg, hoverImg, (btn) => console.log("clicked")]);
+ *
+ * // Full object syntax
+ * this.P2P.use.button([
+ *   { normal: btnNormal, hover: btnHover, active: btnPressed },
+ *   {
+ *     click: (btn) => console.log("clicked"),
+ *     mouseOver: (btn) => console.log("hover"),
+ *   },
+ * ]);
+ * ```
+ */
+
 import PsdToPhaserPlugin from '../../../PsdToPhaser';
 
-// Type for game objects that support visibility
+/** A game object that supports `setVisible()`. */
 type VisibleGameObject = Phaser.GameObjects.GameObject & { setVisible(value: boolean): void };
 
+/** Image states for a button. */
 interface ButtonImages {
+  /** Default image (required) */
   normal: VisibleGameObject;
+  /** Image shown on mouse over (desktop only, optional) */
   hover?: VisibleGameObject;
+  /** Image shown while pressed down (optional) */
   active?: VisibleGameObject;
 }
 
+/** Callback functions for button interactions. */
 interface ButtonCallbacks {
+  /** Triggered on button release */
   click?: (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void;
+  /** Triggered when mouse enters button area (desktop only) */
   mouseOver?: (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void;
+  /** Triggered when mouse leaves button area (desktop only) */
   mouseOut?: (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void;
+  /** Triggered when button is pressed down */
   mousePress?: (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void;
 }
 
+/**
+ * Union type for the three accepted button input formats.
+ * @see {@link button} for usage examples.
+ */
 type ButtonInput =
   | [VisibleGameObject, (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void]
   | [VisibleGameObject, VisibleGameObject, (button: Phaser.GameObjects.GameObject, eventData: any, pointer: Phaser.Input.Pointer) => void]
   | [ButtonImages, ButtonCallbacks];
 
+/**
+ * Factory that creates the `button()` preset function.
+ *
+ * @param _plugin - Plugin instance (unused, reserved)
+ * @returns The `button()` function
+ *
+ * @internal
+ */
 export function button(_plugin: PsdToPhaserPlugin) {
   return function(input: ButtonInput) {
     let images: ButtonImages;

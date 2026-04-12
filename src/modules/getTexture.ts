@@ -1,10 +1,52 @@
-// src/modules/getTexture.ts
+/**
+ * Texture retrieval module – extracts Phaser textures from loaded sprites
+ * so they can be reused for particles, manual sprite creation, etc.
+ *
+ * @module getTexture
+ */
 
 import PsdToPhaserPlugin from '../PsdToPhaser';
 import { findLayer } from './shared/findLayer';
 import { isSpriteLayer } from '../types';
 
+/**
+ * Factory that creates the public `getTexture()` function bound to the plugin.
+ *
+ * @param plugin - The PsdToPhaser plugin instance
+ * @returns The `getTexture()` function
+ *
+ * @internal
+ */
 export default function getTextureModule(plugin: PsdToPhaserPlugin) {
+  /**
+   * Get the Phaser Texture for a loaded sprite by path.
+   *
+   * Once a sprite has been loaded, you can grab its texture for use
+   * with particle emitters, manual sprite placement, or other systems.
+   * Supports spritesheets, atlases, and simple image sprites.
+   *
+   * **Important:** Remember the depth gotcha – manually placed items
+   * may be hidden behind PSD layers. Set a high depth value.
+   *
+   * @param scene - The Phaser scene
+   * @param psdKey - The key used when loading the PSD
+   * @param spritePath - Slash-delimited path to the sprite layer
+   * @returns The Phaser Texture, or `null` if not found
+   *
+   * @example
+   * ```js
+   * const tex = this.P2P.getTexture(this, "psd_key", "simpleSprite");
+   * this.newSprite = this.add.sprite(200, 30, tex);
+   * this.newSprite.setDepth(100); // avoid depth gotcha
+   *
+   * // Atlas frames for particles
+   * const atlasTex = this.P2P.getTexture(this, "psd_key", "anAtlas");
+   * this.add.particles(200, 30, atlasTex, {
+   *   frame: ['pinkDot', 'greenDot'],
+   *   speed: 100,
+   * });
+   * ```
+   */
   return function getTexture(scene: Phaser.Scene, psdKey: string, spritePath: string): Phaser.Textures.Texture | null {
     const psdData = plugin.getData(psdKey);
     if (!psdData) {

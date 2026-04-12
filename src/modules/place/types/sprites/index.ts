@@ -1,3 +1,10 @@
+/**
+ * Sprite placement router – dispatches to the correct handler based on
+ * sprite type (default, atlas, spritesheet, animation).
+ *
+ * @module place/types/sprites
+ */
+
 import PsdToPhaserPlugin from "../../../../PsdToPhaser";
 import { placeDefaultSprite } from "./default";
 import { placeSpritesheet } from "./spritesheet";
@@ -8,6 +15,22 @@ import { addDebugVisualization } from "../../../shared/debugVisualizer";
 
 import type { SpriteLayer } from "../../../../types";
 
+/**
+ * Place a sprite layer, routing to the appropriate handler by type.
+ *
+ * Handles lazy-load skipping, texture-key namespacing (for `loadMultiple`),
+ * alpha/visibility/depth from PSD attributes, and debug visualisation.
+ *
+ * @param scene - The Phaser scene
+ * @param spriteData - The sprite layer definition
+ * @param plugin - Plugin instance
+ * @param group - Parent group to add the sprite to
+ * @param resolve - Callback to signal placement is complete
+ * @param psdKey - PSD key for namespace resolution
+ * @param animationOptions - Optional animation overrides (for animation sprites)
+ *
+ * @internal
+ */
 export function placeSprites(
   scene: Phaser.Scene,
   spriteData: SpriteLayer,

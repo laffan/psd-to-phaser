@@ -1,11 +1,47 @@
+/**
+ * Parallax preset – makes a placed object move at a different speed than
+ * the camera scroll, creating a depth/parallax effect.
+ *
+ * Defaults to the main camera but accepts a specific camera reference
+ * or camera name.
+ *
+ * @module use/functions/parallax
+ *
+ * @example
+ * ```js
+ * const psd = this.P2P.place(this, "psd_key", "root");
+ * const distant = psd.target("distant");
+ *
+ * this.P2P.use.parallax({
+ *   target: distant,
+ *   scrollFactor: 0.25,  // moves at 25% of camera speed
+ * });
+ * ```
+ */
+
 import PsdToPhaserPlugin from '../../../PsdToPhaser';
 
+/** Configuration options for `parallax()`. */
 export interface ParallaxOptions {
+  /** Camera to track (defaults to `scene.cameras.main`). Accepts a Camera instance or camera name string. */
   camera?: Phaser.Cameras.Scene2D.Camera | string;
-  target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image; // Use a specific type
+  /** The game object to apply the parallax effect to */
+  target: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image;
+  /** Scroll factor (0–1). Lower values = slower movement = appears more distant. Default: 0.25 */
   scrollFactor?: number;
 }
 
+/**
+ * Factory that creates the `parallax()` preset function.
+ *
+ * Registers a scene `update` handler that adjusts the target's position
+ * each frame based on camera scroll and the configured scroll factor.
+ *
+ * @param _plugin - Plugin instance (unused, reserved)
+ * @returns The `parallax()` function
+ *
+ * @internal
+ */
 export function parallax(_plugin: PsdToPhaserPlugin) {
   return function (options: ParallaxOptions) {
     const {

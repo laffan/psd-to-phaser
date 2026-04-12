@@ -16,16 +16,78 @@ import type {
 // Re-export types for external consumers
 export type { DebugOptions, PluginOptions } from "./types";
 
+/**
+ * Main plugin class for psd-to-phaser.
+ *
+ * Register as a global Phaser plugin to gain access to PSD loading, placement,
+ * texture retrieval, mask handling, camera features, and interaction presets.
+ *
+ * @example
+ * ```js
+ * new Phaser.Game({
+ *   plugins: {
+ *     global: [{
+ *       key: "PsdToPhaser",
+ *       plugin: PsdToPhaser,
+ *       start: true,
+ *       mapping: "P2P",
+ *       data: {
+ *         debug: { shape: false, label: false, console: false },
+ *         applyAlphaAll: false,
+ *         applyBlendModesAll: false,
+ *       },
+ *     }],
+ *   },
+ * });
+ * ```
+ */
 export default class PsdToPhaser extends Phaser.Plugins.BasePlugin {
+  /** Internal store of processed PSD data, keyed by the user-supplied PSD key. */
   private psdData: Record<string, ProcessedPsdData> = {};
+
+  /** Plugin-wide configuration options set during {@link init}. */
   public options: PluginOptions;
-  
+
+  /**
+   * Load PSD manifests and their assets.
+   *
+   * @see {@link loadModule} for `load()` and `loadMultiple()` signatures.
+   */
   public load: ReturnType<typeof loadModule>;
+
+  /**
+   * Place loaded layers into a scene, preserving PSD structure and depth.
+   *
+   * @see {@link placeModule} for the `place()` signature.
+   */
   public place: ReturnType<typeof placeModule>;
+
+  /**
+   * Retrieve a Phaser texture for a loaded sprite by path.
+   *
+   * @see {@link getTextureModule}
+   */
   public getTexture: ReturnType<typeof getTextureModule>;
+
+  /**
+   * Retrieve a mask image for a layer that has a PSD mask defined.
+   *
+   * @see {@link getMaskModule}
+   */
   public getMask: ReturnType<typeof getMaskModule>;
+
+  /**
+   * Built-in interaction presets: button, fillZone, joystick, panTo, parallax.
+   *
+   * @see {@link useModule}
+   */
   public use: ReturnType<typeof useModule>;
 
+  /**
+   * Create an enhanced camera with draggable and/or lazyLoad features.
+   *
+   * @see {@link createCamera}
+   */
   public createCamera: (
     camera: Phaser.Cameras.Scene2D.Camera,
     features: string[],
@@ -45,7 +107,7 @@ console.log(
     this.place = placeModule(this);
     this.getTexture = getTextureModule(this);
     this.getMask = getMaskModule(this);
-    this.use = useModule(this); // Initialize the presets module
+    this.use = useModule(this);
     this.createCamera = (
       camera: Phaser.Cameras.Scene2D.Camera,
       features: string[],
@@ -54,6 +116,15 @@ console.log(
 
   }
 
+  /**
+   * Initialise plugin options. Called automatically by Phaser when the plugin
+   * starts, using the `data` object from the plugin config.
+   *
+   * Accepts a boolean or granular `{ shape, label, console }` object for debug.
+   * When `true`, all three debug channels are enabled.
+   *
+   * @param options - Plugin-wide configuration
+   */
   init(options: PluginOptions = {}): void {
     this.options = {
       debug: false,
@@ -73,6 +144,14 @@ console.log(
     }
   }
 
+  /**
+   * Store processed PSD data under the given key.
+   *
+   * @param key - Unique identifier for this PSD (same key passed to `load()`)
+   * @param data - The fully processed PSD data
+   *
+   * @internal
+   */
   setData(key: string, data: ProcessedPsdData): void {
     this.psdData[key] = data;
     if (this.isDebugEnabled("console")) {
@@ -80,17 +159,46 @@ console.log(
     }
   }
 
+  /**
+   * Retrieve the processed data for a previously loaded PSD.
+   *
+   * The returned object contains:
+   * - `basePath` – folder where assets reside
+   * - `original` – the full JSON manifest
+   * - `initialLoad` – layers loaded immediately
+   * - `lazyLoad` – layers deferred for lazy loading
+   * - `positionOffset` – offset applied via `loadMultiple()`
+   *
+   * @param key - The PSD key used during `load()` or `loadMultiple()`
+   * @returns The processed data, or `undefined` if the key is unknown
+   *
+   * @example
+   * ```js
+   * const psdData = this.P2P.getData("psd_key");
+   * const psdWidth = psdData.original.width;
+   * ```
+   */
   getData(key: string): ProcessedPsdData | undefined {
     return this.psdData[key];
   }
 
   /**
-   * Get all registered PSD keys
+   * Get all registered PSD keys.
+   *
+   * @returns Array of string keys for every PSD that has been loaded
    */
   getAllKeys(): string[] {
     return Object.keys(this.psdData);
   }
 
+  /**
+   * Check whether a specific debug channel is enabled.
+   *
+   * @param option - The debug channel to check: `"shape"`, `"label"`, or `"console"`
+   * @returns `true` if the channel is active
+   *
+   * @internal
+   */
   isDebugEnabled(option: keyof DebugOptions): boolean {
     return (
       typeof this.options.debug === "object" && !!this.options.debug[option]

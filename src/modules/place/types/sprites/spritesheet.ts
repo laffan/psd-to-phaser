@@ -1,3 +1,13 @@
+/**
+ * Spritesheet placement – creates a Group of sprites from grid-based frames.
+ *
+ * A spritesheet is a single image divided into a uniform grid of frames.
+ * Each instance in the PSD manifest is mapped to a frame index and placed
+ * at its defined position.
+ *
+ * @module place/types/sprites/spritesheet
+ */
+
 import PsdToPhaserPlugin from "../../../../PsdToPhaser";
 import {
   setupSpriteGroup,
@@ -8,6 +18,21 @@ import {
 
 import type { SpritesheetLayer, SpriteInstance } from "../../../../types";
 
+/**
+ * Place a spritesheet layer as a Group of individual frame sprites.
+ *
+ * Maps each instance name to a frame index via the layer's `frames` record,
+ * then creates a Sprite for each instance at its PSD position.
+ *
+ * @param scene - The Phaser scene
+ * @param layer - Spritesheet layer definition
+ * @param plugin - Plugin instance (for debug logging)
+ * @param _psdKey - PSD key (unused)
+ * @param textureKey - Override texture key (for loadMultiple namespacing)
+ * @returns Group containing all placed spritesheet frame sprites
+ *
+ * @internal
+ */
 export function placeSpritesheet(
   scene: Phaser.Scene,
   layer: SpritesheetLayer,

@@ -1,9 +1,34 @@
+/**
+ * Zone layer placement – creates Phaser Zones from PSD vector shapes.
+ *
+ * Zones are invisible hit-test areas defined by polygon subpaths or
+ * bounding boxes in the PSD. They carry their vertex data on a `"points"`
+ * data key for use with `fillZone()`, joystick bounds, etc.
+ *
+ * @module place/types/zones
+ */
+
 import PsdToPhaserPlugin from '../../../PsdToPhaser';
 import { attachAttributes } from '../../shared/attachAttributes';
 import { addDebugVisualization } from '../../shared/debugVisualizer';
 
 import type { ZoneLayer } from '../../../types';
 
+/**
+ * Place a zone layer as a Phaser Zone game object.
+ *
+ * Creates the zone from polygon subpaths or a bounding box, stores vertex
+ * data on the `"points"` data key, and adds debug visualisation when enabled.
+ *
+ * @param scene - The Phaser scene
+ * @param layer - The zone layer definition from the PSD manifest
+ * @param plugin - Plugin instance (for debug settings)
+ * @param group - Parent group to add the zone to
+ * @param resolve - Callback to signal placement is complete
+ * @param _psdKey - PSD key (unused for zones)
+ *
+ * @internal
+ */
 export function placeZones(
   scene: Phaser.Scene,
   layer: ZoneLayer,
@@ -32,6 +57,12 @@ export function placeZones(
   resolve();
 }
 
+/**
+ * Create a Zone game object from a zone layer definition.
+ * Stores polygon vertices on the `"points"` data key.
+ *
+ * @internal
+ */
 function createZone(scene: Phaser.Scene, zone: ZoneLayer): Phaser.GameObjects.Zone | null {
   const shape = createZoneShape(zone);
   let zoneObject: Phaser.GameObjects.Zone;
@@ -73,6 +104,12 @@ function createZone(scene: Phaser.Scene, zone: ZoneLayer): Phaser.GameObjects.Zo
   return zoneObject;
 }
 
+/**
+ * Build a geometry shape (Polygon or Rectangle) from a zone's subpath
+ * or bounding box data.
+ *
+ * @internal
+ */
 function createZoneShape(zone: ZoneLayer): Phaser.Geom.Polygon | Phaser.Geom.Rectangle {
   if (zone.subpaths && Array.isArray(zone.subpaths) && zone.subpaths.length > 0 && Array.isArray(zone.subpaths[0])) {
     const points = zone.subpaths[0].flatMap((point: number[]) => new Phaser.Math.Vector2(point[0], point[1]));

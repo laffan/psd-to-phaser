@@ -1,9 +1,32 @@
+/**
+ * Point layer placement – creates invisible container markers at PSD-defined
+ * coordinates. Useful for spawn points, waypoints, or other positional data.
+ *
+ * @module place/types/points
+ */
+
 import PsdToPhaserPlugin from "../../../PsdToPhaser";
 import { attachAttributes } from "../../shared/attachAttributes";
 import { addDebugVisualization } from "../../shared/debugVisualizer";
 
 import type { PointLayer } from "../../../types";
 
+/**
+ * Place a point layer as a Phaser Container at the defined x/y position.
+ *
+ * The container carries the original layer data on a `"pointData"` data key
+ * and is added to the parent group. Debug visualisation (a small circle
+ * and label) is added when debug mode is enabled.
+ *
+ * @param scene - The Phaser scene
+ * @param layer - The point layer definition from the PSD manifest
+ * @param plugin - Plugin instance (for debug settings)
+ * @param group - Parent group to add the point to
+ * @param resolve - Callback to signal placement is complete
+ * @param _psdKey - PSD key (unused for points, reserved for consistency)
+ *
+ * @internal
+ */
 export function placePoints(
   scene: Phaser.Scene,
   layer: PointLayer,
@@ -30,6 +53,11 @@ export function placePoints(
   resolve();
 }
 
+/**
+ * Create a Container game object representing a point.
+ *
+ * @internal
+ */
 function createPoint(
   scene: Phaser.Scene,
   layer: PointLayer

@@ -1,14 +1,51 @@
+/**
+ * PanTo preset – smoothly pans a camera to a target position or game object.
+ *
+ * Emits the following events on the scene:
+ * - `"panToStart"` – pan begins
+ * - `"panToProgress"` – pan in progress (with completion ratio)
+ * - `"panToComplete"` – pan finished
+ *
+ * @module use/functions/panTo
+ *
+ * @example
+ * ```js
+ * this.P2P.use.panTo(this.cameras.main, placedPoint, {
+ *   targetPositionY: "center",
+ *   targetPositionX: "center",
+ *   targetOffset: [300, 100],
+ *   speed: 300,
+ *   easing: true,
+ * });
+ *
+ * this.events.on("panToComplete", () => console.log("Done!"));
+ * ```
+ */
 
 import PsdToPhaserPlugin from '../../../PsdToPhaser';
 
+/** Configuration options for `panTo()`. */
 export interface PanToOptions {
+  /** Vertical alignment of the target in the viewport */
   targetPositionY?: 'center' | 'top' | 'bottom';
+  /** Horizontal alignment of the target in the viewport */
   targetPositionX?: 'center' | 'left' | 'right';
+  /** Pixel offset `[x, y]` applied after alignment */
   targetOffset?: [number, number];
+  /** Duration of the pan animation in milliseconds (default: 300) */
   speed?: number;
+  /** Enable cubic ease-in-out (default: true) */
   easing?: boolean;
 }
 
+/**
+ * Factory that creates the `panTo()` preset function.
+ *
+ * @param _plugin - Plugin instance (unused, reserved)
+ * @returns The `panTo()` function
+ *
+ * @internal
+ */
 export function panTo(_plugin: PsdToPhaserPlugin) {
   return function(camera: Phaser.Cameras.Scene2D.Camera, target: Phaser.GameObjects.GameObject | [number, number], options: PanToOptions = {}) {
     const scene = camera.scene;

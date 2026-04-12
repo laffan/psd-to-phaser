@@ -1,8 +1,29 @@
-// src/modules/load/loadTiles.ts
+/**
+ * Tile asset loading – queues individual tile slice images with Phaser's loader.
+ *
+ * Tilesets are large images that have been pre-sliced by psd-to-json into a
+ * grid of smaller images (`tiles/<name>/<sliceSize>/<name>_tile_<col>_<row>.png`).
+ *
+ * @module load/loadTiles
+ */
 
 import type { TilesetLayer, TileLoadData } from '../../types';
 
-// Function to load a single tile
+/**
+ * Load a single tile slice image.
+ *
+ * Checks whether the texture already exists before queuing to avoid
+ * duplicate loads (important for lazy-load scenarios).
+ *
+ * @param scene - The Phaser scene
+ * @param tileData - Tile identification (tileset name, column, row, file type)
+ * @param basePath - Base path to the PSD assets folder
+ * @param tileSliceSize - Pixel size of each tile slice
+ * @param onComplete - Callback invoked when the tile finishes loading
+ * @param debug - Whether to log loading events to the console
+ *
+ * @internal
+ */
 export function loadSingleTile(
   scene: Phaser.Scene,
   tileData: TileLoadData,
@@ -33,7 +54,22 @@ export function loadSingleTile(
   }
 }
 
-// Function to load multiple tiles (for normal loading)
+/**
+ * Queue all tile slices for an array of tilesets.
+ *
+ * Iterates every column/row combination for each tileset and delegates
+ * to {@link loadSingleTile} for the actual load call.
+ *
+ * @param scene - The Phaser scene
+ * @param tiles - Array of tileset layer definitions
+ * @param basePath - Base path to the PSD assets folder
+ * @param tileSliceSize - Pixel size of each tile slice
+ * @param onProgress - Callback invoked each time a tile finishes loading
+ * @param debug - Whether to log loading events to the console
+ * @param remainingAssets - Mutable array tracking which tile keys are still pending
+ *
+ * @internal
+ */
 export function loadTiles(
   scene: Phaser.Scene,
   tiles: TilesetLayer[],

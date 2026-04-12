@@ -1,26 +1,84 @@
+/**
+ * Joystick preset – combines a sprite and a zone into a draggable virtual
+ * joystick that returns normalised x/y values.
+ *
+ * Supports multiple simultaneous joysticks (each with its own key),
+ * bounce-back on release, and chained `.control()` for automatic
+ * sprite movement.
+ *
+ * Emits the following events on the scene:
+ * - `"joystickStart"` – joystick grabbed
+ * - `"joystickActive"` – joystick being moved (includes normalised values)
+ * - `"joystickRelease"` – joystick released
+ *
+ * @module use/functions/joystick
+ *
+ * @example
+ * ```js
+ * this.P2P.use.joystick(joyStick, joyZone, "joystickA", {
+ *   bounceBack: true,
+ *   joystickRadius: 50,
+ * });
+ *
+ * // With automatic sprite control
+ * this.P2P.use
+ *   .joystick(joyStick, joyZone, "joystickA", { bounceBack: true })
+ *   .control(spriteToControl, { type: "speed", maxSpeed: 300 });
+ * ```
+ */
+
 import PsdToPhaserPlugin from "../../../PsdToPhaser";
 
+/** Configuration options for the joystick preset. */
 interface JoystickOptions {
+  /** Bounce the joystick sprite back to its start position on release */
   bounceBack?: boolean;
+  /** Spring strength for bounce-back animation */
   springStrength?: number;
+  /** Radius constraint for joystick movement (default: 50) */
   joystickRadius?: number;
 }
 
+/**
+ * Configuration for the `.control()` chained method.
+ *
+ * Control modes:
+ * - `"speed"` – move at a constant speed (use `maxSpeed`)
+ * - `"velocity"` – apply velocity to a physics body (use `force`)
+ * - `"unit"` – move a fixed number of pixels per interval (use `pixels`, `repeatRate`)
+ * - `"tracked"` – 1:1 tracking with optional multiplier
+ */
 interface ControlOptions {
+  /** Movement strategy */
   type: "speed" | "velocity" | "unit" | "tracked";
+  /** Force multiplier for `"velocity"` mode */
   force?: number;
+  /** Maximum speed for `"speed"` mode */
   maxSpeed?: number;
+  /** Pixels moved per repeat for `"unit"` mode */
   pixels?: number;
+  /** Direction locking: 4 = cardinal, 8 = cardinal + diagonal, false = none */
   directionLock?: 4 | 8 | false;
+  /** Milliseconds between repetitions for `"unit"` mode */
   repeatRate?: number;
+  /** Position multiplier for `"tracked"` mode */
   multiplier?: number;
 }
 
+/** A sprite with known width/height dimensions. */
 interface TargetedObject extends Phaser.GameObjects.Sprite {
   width: number;
   height: number;
 }
 
+/**
+ * Factory that creates the `joystick()` preset function.
+ *
+ * @param _plugin - Plugin instance (unused, reserved)
+ * @returns The `joystick()` function
+ *
+ * @internal
+ */
 export function joystick(_plugin: PsdToPhaserPlugin) {
   return function (
     joystickObject: TargetedObject,

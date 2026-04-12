@@ -1,4 +1,9 @@
-// src/modules/load/loadItems.ts
+/**
+ * Asset loading orchestrator – queues all categorised assets with Phaser's
+ * loader and tracks combined progress across tiles, sprites, atlases, and masks.
+ *
+ * @module load/loadItems
+ */
 
 import PsdToPhaserPlugin from '../../PsdToPhaser';
 import { loadSprites, loadMaskImage } from './loadSprites';
@@ -7,10 +12,30 @@ import { loadTiles, loadSingleTile } from './loadTiles';
 import type { CategorizedLayers, SpriteLayer, TileLoadData } from '../../types';
 import { hasMask } from '../../types';
 
+/**
+ * Extended layer collection that may include individually-queued tiles
+ * (used by the lazy-load camera when loading tiles one at a time).
+ *
+ * @internal
+ */
 interface ExtendedCategorizedLayers extends CategorizedLayers {
   singleTiles?: TileLoadData[];
 }
 
+/**
+ * Queue all assets in a categorised layer collection for loading.
+ *
+ * Counts every loadable asset (tiles, sprites, atlases, masks), registers
+ * Phaser loader callbacks, and emits `psdLoadProgress` / `psdLoadComplete`
+ * events on the scene as assets finish loading.
+ *
+ * @param scene - The Phaser scene whose loader will process the assets
+ * @param key - PSD key for retrieving base path and metadata
+ * @param data - Categorised layers to load (sprites, tiles, zones, etc.)
+ * @param plugin - Plugin instance for configuration and data access
+ *
+ * @internal
+ */
 export function loadItems(
   scene: Phaser.Scene,
   key: string,
@@ -100,6 +125,7 @@ export function loadItems(
   }
 }
 
+/** Breakdown of asset counts by type for progress tracking. */
 interface AssetCounts {
   tiles: number;
   sprites: number;
@@ -108,6 +134,12 @@ interface AssetCounts {
   masks: number;
 }
 
+/**
+ * Count the total number of loadable assets across all categories.
+ * Used to calculate accurate progress percentages.
+ *
+ * @internal
+ */
 function countAssets(data: ExtendedCategorizedLayers): AssetCounts {
   let tileCount = 0;
   let spriteCount = 0;

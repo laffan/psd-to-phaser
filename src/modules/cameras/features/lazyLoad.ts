@@ -1,4 +1,38 @@
-// src/modules/cameras/features/lazyLoad.ts
+/**
+ * Lazy-load camera feature – defers asset loading until layers enter
+ * the camera viewport, keeping initial load times small.
+ *
+ * Works in conjunction with the `lazyLoad` attribute on sprite and tile
+ * layers. Assets marked `lazyLoad: true` are skipped during `load()` and
+ * instead loaded on demand when the camera scrolls near them.
+ *
+ * Emits the following events on the scene:
+ * - `"lazyLoadStart"` – new batch of assets detected in viewport
+ * - `"lazyLoadProgress"` – an asset finished loading (with progress ratio)
+ * - `"lazyLoadingComplete"` – all lazy-load assets have been loaded
+ *
+ * **Note:** Camera zoom is handled correctly by default. The
+ * `createBoundaryCamera` option is available if a separate boundary
+ * camera is needed, but is no longer required for zoom support.
+ *
+ * @module cameras/features/lazyLoad
+ *
+ * @example
+ * ```js
+ * this.P2P.createCamera(this.cameras.main, ['lazyLoad'], {
+ *   lazyLoad: {
+ *     targetKeys: ["psd_01"],
+ *     extendPreloadBounds: 50,
+ *     checkInterval: 300,
+ *     debug: { shape: true, console: true },
+ *   },
+ * });
+ *
+ * this.events.on("lazyLoadProgress", (progress) => {
+ *   console.log(`${(progress * 100).toFixed(0)}% loaded`);
+ * });
+ * ```
+ */
 
 import PsdToPhaserPlugin from "../../../PsdToPhaser";
 import { loadItems } from "../../load/loadItems";
@@ -7,9 +41,23 @@ import { placeSingleTile } from "../../place/types/tiles";
 
 import type { LazyLoadCameraOptions } from "../../../types";
 
-// Re-export for backwards compatibility
+/** @deprecated Use {@link LazyLoadCameraOptions} instead. */
 export type LazyLoadOptions = LazyLoadCameraOptions;
 
+/**
+ * Create the lazy-load camera feature.
+ *
+ * Collects all lazy-load items from target PSDs, creates invisible
+ * boundary rectangles for intersection testing, and starts a periodic
+ * visibility check that triggers asset loading when items enter the viewport.
+ *
+ * @param plugin - Plugin instance (for data access and debug settings)
+ * @param camera - The Phaser camera to monitor
+ * @param options - Lazy-load configuration
+ * @returns An object with `update()` and `destroy()` methods
+ *
+ * @internal
+ */
 export function LazyLoadCamera(
   plugin: PsdToPhaserPlugin,
   camera: Phaser.Cameras.Scene2D.Camera,

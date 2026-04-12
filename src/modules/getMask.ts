@@ -1,22 +1,39 @@
-// src/modules/getMask.ts
-// Phaser 4: BitmapMask replaced by Filter system
+/**
+ * Mask retrieval module – provides access to PSD layer masks for manual
+ * application via Phaser 4's Filter system.
+ *
+ * Masks applied automatically during `place()` are handled by the
+ * {@link applyMask} module. This module is for cases where you need
+ * to retrieve and apply a mask manually.
+ *
+ * @module getMask
+ */
 
 import PsdToPhaserPlugin from '../PsdToPhaser';
 import { findLayer } from './shared/findLayer';
 import { hasMask } from '../types';
 
 /**
- * Result object from getMask containing the mask image.
+ * Result object from `getMask()` containing the mask image.
  *
- * Phaser 4 migration: The bitmapMask field has been replaced with the maskImage.
- * Users should apply the mask via the Filter system:
- *   gameObject.filters.internal.addMask(result.maskImage)
+ * **Phaser 4:** Apply the mask via the Filter system instead of `setMask()`:
+ * ```js
+ * gameObject.filters.internal.addMask(result.maskImage);
+ * ```
  */
 export interface MaskResult {
-  /** The hidden image used to create the mask */
+  /** The hidden Image game object used as a mask source */
   maskImage: Phaser.GameObjects.Image;
 }
 
+/**
+ * Factory that creates the public `getMask()` function bound to the plugin.
+ *
+ * @param plugin - The PsdToPhaser plugin instance
+ * @returns The `getMask()` function
+ *
+ * @internal
+ */
 export default function getMaskModule(plugin: PsdToPhaserPlugin) {
   /**
    * Get a mask image for a layer. The mask texture should already be loaded.

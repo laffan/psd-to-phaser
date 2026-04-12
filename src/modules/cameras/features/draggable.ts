@@ -1,15 +1,64 @@
-// src/modules/cameras/features/draggable.ts
+/**
+ * Draggable camera feature – enables click-and-drag panning with
+ * optional inertia/easing, bounds constraints, and object ignoring.
+ *
+ * Emits the following events on the scene:
+ * - `"draggableStart"` – drag begins
+ * - `"draggableActive"` – camera is being dragged (or easing)
+ * - `"draggableComplete"` – drag ends
+ *
+ * @module cameras/features/draggable
+ *
+ * @example
+ * ```js
+ * const cam = this.P2P.createCamera(this.cameras.main, ['draggable'], {
+ *   draggable: {
+ *     useBounds: { x: 0, y: 0, width: 1000, height: 1000 },
+ *     easeDragging: true,
+ *     friction: 0.95,
+ *     minSpeed: 0.1,
+ *     ignore: ["ui/buttons", "draggableSprite"],
+ *   },
+ * });
+ *
+ * // Pause/resume
+ * cam.pause();
+ * cam.resume();
+ * ```
+ */
 
 import PsdToPhaserPlugin from '../../../PsdToPhaser';
 
+/**
+ * Configuration options for the draggable camera feature.
+ */
 export interface DraggableOptions {
+  /** Rectangular bounds to constrain camera scrolling */
   useBounds?: { x: number; y: number; width: number; height: number };
+  /** Enable momentum/inertia after releasing the drag */
   easeDragging?: boolean;
+  /** Friction factor applied to velocity each frame when easing (0–1) */
   friction?: number;
+  /** Minimum velocity threshold below which easing stops */
   minSpeed?: number;
+  /** Paths of interactive objects to ignore when starting a drag */
   ignore?: string[];
 }
 
+/**
+ * Create the draggable camera feature.
+ *
+ * Returns an object with `pause()`, `resume()`, `isPaused()`,
+ * `isDragging()`, `getVelocity()`, and `setOptions()` methods
+ * that are mixed into the camera.
+ *
+ * @param _plugin - Plugin instance (unused, reserved)
+ * @param camera - The Phaser camera to make draggable
+ * @param options - Draggable configuration
+ * @returns Methods to mix into the camera
+ *
+ * @internal
+ */
 export function DraggableCamera(_plugin: PsdToPhaserPlugin, camera: Phaser.Cameras.Scene2D.Camera, options: DraggableOptions = {}) {
   const scene = camera.scene;
   let isDragging = false;

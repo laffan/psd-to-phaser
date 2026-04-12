@@ -1,8 +1,36 @@
+/**
+ * Animation sprite placement – creates a Sprite with an auto-playing animation.
+ *
+ * Animation properties can be set at three levels (in priority order):
+ * 1. The `animationOptions` parameter passed to `place()`
+ * 2. The PSD layer name attributes (e.g. `S | bounce | animation | frameRate: 5`)
+ * 3. Built-in defaults (frameRate 24, infinite repeat)
+ *
+ * @module place/types/sprites/animation
+ */
+
 import PsdToPhaserPlugin from '../../../../PsdToPhaser';
 import { setupSprite, getTextureKey } from '../../../shared/spriteSetup';
 
 import type { AnimationSpriteLayer } from '../../../../types';
 
+/**
+ * Place an animation sprite and start its animation automatically.
+ *
+ * Creates the animation config from layer attributes, merges in any
+ * caller overrides, registers the animation with Phaser's AnimationManager,
+ * and starts playback.
+ *
+ * @param scene - The Phaser scene
+ * @param layer - Animation sprite layer definition
+ * @param _plugin - Plugin instance (unused)
+ * @param _psdKey - PSD key (unused)
+ * @param textureKey - Override texture key (for loadMultiple namespacing)
+ * @param animationOptions - Optional overrides that take precedence over layer attributes
+ * @returns The created Sprite game object (already playing its animation)
+ *
+ * @internal
+ */
 export function placeAnimation(
   scene: Phaser.Scene,
   layer: AnimationSpriteLayer,

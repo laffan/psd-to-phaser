@@ -1,15 +1,41 @@
+/**
+ * Multiple-PSD loader – loads several PSD manifests with position offsets
+ * and coordinates their progress into a single event stream.
+ *
+ * @module load/loadMultiple
+ */
+
 import PsdToPhaserPlugin from '../../PsdToPhaser';
 
+/**
+ * Configuration for a single PSD within a `loadMultiple()` call.
+ */
 export interface MultiplePsdConfig {
+  /** Unique identifier for this PSD */
   key: string;
+  /** Path to the PSD assets folder (contains `data.json`) */
   path: string;
+  /** World-space offset applied to every layer's position */
   position: {
     x: number;
     y: number;
   };
+  /** Mark all layers (`true`) or specific layers (string array) for lazy loading */
   lazyLoad?: boolean | string[];
 }
 
+/**
+ * Factory that creates the `loadMultiple` function bound to the plugin.
+ *
+ * Loads all JSON manifests first, counts total assets across all PSDs,
+ * then processes and loads each PSD with namespaced texture keys
+ * (`<psdKey>_<layerName>`) to avoid collisions.
+ *
+ * @param plugin - The PsdToPhaser plugin instance
+ * @returns The `loadMultiple()` function
+ *
+ * @internal
+ */
 export function loadMultiple(plugin: PsdToPhaserPlugin) {
   return function(scene: Phaser.Scene, configs: MultiplePsdConfig[]): void {
     if (!Array.isArray(configs) || configs.length === 0) {
@@ -134,6 +160,12 @@ export function loadMultiple(plugin: PsdToPhaserPlugin) {
   };
 }
 
+/**
+ * Deep-clone a PSD document and add a position offset to every layer
+ * (including child groups and sprite instances).
+ *
+ * @internal
+ */
 function applyPositionOffset(data: any, offset: { x: number; y: number }): any {
   const offsetData = JSON.parse(JSON.stringify(data)); // Deep clone
   
@@ -164,6 +196,12 @@ function applyPositionOffset(data: any, offset: { x: number; y: number }): any {
   return offsetData;
 }
 
+/**
+ * Walk a raw PSD document and count the total loadable assets,
+ * respecting lazy-load settings.
+ *
+ * @internal
+ */
 function countAssetsInData(data: any, lazyLoadOption?: boolean | string[]): number {
   let assetCount = 0;
   
@@ -212,6 +250,12 @@ function countAssetsInData(data: any, lazyLoadOption?: boolean | string[]): numb
   return assetCount;
 }
 
+/**
+ * Queue asset loading for a single PSD that was loaded via `loadMultiple`.
+ * Uses namespaced texture keys (`<psdKey>_<layerName>`) to avoid collisions.
+ *
+ * @internal
+ */
 function loadPsdAssets(scene: Phaser.Scene, key: string, data: any, plugin: PsdToPhaserPlugin, updateProgress: () => void): void {
   const psdData = plugin.getData(key);
   if (!psdData || !psdData.basePath) {
