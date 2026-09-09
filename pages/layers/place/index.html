@@ -481,7 +481,7 @@ const item = this.P2P.place(
 </code></pre>
 <p>In the following example, click the PSD Layers button to see how the PSD layers are named and nested.</p>
 <h3>Default Methods</h3>
-<p>Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : &#x27;setAlpha&#x27;, &#x27;setAngle&#x27;, &#x27;setBlendMode&#x27;, &#x27;setDepth&#x27;, &#x27;setDisplaySize&#x27;, &#x27;setFlip&#x27;, &#x27;setMask&#x27;, &#x27;setOrigin&#x27;, &#x27;setPipeline&#x27;, &#x27;setPosition&#x27;, &#x27;setRotation&#x27;, &#x27;setScale&#x27;, &#x27;setScrollFactor&#x27;, &#x27;setSize&#x27;, &#x27;setTint&#x27;, &#x27;setVisible&#x27;, &#x27;setX&#x27;, &#x27;setY&#x27;, &#x27;setZ&#x27;.</p>
+<p>Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : &#x27;setAlpha&#x27;, &#x27;setAngle&#x27;, &#x27;setBlendMode&#x27;, &#x27;setDepth&#x27;, &#x27;setDisplaySize&#x27;, &#x27;setFlip&#x27;, &#x27;setLighting&#x27;, &#x27;setMask&#x27;, &#x27;setOrigin&#x27;, &#x27;setPosition&#x27;, &#x27;setRotation&#x27;, &#x27;setScale&#x27;, &#x27;setScrollFactor&#x27;, &#x27;setSize&#x27;, &#x27;setTint&#x27;, &#x27;setTintMode&#x27;, &#x27;setVisible&#x27;, &#x27;setX&#x27;, &#x27;setY&#x27;, &#x27;setZ&#x27;.</p>
 <div class="interactive-example"><div class="row mb-3">
       <div class="col-12">
         <div class="d-flex align-items-start gap-2">
@@ -680,8 +680,9 @@ this.bounce.updateAnimation({
         <div class="phaser-container" id="phaser-place-mask"></div>
       </div>
     </div></div>
-<p>In the demo above, notice how the moon and mountains move independently while the circular mask stays fixed. This is because Phaser&#x27;s bitmap masks are positioned in global space - sprites move &quot;underneath&quot; the mask.</p>
-<p>In the PSD, a group layer with a mask will export with <code>mask: true</code>, position properties (<code>maskX</code>, <code>maskY</code>), and a <code>maskPath</code> pointing to the mask image. The mask uses Phaser&#x27;s bitmap mask system - white areas are visible, black areas are hidden.</p>
+<p>In the demo above, notice how the moon and mountains move independently while the circular mask stays fixed. This is because masks are positioned in global space - sprites move &quot;underneath&quot; the mask.</p>
+<p>In the PSD, a group layer with a mask will export with <code>mask: true</code>, position properties (<code>maskX</code>, <code>maskY</code>), and a <code>maskPath</code> pointing to the mask image. White areas of the mask are visible, black areas are hidden.</p>
+<p>Masks are built on Phaser 4&#x27;s <a href="https://docs.phaser.io/phaser/concepts/filters">Filter system</a>, which is WebGL only - under the Canvas renderer masked layers render unmasked. Every filtered object also renders through its own framebuffer, so a mask on a large group is not free: mask the smallest set of layers you can.</p>
 <pre><code class="language-js">// Place a group with a layer mask
 const maskedGroup = this.P2P.place(this, &quot;psd_key&quot;, &quot;maskedShape&quot;);
 
@@ -830,7 +831,7 @@ this.tweens.add({
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/mode-javascript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/theme-github.js"></script>
     <!-- Phaser -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js"></script>
     
     <!-- PSD to Phaser (local build) -->
     <script src="/psd-to-phaser/js/psd-to-phaser.umd.js"></script>

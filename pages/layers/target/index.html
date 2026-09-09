@@ -473,6 +473,7 @@ const = L1Text = placedGroup.target(&quot;depthTest/Level1/Level1Text&quot;);
 L1Text.setAlpha(0.3)
 
 // Get  the points which make up a placed Zone
+// (an array of Phaser.Math.Vector2)
 const zone = placedGroup.target(&quot;depthTest/zone1&quot;);
 const points = zone.getData(&#x27;points&#x27;);
 </code></pre>
@@ -604,7 +605,7 @@ const points = zone.getData(&#x27;points&#x27;);
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/mode-javascript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/theme-github.js"></script>
     <!-- Phaser -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js"></script>
     
     <!-- PSD to Phaser (local build) -->
     <script src="/psd-to-phaser/js/psd-to-phaser.umd.js"></script>
