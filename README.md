@@ -4,6 +4,12 @@ psd-to-phaser is a Phaser plugin that reads the JSON manifest created by [psd-to
 
  Interested? Check out the new [🪩 **Interactive Docs** ⭐️](https://laffan.github.io/psd-to-phaser/)
 
+## Requirements
+
+Phaser 4 (`phaser@^4.0.0`) and the WebGL renderer. Earlier releases of the plugin targeted Phaser 3; see [Upgrading from Phaser 3](#upgrading-from-phaser-3) for what changed.
+
+Layer masks are built on Phaser 4's Filter system, which is WebGL only. Under the Canvas renderer masked layers still place and render, just unmasked.
+
 ## Examples
 
 [](https://www.npmjs.com/package/psd-to-phaser#examples)
@@ -187,7 +193,7 @@ const item = this.P2P.place(
 
 [](https://www.npmjs.com/package/psd-to-phaser#placedspritemethods)
 
-Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setActive', 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setMask', 'setOrigin', 'setPipeline', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setVisible', 'setX', 'setY', 'setZ'.
+Several sprite methods can be called on a placed group. This just applies the method to each sprite individually. Currently, the list of supported methods (somewhat arbitrarily) includes : 'setActive', 'setAlpha', 'setAngle', 'setBlendMode', 'setDepth', 'setDisplaySize', 'setFlip', 'setLighting', 'setMask', 'setOrigin', 'setPosition', 'setRotation', 'setScale', 'setScrollFactor', 'setSize', 'setTint', 'setTintMode', 'setVisible', 'setX', 'setY', 'setZ'.
 
 ```js
 // Set the alpha and rotation of a group.
@@ -217,6 +223,7 @@ const = L1Text = placedGroup.target("depthTest/Level1/Level1Text");
 L1Text.setAlpha(0.3)
 
 // Get  the points which make up a placed Zone
+// (an array of Phaser.Math.Vector2 - Phaser 4 removed Geom.Point)
 const zone = placedGroup.target("depthTest/zone1");
 const points = zone.getData('points');
 ```
@@ -745,6 +752,44 @@ this.P2P.use
 [](https://www.npmjs.com/package/psd-to-phaser#depth--placing-your-own-items)
 
 Because the plugin is maintaining layer order with setDepth() it is very likely that new items will be hidden behind something. When placing something of your own, make sure you set its depth to something higher than the number of layers you're bringing in from the PSD.
+
+### Masks cost a draw call each
+
+In Phaser 4 a mask is a Filter, and every filtered object renders through its own framebuffer. When a masked group is placed, each child gets its own mask filter, so a mask on a group of a hundred sprites is a hundred extra render passes. Mask the smallest set of layers you can.
+
+## Upgrading from Phaser 3
+
+[](https://www.npmjs.com/package/psd-to-phaser#upgrading-from-phaser-3)
+
+The plugin now requires Phaser 4. Install it alongside the plugin:
+
+```bash
+npm install phaser@^4.0.0 psd-to-phaser
+```
+
+Most of the plugin's API is unchanged - `load()`, `place()`, `target()`, cameras and presets all work the same way. Three things are worth knowing about:
+
+**Masks.** Phaser 4 removed `BitmapMask` and replaced masks with Filters, so `getMask()` no longer returns a `bitmapMask` you can hand to `setMask()`. It returns the mask image plus an `applyTo()` method instead:
+
+```js
+const mask = this.P2P.getMask(this, "psd_key", "Background/Trees");
+
+// Phaser 3 (old)
+// mySprite.setMask(mask.bitmapMask);
+
+// Phaser 4
+mask.applyTo(mySprite);
+```
+
+Masks applied automatically during `place()` need no change on your side. They do need the WebGL renderer: `Phaser.AUTO` picks WebGL wherever it is available, but under Canvas masked layers render unmasked.
+
+**Zone points.** `Phaser.Geom.Point` is gone in Phaser 4. `zone.getData('points')` now returns an array of `Phaser.Math.Vector2`. Both have `x` and `y`, so most code is unaffected; only an `instanceof Phaser.Geom.Point` check needs updating.
+
+**Pipelines.** `setPipeline` was removed along with the Phaser 3 pipeline system, so it is no longer in the list of methods a placed group forwards to its sprites. `setLighting` and `setTintMode` replace the common uses of it and have been added. For custom rendering, Phaser 4 uses render nodes.
+
+One more thing that is not about this plugin but bites on upgrade: Phaser 4 defaults `roundPixels` to `false` (Phaser 3 defaulted to `true`). If your tiles suddenly show seams, set `render: { roundPixels: true }` in your game config - `render: { pixelArt: true }` still turns it on for you.
+
+The full list of framework changes is in Phaser's [v3 to v4 migration guide](https://github.com/phaserjs/phaser/blob/master/changelog/v4/4.0/MIGRATION-GUIDE.md).
 
 ## Development
 

@@ -2,32 +2,41 @@
 
 import PsdToPhaserPlugin from '../PsdToPhaser';
 import { findLayer } from './shared/findLayer';
+import { addMaskFilter } from './shared/applyMask';
 import { hasMask } from '../types';
 
 /**
- * Result object from getMask containing the mask image and bitmap mask
+ * Result object from getMask containing the mask image and a way to apply it
  */
 export interface MaskResult {
-  /** The hidden image used to create the mask */
+  /** The hidden image used as the mask source */
   maskImage: Phaser.GameObjects.Image;
-  /** The bitmap mask that can be applied to game objects */
-  bitmapMask: Phaser.Display.Masks.BitmapMask;
+  /**
+   * Apply this mask to a game object.
+   *
+   * Phaser 4 has no standalone mask object to pass around: a mask is a Filter that
+   * lives on the object it masks, so masking happens through this method.
+   *
+   * @param gameObject - The game object to mask
+   * @returns The Mask filter controller, or null if filters are unavailable (Canvas renderer)
+   */
+  applyTo: (gameObject: Phaser.GameObjects.GameObject) => Phaser.Filters.Mask | null;
 }
 
 export default function getMaskModule(plugin: PsdToPhaserPlugin) {
   /**
-   * Get a bitmap mask for a layer. The mask texture should already be loaded.
+   * Get a mask for a layer. The mask texture should already be loaded.
    *
    * @param scene - The Phaser scene
    * @param psdKey - The key used when loading the PSD
    * @param layerPath - Path to the layer (e.g., "GroupName/LayerName")
-   * @returns MaskResult with the mask image and bitmap mask, or null if no mask exists
+   * @returns MaskResult with the mask image and an applyTo method, or null if no mask exists
    *
    * @example
    * // Get a mask for a layer
    * const mask = psd.getMask(this, 'myPsd', 'Background/Trees');
    * if (mask) {
-   *   mySprite.setMask(mask.bitmapMask);
+   *   mask.applyTo(mySprite);
    * }
    */
   return function getMask(
@@ -82,12 +91,10 @@ export default function getMaskModule(plugin: PsdToPhaserPlugin) {
     maskImage.setOrigin(0, 0);
     maskImage.setVisible(false); // The mask image should be invisible
 
-    // Create the bitmap mask from the image
-    const bitmapMask = maskImage.createBitmapMask();
-
     return {
       maskImage,
-      bitmapMask,
+      applyTo: (gameObject: Phaser.GameObjects.GameObject) =>
+        addMaskFilter(gameObject, maskImage),
     };
   };
 }

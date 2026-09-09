@@ -35,7 +35,7 @@ export function placeZones(
 function createZone(scene: Phaser.Scene, zone: ZoneLayer): Phaser.GameObjects.Zone | null {
   const shape = createZoneShape(zone);
   let zoneObject: Phaser.GameObjects.Zone;
-  let points: Phaser.Geom.Point[];
+  let points: Phaser.Math.Vector2[];
 
   if (shape instanceof Phaser.Geom.Polygon) {
     const bounds = Phaser.Geom.Polygon.GetAABB(shape);
@@ -44,10 +44,10 @@ function createZone(scene: Phaser.Scene, zone: ZoneLayer): Phaser.GameObjects.Zo
   } else {
     zoneObject = scene.add.zone(shape.x, shape.y, shape.width, shape.height);
     points = [
-      new Phaser.Geom.Point(shape.x, shape.y),
-      new Phaser.Geom.Point(shape.x + shape.width, shape.y),
-      new Phaser.Geom.Point(shape.x + shape.width, shape.y + shape.height),
-      new Phaser.Geom.Point(shape.x, shape.y + shape.height)
+      new Phaser.Math.Vector2(shape.x, shape.y),
+      new Phaser.Math.Vector2(shape.x + shape.width, shape.y),
+      new Phaser.Math.Vector2(shape.x + shape.width, shape.y + shape.height),
+      new Phaser.Math.Vector2(shape.x, shape.y + shape.height)
     ];
   }
 
@@ -75,7 +75,7 @@ function createZone(scene: Phaser.Scene, zone: ZoneLayer): Phaser.GameObjects.Zo
 
 function createZoneShape(zone: ZoneLayer): Phaser.Geom.Polygon | Phaser.Geom.Rectangle {
   if (zone.subpaths && Array.isArray(zone.subpaths) && zone.subpaths.length > 0 && Array.isArray(zone.subpaths[0])) {
-    const points = zone.subpaths[0].flatMap((point: number[]) => new Phaser.Geom.Point(point[0], point[1]));
+    const points = zone.subpaths[0].flatMap((point: number[]) => new Phaser.Math.Vector2(point[0], point[1]));
     return new Phaser.Geom.Polygon(points);
   } else if (zone.bbox && typeof zone.bbox === "object") {
     const { left, top, right, bottom } = zone.bbox;

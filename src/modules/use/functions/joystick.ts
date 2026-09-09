@@ -39,7 +39,7 @@ export function joystick(_plugin: PsdToPhaserPlugin) {
     );
 
     const startPosition = { x: joystickObject.x, y: joystickObject.y };
-    const zoneShape = zoneObject.getData("points") as Phaser.Geom.Point[];
+    const zoneShape = zoneObject.getData("points") as Phaser.Math.Vector2[];
     const zoneBounds = zoneShape
       ? new Phaser.Geom.Polygon(zoneShape)
       : zoneObject.getBounds();
@@ -347,8 +347,8 @@ function getClosestPointOnPolygon(
   polygon: Phaser.Geom.Polygon,
   x: number,
   y: number
-): Phaser.Geom.Point {
-  let closestPoint = new Phaser.Geom.Point();
+): Phaser.Math.Vector2 {
+  let closestPoint = new Phaser.Math.Vector2();
   let minDistance = Number.MAX_VALUE;
 
   for (let i = 0; i < polygon.points.length; i++) {
@@ -367,29 +367,29 @@ function getClosestPointOnPolygon(
 }
 
 function getClosestPointOnLine(
-  start: Phaser.Geom.Point,
-  end: Phaser.Geom.Point,
+  start: Phaser.Math.Vector2,
+  end: Phaser.Math.Vector2,
   x: number,
   y: number
-): Phaser.Geom.Point {
+): Phaser.Math.Vector2 {
   const dx = end.x - start.x;
   const dy = end.y - start.y;
   const t = ((x - start.x) * dx + (y - start.y) * dy) / (dx * dx + dy * dy);
   const clampedT = Phaser.Math.Clamp(t, 0, 1);
-  return new Phaser.Geom.Point(
+  return new Phaser.Math.Vector2(
     start.x + clampedT * dx,
     start.y + clampedT * dy
   );
 }
 
-function getPolygonCenter(polygon: Phaser.Geom.Polygon): Phaser.Geom.Point {
+function getPolygonCenter(polygon: Phaser.Geom.Polygon): Phaser.Math.Vector2 {
   let sumX = 0,
     sumY = 0;
   for (const point of polygon.points) {
     sumX += point.x;
     sumY += point.y;
   }
-  return new Phaser.Geom.Point(
+  return new Phaser.Math.Vector2(
     sumX / polygon.points.length,
     sumY / polygon.points.length
   );

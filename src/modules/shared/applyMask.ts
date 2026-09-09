@@ -4,7 +4,44 @@ import type { PsdLayer } from '../../types';
 import { hasMask } from '../../types';
 
 /**
- * Apply a bitmap mask to a game object if the layer has a mask defined.
+ * Attach a Mask filter to a game object, using `maskImage` as the mask source.
+ *
+ * Phaser 4 removed BitmapMask: masks are now Filters, added to a game object's
+ * internal filter list.
+ *
+ * An internal filter renders the object into its own framebuffer, so the mask has to
+ * be viewed through the same camera to line up. That camera is the object's own
+ * `filterCamera`, which Phaser keeps focused on the object; passing it as the mask's
+ * `viewCamera` gives the world-space positioning BitmapMask had in Phaser 3. Leaving
+ * it unset (or passing the scene camera) pins the mask to each object's own bounds
+ * instead, which shifts the mask per object.
+ *
+ * Filters are WebGL only. Under the Canvas renderer `enableFilters()` returns early
+ * and `filters` stays null, so this returns null and the object renders unmasked.
+ *
+ * @param gameObject - The game object to mask
+ * @param maskImage - The (hidden) image used as the mask source
+ * @returns The Mask filter controller, or null if filters are unavailable
+ */
+export function addMaskFilter(
+  gameObject: Phaser.GameObjects.GameObject,
+  maskImage: Phaser.GameObjects.Image
+): Phaser.Filters.Mask | null {
+  gameObject.enableFilters();
+
+  if (!gameObject.filters) {
+    console.warn(
+      'Masks require the WebGL renderer in Phaser 4. Skipping mask for',
+      gameObject.name || gameObject.type
+    );
+    return null;
+  }
+
+  return gameObject.filters.internal.addMask(maskImage, false, gameObject.filterCamera);
+}
+
+/**
+ * Apply a mask to a game object if the layer has a mask defined.
  * The mask texture should already be loaded with key `${layerName}_mask`.
  *
  * @param scene - The Phaser scene
@@ -15,7 +52,7 @@ import { hasMask } from '../../types';
 export function applyMaskToGameObject(
   scene: Phaser.Scene,
   layer: PsdLayer,
-  gameObject: Phaser.GameObjects.GameObject & { setMask?: (mask: Phaser.Display.Masks.BitmapMask) => void }
+  gameObject: Phaser.GameObjects.GameObject
 ): Phaser.GameObjects.Image | null {
   if (!hasMask(layer)) {
     return null;
@@ -34,19 +71,14 @@ export function applyMaskToGameObject(
   maskImage.setOrigin(0, 0);
   maskImage.setVisible(false); // The mask image should be invisible
 
-  // Create the bitmap mask from the image
-  const bitmapMask = maskImage.createBitmapMask();
-
   // Apply the mask to the game object
-  if (gameObject.setMask) {
-    gameObject.setMask(bitmapMask);
-  }
+  addMaskFilter(gameObject, maskImage);
 
   return maskImage;
 }
 
 /**
- * Apply a bitmap mask to a container and all its children.
+ * Apply a mask to a container and all its children.
  * Useful for group layers with masks.
  *
  * @param scene - The Phaser scene
@@ -75,23 +107,22 @@ export function applyMaskToContainer(
   maskImage.setOrigin(0, 0);
   maskImage.setVisible(false);
 
-  // Create the bitmap mask from the image
-  const bitmapMask = maskImage.createBitmapMask();
-
   // Apply the mask to the container (which affects all children)
-  container.setMask(bitmapMask);
+  addMaskFilter(container, maskImage);
 
   return maskImage;
 }
 
 /**
- * Apply a SHARED bitmap mask to all children in a Phaser Group.
- * Creates ONE mask image and ONE bitmap mask, then applies it to all children.
- * This is more efficient and correct - masks in Phaser are positioned in global space
- * and can be shared across multiple game objects.
+ * Apply a SHARED mask to all children in a Phaser Group.
+ * Creates ONE mask image, then adds a Mask filter for it to every child.
  *
  * Note: Mask images are converted from luminance to alpha, so grayscale masks
- * (white=visible, black=hidden) work correctly with Phaser's BitmapMask.
+ * (white=visible, black=hidden) work correctly with Phaser's Mask filter, which
+ * multiplies the input by the alpha of the mask.
+ *
+ * Each filtered child renders through its own framebuffer, so masking a large
+ * group is not free - mask the smallest set of objects you can get away with.
  *
  * @param scene - The Phaser scene
  * @param layer - The layer data that contains mask information
@@ -118,7 +149,7 @@ export function applySharedMaskToGroup(
   // Check if we already created the alpha-converted texture
   let finalMaskKey = alphaKeyMaskKey;
   if (!scene.textures.exists(alphaKeyMaskKey)) {
-    // Convert luminance to alpha for the mask to work with Phaser's BitmapMask
+    // Convert luminance to alpha so the Mask filter reads the mask correctly
     const converted = convertLuminanceToAlpha(scene, maskKey, alphaKeyMaskKey);
     if (!converted) {
       // Fallback to original texture if conversion fails
@@ -137,18 +168,13 @@ export function applySharedMaskToGroup(
   maskImage.setOrigin(0, 0);
   maskImage.setVisible(false);
 
-  // Create ONE bitmap mask from the image
-  const bitmapMask = maskImage.createBitmapMask();
-
-  // Apply the SAME bitmap mask to ALL children in the group
+  // Apply the SAME mask image to ALL children in the group
   const children = group.getChildren();
   console.log(`🎭 Applying mask "${maskKey}" to ${children.length} children at position (${maskX}, ${maskY})`);
 
   children.forEach((child, index) => {
-    if ('setMask' in child && typeof child.setMask === 'function') {
-      (child as Phaser.GameObjects.Sprite).setMask(bitmapMask);
-      console.log(`  - Applied mask to child ${index}: ${child.name || 'unnamed'}`);
-    }
+    addMaskFilter(child, maskImage);
+    console.log(`  - Applied mask to child ${index}: ${child.name || 'unnamed'}`);
   });
 
   return maskImage;
@@ -156,7 +182,7 @@ export function applySharedMaskToGroup(
 
 /**
  * Convert a grayscale/luminance mask image to use alpha channel.
- * Phaser's BitmapMask uses alpha, but many mask images are grayscale
+ * The Mask filter multiplies by alpha, but many mask images are grayscale
  * (white=visible, black=hidden). This converts luminance to alpha.
  *
  * @param scene - The Phaser scene

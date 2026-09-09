@@ -21,7 +21,7 @@ export function fillZone(_plugin: PsdToPhaserPlugin) {
       return;
     }
 
-    const points = zone.getData('points') as Phaser.Geom.Point[];
+    const points = zone.getData('points') as Phaser.Math.Vector2[];
     if (!points || points.length === 0) {
       console.error('Zone does not have valid points data');
       return;
